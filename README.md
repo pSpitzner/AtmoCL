@@ -1,6 +1,6 @@
-#Installation
-##Prerequisites
-####macOS
+# Installation
+## Prerequisites
+#### macOS
 - [libgd](https://libgd.github.io/) is required for writing images to disk and can be installed using [brew](https://brew.sh/) or [macports](https://www.macports.org/), e.g. with
 
 ```
@@ -9,7 +9,7 @@ sudo port install gd2
 
 - OpenCL drivers are included in macOS versions later than 10.6 Snow Leopard but we recommend 10.11 El Capitan. Unfortunately, Apples OpenCL drivers tend to be [buggy](http://preta3d.com/os-x-users-unite/) and the only way to change them is by upgrading to a different version of macOS. We cannot say much about the Sierra drivers so far but have made some bad experience with Yosemite.
 
-####Linux
+#### Linux
 - [libgd](https://libgd.github.io/) is in the Ubuntu package repository
 
 ```
@@ -18,7 +18,7 @@ sudo apt-get install libgd-dev
 
 - Depending on your hardware you have to install OpenCL drivers according to your vendor. Coming Soon.
 
-##Compiling the Source
+## Compiling the Source
 Open a terminal, change into the ```AtmoCL``` folder and type
 
 ```
@@ -27,7 +27,7 @@ make
 
 to get the ```executable``` if successful. Possibly you have to adjust the path to linked libraries and includes, depending on where you installed OpenCL and libgd. Note that this is platform dependant, edit the right ones.
 
-##Running the Program
+## Running the Program
 If you have a look into the ```run``` file, you will see that this just calls the ```executable``` for and does some cleanup work. Start the program using
 
 ```
@@ -62,7 +62,7 @@ There is also a ```-profiling``` option, which forces the host to wait for the d
 
 Any generated output is written into the ```output``` folder, which you can change into a symlink to save elsewhere. According subdirectories are created for images ```img```, ```timeseries```, ```verticalprofiles``` and ```logs```.
 
-##Changing Settings
+## Changing Settings
 
 So far, settings are hard coded into the program, so you have to recompile after doing any changes.
 
@@ -72,7 +72,7 @@ make clean; make
 
 Most settings are located at the beginning of the ```classes/asystem.cpp``` class. They are grouped into a global parameter struct we call ```par```, that is also available in kernels and other classes.
 
-####System Size
+#### System Size
 Change the amount of cells in each dimension
 
 ```
@@ -91,13 +91,13 @@ par.dz  = 20.0;
 
 to get the desired system volume.
 
-####Time Step
+#### Time Step
 ```
 par.dT = 1.0;
 ```
 is the large time step in seconds from which intermediate step sizes ```par.dtis[s]``` and step amounts ```par.nsi[s]``` are calculated for the different stages.
 
-####Export Interval
+#### Export Interval
 In the ```classes/clexporter.cpp``` class you will find the three parameters setting the interval of exporting images, timeseries and vertical profiles
 ```
 img_every = 60.0;   // write image files every 60 seconds
@@ -105,7 +105,7 @@ ts_every  = 60.0;   // make an entry into timeseries
 vp_every  = 120.0;  // write a vertical profile every 120s
 ```
 
-#What's in the Box and How Does it Work?
+# What's in the Box and How Does it Work?
 
 Coming Soon :P
 
