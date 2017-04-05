@@ -1,0 +1,10 @@
+*.o
+.DS_Store
+executable
+*.dSYM
+output
+output/
+abort
+snapshots/
+*.m4v
+

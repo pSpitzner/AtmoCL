@@ -1,0 +1,18 @@
+__kernel void ks_prep_fast_1_kernel_main(__private parameters par,
+                                         __read_only image3d_t bs_source_0,
+                                         __read_only image3d_t bs_source_1,
+                                         __write_only image3d_t bf_target_a)
+{
+  position pos = get_pos_bc(par, get_global_id(0), get_global_id(1), get_global_id(2));
+
+  int s = 1;
+  float4 scl, y_s[2];
+
+  y_s[0] = read_imagef(bs_source_0, (int4)(pos.x, pos.y, pos.z, 0));
+  y_s[1] = read_imagef(bs_source_1, (int4)(pos.x, pos.y, pos.z, 0));
+
+  scl = y_s[0];
+  scl += par.a[s][1]*(y_s[1]-y_s[0]);
+
+  write_imagef(bf_target_a, (int4)(pos.x, pos.y, pos.z, 0), scl);
+}
