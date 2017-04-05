@@ -73,11 +73,14 @@ make clean; make
 Most settings are located at the beginning of the ```classes/asystem.cpp``` class. They are grouped into a global parameter struct we call ```par```, that is also available in kernels and other classes.
 
 #### System Size
-Change the amount of cells in each dimension
+Before increasing the volume to get an actual 3D simulation box, make sure your computer has the power to handle it. Especially on Latops running macOS, your whole OS interface may become unresponsive up to the point where you are unable to kill the process. To be safe, run on a remote box over ssh.
+
+You can change the amount of cells in each dimension
 
 ```
 par.sx  = 128;
-par.sy  = 128;
+//par.sy  = 1;
+par.sy = 128;
 par.sz  = 64;
 ```
 
@@ -104,8 +107,3 @@ img_every = 60.0;   // write image files every 60 seconds
 ts_every  = 60.0;   // make an entry into timeseries
 vp_every  = 120.0;  // write a vertical profile every 120s
 ```
-
-# What's in the Box and How Does it Work?
-
-Coming Soon :P
-

@@ -11,7 +11,7 @@ void asystem::set_par(int timescheme_) {
 
   // isdac
   par.sx  = 128;     // system size
-  par.sy  = 128;
+  par.sy  = 1;
   par.sz  = 64;
   par.dx  = 50.0;
   par.dy  = 50.0;
