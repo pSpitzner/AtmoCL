@@ -23,8 +23,8 @@ int main(int argc, char * argv[]) {
 
   cl_device_type DeviceType = CL_DEVICE_TYPE_CPU;
   bool profiling_enabled = false;
-  // std::string s_profilePath = "./profiles/data125";
-  std::string s_profilePath = "./profiles/dycoms_2";
+  std::string s_profilePath = "./profiles/data125";
+  // std::string s_profilePath = "./profiles/dycoms_2";
   std::string s_statePath = "";
   int timescheme = 1;
   int device = 0;
@@ -67,7 +67,8 @@ int main(int argc, char * argv[]) {
         logger->log(0, "No profile provided\n");
         return -1;
       } else {
-        sys->init_from_file(s_profilePath);
+        // sys->init_from_file(s_profilePath);
+        sys->init_from_kernel();
       }
     logger->log(0, "Equilibrating...");
     sys->equilibrate();

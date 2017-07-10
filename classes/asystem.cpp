@@ -11,11 +11,11 @@ void asystem::set_par(int timescheme_) {
 
   // isdac
   par.sx  = 128;     // system size
-  par.sy  = 1;
+  par.sy  = 256;
   par.sz  = 64;
-  par.dx  = 50.0;
-  par.dy  = 50.0;
-  par.dz  = 20.0;
+  par.dx  = 600.0;
+  par.dy  = 600.0;
+  par.dz  = 300.0;
 
   par.ui = 0.0;
   par.vi = 0.0;
@@ -206,7 +206,7 @@ asystem::asystem(clcontext *contextn, cllogger *loggern, int timescheme) {
   // kernel //
   // ----------------------------------------------------------------- //
 
-  k_init_scalars          = new clkernel(context, par, "./kernels/k_init_scalars_dycoms.cl");
+  k_init_scalars          = new clkernel(context, par, "./kernels/k_init_scalars_cell.cl");
   k_init_momenta          = new clkernel(context, par, "./kernels/k_init_momenta.cl");
   ks_ext_forcings         = new clkernel(context, par, "./kernels/k_ext_forcings_isdac.cl");
   ks_copy[0][0]           = new clkernel(context, par, "./kernels/k_copy_one.cl");
@@ -266,7 +266,7 @@ asystem::asystem(clcontext *contextn, cllogger *loggern, int timescheme) {
   kf_copy[2]              = new clkernel(context, par, "./kernels/k_copy_one.cl");
   kf_copy[3]              = new clkernel(context, par, "./kernels/k_copy_one.cl");
   k_damping               = new clkernel(context, par, "./kernels/k_damping.cl");
-  k_nesting               = new clkernel(context, par, "./kernels/k_nesting_isdac.cl");
+  k_nesting               = new clkernel(context, par, "./kernels/k_nesting_cell.cl");
   k_clone[0]              = new clkernel(context, par, "./kernels/k_clone.cl");
   k_clone[1]              = new clkernel(context, par, "./kernels/k_clone.cl");
   k_clone[2]              = new clkernel(context, par, "./kernels/k_clone.cl");
@@ -499,6 +499,7 @@ asystem::asystem(clcontext *contextn, cllogger *loggern, int timescheme) {
   v_exporter.push_back(new clexport(context, "XZ_w",     "./kernels/exporter/ke_w.cl",     par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,1,0  ));
 
   v_exporter.push_back(new clexport(context, "XZ_rho_c", "./kernels/exporter/ke_rho_c.cl", par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,1,0  ));
+  v_exporter.push_back(new clexport(context, "XZ_rho_v", "./kernels/exporter/ke_rho_v.cl", par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,1,0  ));
   v_exporter.push_back(new clexport(context, "XZ_rho_r", "./kernels/exporter/ke_rho_r.cl", par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,1,0  ));
   v_exporter.push_back(new clexport(context, "XZ_rho_i", "./kernels/exporter/ke_rho_i.cl", par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,1,1  ));
   v_exporter.push_back(new clexport(context, "XZ_rho_s", "./kernels/exporter/ke_rho_s.cl", par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,1,1  ));
@@ -518,8 +519,10 @@ asystem::asystem(clcontext *contextn, cllogger *loggern, int timescheme) {
   v_exporter.push_back(new clexport(context, "VP_qt",    "./kernels/exporter/ke_int_qt.cl",par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  0,0,1  ));
   v_exporter.push_back(new clexport(context, "VP_qi",    "./kernels/exporter/ke_int_qi.cl",par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  0,0,1  ));
   v_exporter.push_back(new clexport(context, "VP_thetal","./kernels/exporter/ke_int_thetal.cl",par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  0,0,1  ));
+  v_exporter.push_back(new clexport(context, "VP_theta","./kernels/exporter/ke_int_theta.cl",par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  0,0,1  ));
+  v_exporter.push_back(new clexport(context, "VP_humidity","./kernels/exporter/ke_int_humidity.cl",par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  0,0,1  ));
   v_exporter.push_back(new clexport(context, "VP_temperature","./kernels/exporter/ke_int_temperature.cl",par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  0,0,1  ));
-  v_exporter.push_back(new clexport(context, "VP_verlocity_variance","./kernels/exporter/ke_int_velocity_variance.cl",par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  0,0,1  ));
+  v_exporter.push_back(new clexport(context, "VP_velocity_variance","./kernels/exporter/ke_int_velocity_variance.cl",par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  0,0,1  ));
 
 }
 
@@ -618,7 +621,7 @@ void asystem::equilibrate() {
   int ky = 1;
   int kz = par.sz;
 
-  kf_microphys->bind("phys", (unsigned int)(2)); // only enable condensation
+  // kf_microphys->bind("phys", (unsigned int)(2)); // only enable condensation
 
   int equil_steps = 5000;
 
@@ -651,7 +654,7 @@ void asystem::equilibrate() {
         kf_copy[2]->step(par.sx, par.sy, par.sz);
         kf_copy[3]->step(par.sx, par.sy, par.sz);
 
-        // write_files(frame_index*3+s);
+        write_files(frame_index*3+s);
       }
     }
     write_files(frame_index);
