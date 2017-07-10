@@ -92,6 +92,7 @@ int main(int argc, char * argv[]) {
     double seconds = double(ns)/1.0E9;
     logger->log_estimated_time(seconds, i, iterations);
     logger->log(2,"  -  %d/%d",i,iterations);
+    if (profiling_enabled) logger->avg_plog();
   }
 
   double seconds_taken = double(logger->end_last_timer())/1.0E9;

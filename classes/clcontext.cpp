@@ -420,6 +420,6 @@ unsigned long clcontext::used_memory() {
   for (int i = 0; i < v_bufferList.size(); i++) {
     mem += v_bufferList[i]->datasize;
   }
-  logger->log(0, "%d buffers: %d MByte total\n",v_bufferList.size(),mem/1024/1024);
+  logger->log(0, "%d buffers: %2.2f MByte total\n",v_bufferList.size(),float(mem)/1024.0/1024.0);
   return mem;
 }

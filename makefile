@@ -17,6 +17,7 @@ OBJ= \
  ./classes/clbuffer.o \
  ./classes/clkernel.o \
  ./classes/clexport.o \
+ ./classes/wrf.o \
  ./classes/asystem.o \
 
 
