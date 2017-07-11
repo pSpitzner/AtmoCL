@@ -58,6 +58,7 @@ class asystem {
 
     clkernel *k_init_scalars;
     clkernel *k_init_momenta;
+    clkernel *k_perturb;
 
     clkernel *k_damping;
     clkernel *k_nesting;
@@ -96,6 +97,7 @@ class asystem {
     void init_from_file(std::string s_filePath);
 
     void equilibrate();
+    void perturb();
     void mis_step();
     void mis_step(int damping, int kx, int ky, int kz);
     void slow_stage(int s, int kx, int ky, int kz);

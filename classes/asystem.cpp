@@ -208,6 +208,7 @@ asystem::asystem(clcontext *contextn, cllogger *loggern, int timescheme) {
 
   k_init_scalars          = new clkernel(context, par, "./kernels/k_init_scalars_cell.cl");
   k_init_momenta          = new clkernel(context, par, "./kernels/k_init_momenta.cl");
+  k_perturb               = new clkernel(context, par, "./kernels/k_perturb_cell.cl");
   ks_ext_forcings         = new clkernel(context, par, "./kernels/k_ext_forcings_isdac.cl");
   ks_copy[0][0]           = new clkernel(context, par, "./kernels/k_copy_one.cl");
   ks_copy[0][1]           = new clkernel(context, par, "./kernels/k_copy_one.cl");
@@ -286,6 +287,15 @@ asystem::asystem(clcontext *contextn, cllogger *loggern, int timescheme) {
 
   k_init_momenta->bind("bf_scalars_vc_a_0", bf_scalars_vc_a[0]);
   k_init_momenta->bind("bf_momenta_fc_a", bf_momenta_fc_a);
+
+  k_perturb->bind("b_source_scalars_0", bf_scalars_vc_a[0]);
+  k_perturb->bind("b_source_scalars_1", bf_scalars_vc_a[1]);
+  k_perturb->bind("b_source_scalars_2", bf_scalars_vc_a[2]);
+  k_perturb->bind("b_target_scalars_0", bf_scalars_vc_b[0]);
+  k_perturb->bind("b_target_scalars_1", bf_scalars_vc_b[1]);
+  k_perturb->bind("b_target_scalars_2", bf_scalars_vc_b[2]);
+  k_perturb->bind("b_source_momenta",   bf_momenta_fc_a);
+  k_perturb->bind("b_target_momenta",   bf_momenta_fc_b);
 
   k_damping->bind("b_source_momenta",   bf_momenta_fc_a);
   k_damping->bind("b_target_momenta",   bf_momenta_fc_b);
@@ -563,7 +573,7 @@ void asystem::write_files(int step) {
 }
 
 void asystem::write_state(std::string s_filename) {
-  logger->log(0, "Writing states to %s\n", s_filename.c_str());
+  logger->log(0, "\nWriting states to %s\n", s_filename.c_str());
   int ret = system(("mkdir -p " + s_filename).c_str());
   bf_scalars_vc_a[0]->write_raw(s_filename+"/s0.dat");
   bf_scalars_vc_a[1]->write_raw(s_filename+"/s1.dat");
@@ -664,6 +674,22 @@ void asystem::equilibrate() {
   logger->log(2,"\rEquilibrating  -  done\n");
 }
 
+void asystem::perturb() {
+
+  int kx = par.sx;
+  int ky = par.sy;
+  int kz = par.sz;
+  k_perturb->step(kx, ky, kz);
+  kf_copy[0]->step(kx, ky, kz);
+  kf_copy[1]->step(kx, ky, kz);
+  kf_copy[2]->step(kx, ky, kz);
+  kf_copy[3]->step(kx, ky, kz);
+
+  // write_files(v_exporter[0]->t_vp);
+
+  context->finish();
+}
+
 void asystem::mis_step() {
   // overload for default arguments
   mis_step(0, par.sx, par.sy, par.sz);
@@ -671,12 +697,12 @@ void asystem::mis_step() {
 
 void asystem::mis_step(int damping, int kx, int ky, int kz) {
 
-  ks_ext_forcings->bind("frame_index", frame_index);
-  ks_ext_forcings->step(kx, ky, kz);
-  kf_copy[0]->step(kx, ky, kz);
-  kf_copy[1]->step(kx, ky, kz);
-  kf_copy[2]->step(kx, ky, kz);
-  kf_copy[3]->step(kx, ky, kz);
+  // ks_ext_forcings->bind("frame_index", frame_index);
+  // ks_ext_forcings->step(kx, ky, kz);
+  // kf_copy[0]->step(kx, ky, kz);
+  // kf_copy[1]->step(kx, ky, kz);
+  // kf_copy[2]->step(kx, ky, kz);
+  // kf_copy[3]->step(kx, ky, kz);
 
   if (par.timescheme == 0) {
     for (int s=0; s<3; s++) {
