@@ -55,9 +55,16 @@ typedef struct {
 
 } parameters;
 
+// wrf parameters, not necessarily matching internal system size etc
 typedef struct {
-  int sx, sy, sz; //unsigned long = size_t
-  float dx, dy, dz;
+  float lat0,lon0,dlat,dlon;
+  int   sx,sy,sz;
+  float dx,dy;
+  float domaincenterx,domaincentery;
+  float domainsizex,domainsizey;
+  float dsx,dsy;
+  float dx0,dy0;
+  float hz[26];
 
 } wrfparameters;
 

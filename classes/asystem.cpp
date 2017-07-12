@@ -1,5 +1,4 @@
 #include "asystem.h"
-// #include "wrfparameters.h"
 
 void asystem::set_par(int timescheme_) {
   // dycoms
@@ -532,8 +531,6 @@ asystem::asystem(clcontext *contextn, cllogger *loggern, int timescheme) {
   test->bind_custom( "wrf", &wrf, sizeof(wrf));
   test->step(1,1,1);
   printf("done\n");
-
-
 }
 
 asystem::~asystem() {
