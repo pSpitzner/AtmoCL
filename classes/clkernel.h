@@ -36,11 +36,13 @@ class clkernel
     std::string read_file(std::string inputPath);
     void read_argument_list(std::string inputPath);
     void replace_string(std::string &oldString, std::string from, std::string to);
+    size_t get_pos_of_argument_from_src(std::string s_kernelArg);
     void bind(const int pos, clbuffer *b);
     void bind(std::string s_kernelArg, unsigned int myInt);
     void bind(std::string s_kernelArg, clbuffer *b);
-    void bind_struct();
-    //    void bind(const int pos, float dt);
+    void bind_custom(std::string s_kernelArg, void *s, size_t custom_size);
+
+       // void bind(const int pos, float dt);
     void set_par(parameters parn);
     void step(int kx, int ky, int kz);
 

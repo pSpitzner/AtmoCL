@@ -1,4 +1,5 @@
 #include "asystem.h"
+// #include "wrfparameters.h"
 
 void asystem::set_par(int timescheme_) {
   // dycoms
@@ -520,6 +521,18 @@ asystem::asystem(clcontext *contextn, cllogger *loggern, int timescheme) {
   v_exporter.push_back(new clexport(context, "VP_thetal","./kernels/exporter/ke_int_thetal.cl",par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  0,0,1  ));
   v_exporter.push_back(new clexport(context, "VP_temperature","./kernels/exporter/ke_int_temperature.cl",par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  0,0,1  ));
   v_exporter.push_back(new clexport(context, "VP_verlocity_variance","./kernels/exporter/ke_int_velocity_variance.cl",par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  0,0,1  ));
+
+
+  wrfparameters wrf;
+  wrf.sx = 10;
+  wrf.sy = 5;
+  wrf.sz = 3;
+  clkernel *test = new clkernel(context, par, "./kernels/k_test.cl");
+  printf("host: %d %d %d\nsize: %ld\t%ld\n", wrf.sx, wrf.sy, wrf.sz, sizeof(wrf),sizeof(wrfparameters));
+  test->bind_custom( "wrf", &wrf, sizeof(wrf));
+  test->step(1,1,1);
+  printf("done\n");
+
 
 }
 

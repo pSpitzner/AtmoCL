@@ -122,7 +122,21 @@ void clkernel::set_par(parameters parn) {
   //  logger->log(1, ret, "Setting parameters: %d %f", par.sx, par.dt );
 }
 
-void clkernel::bind_struct() {
+size_t clkernel::get_pos_of_argument_from_src(std::string s_kernelArg) {
+  // find the index of kernel argument in kernel source
+  std::string::size_type start = s_sourceCode.find("kernel_main(", 0);
+  std::string::size_type end = s_sourceCode.find(s_kernelArg, start);
+  std::string s_argList = s_sourceCode.substr(start,end-start);
+
+  return std::count(s_argList.begin(), s_argList.end(), ',');
+}
+
+void clkernel::bind_custom(std::string s_kernelArg, void *s, size_t custom_size) {
+  // use this with care. kernels need to know what s looks like. void pointer are usually a bad idea
+  // provides direct access to the opencl api so to say
+  size_t pos = get_pos_of_argument_from_src(s_kernelArg);
+  ret = clSetKernelArg(kernel, pos, custom_size, s);
+  logger->log(0, ret, "binding custom data type to kernel %s at argument %d to %s\n",  s_name.c_str(), pos, s_kernelArg.c_str());
 }
 
 void clkernel::bind(const int pos, clbuffer *b) {
@@ -132,12 +146,7 @@ void clkernel::bind(const int pos, clbuffer *b) {
 
 // overload to set integers
 void clkernel::bind(std::string s_kernelArg, unsigned int myInt) {
-  // find the index of kernel argument in kernel source
-  std::string::size_type start = s_sourceCode.find("kernel_main(", 0);
-  std::string::size_type end = s_sourceCode.find(s_kernelArg, start);
-  std::string s_argList = s_sourceCode.substr(start,end-start);
-
-  std::string::size_type pos = std::count(s_argList.begin(), s_argList.end(), ',');
+  size_t pos = get_pos_of_argument_from_src(s_kernelArg);
 
   ret = clSetKernelArg(kernel, pos, sizeof(unsigned int), (void *) &myInt);
   logger->log(1, ret, "binding int to kernel %s at argument %d - int %d to %s\n",  s_name.c_str(), pos, myInt, s_kernelArg.c_str());
@@ -155,22 +164,10 @@ void clkernel::bind() {
 }
 
 void clkernel::bind(std::string s_kernelArg, clbuffer *b) {
-  // find the index of kernel argument in kernel source
-  std::string::size_type start = s_sourceCode.find("kernel_main(", 0);
-  std::string::size_type end = s_sourceCode.find(s_kernelArg, start);
-  std::string s_argList = s_sourceCode.substr(start,end-start);
-
-  std::string::size_type pos = std::count(s_argList.begin(), s_argList.end(), ',');
-
+  size_t pos = get_pos_of_argument_from_src(s_kernelArg);
   ret = clSetKernelArg(kernel, pos, sizeof(b->buffer), (void *) &b->buffer);
   logger->log(1, ret, "binding buffer to kernel %s at argument %d - buffer %s to %s\n",  s_name.c_str(), pos, b->s_name.c_str(), s_kernelArg.c_str());
 }
-
-//void clkernel::bind(const int pos, float dt)
-//{
-//  ret = clSetKernelArg(kernel, pos, sizeof(dt), (void *) &dt);
-//  logger->log(1, ret, "binding timestep, size: %ld", sizeof(dt));
-//}
 
 void clkernel::step(int kx, int ky, int kz) {
   // specify dimensions, number of kernels
