@@ -39,6 +39,7 @@ class clkernel
     void bind(const int pos, clbuffer *b);
     void bind(std::string s_kernelArg, unsigned int myInt);
     void bind(std::string s_kernelArg, clbuffer *b);
+    void bind_struct();
     //    void bind(const int pos, float dt);
     void set_par(parameters parn);
     void step(int kx, int ky, int kz);

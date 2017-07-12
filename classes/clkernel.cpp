@@ -122,6 +122,8 @@ void clkernel::set_par(parameters parn) {
   //  logger->log(1, ret, "Setting parameters: %d %f", par.sx, par.dt );
 }
 
+void clkernel::bind_struct() {
+}
 
 void clkernel::bind(const int pos, clbuffer *b) {
   ret = clSetKernelArg(kernel, pos, sizeof(b->buffer), (void *) &b->buffer);
