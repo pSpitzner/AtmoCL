@@ -70,6 +70,16 @@ __kernel void k_perturb_cell_kernel_main(__private parameters par,
 
   // if (pos.x == 64 && pos.y == 128) printf("%f %f %f %f %f\n", pos.z*par.dz, the_old, the_new, st.sig, stn.sig);
 
+  // shear velocity
+  float us = 15.0f;
+  float u = 0.0f;
+  float zs = 3000.0f;
+
+  u = us*tanh((pos.z+0.5f)*par.dz/zs);
+  u *= (st.rho+read_f4(pos.xl, pos.y, pos.z, b_source_scalars_0).s0)*0.5f;
+
+  mom.s0 = u;
+
   write_f8(pos.x, pos.y, pos.z, c,    b_target_scalars_0, b_target_scalars_1);
   write_f4(pos.x, pos.y, pos.z, cice, b_target_scalars_2);
   write_f4(pos.x, pos.y, pos.z, mom,  b_target_momenta);
