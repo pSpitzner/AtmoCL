@@ -76,7 +76,7 @@ __kernel void k_perturb_cell_kernel_main(__private parameters par,
   float zs = 3000.0f;
 
   u = us*tanh((pos.z+0.5f)*par.dz/zs);
-  u *= (st.rho+read_f4(pos.xl, pos.y, pos.z, b_source_scalars_0).s0)*0.5f;
+  u *= (st.rho+read_f4(pos.xl, pos.y, pos.z, b_source_scalars_0).s1)*0.5f;
 
   mom.s0 = u;
 
