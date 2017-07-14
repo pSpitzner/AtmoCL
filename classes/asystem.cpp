@@ -10,8 +10,8 @@ void asystem::set_par(int timescheme_) {
   // par.dz  = 50.0;
 
   // isdac
-  par.sx  = 128;     // system size
-  par.sy  = 256;
+  par.sx  = 256;     // system size
+  par.sy  = 128;
   par.sz  = 64;
   par.dx  = 600.0;
   par.dy  = 600.0;
