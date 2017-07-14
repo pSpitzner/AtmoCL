@@ -41,7 +41,7 @@ __kernel void k_nesting_cell_kernel_main(__private parameters par,
 
   // theta profile according to weisman_klemp
   if (z <= z_tr) {
-    theta_prof = (300.0f - (343.0f - 300.0f)*pow(z/z_tr, 5.0f/4.0f));
+    theta_prof = (300.0f + (343.0f - 300.0f)*pow(z/z_tr, 5.0f/4.0f));
   } else {
     theta_prof = 343.0f*exp(par.gr/par.cpd/213.0f*(z-z_tr));
   }

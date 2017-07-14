@@ -22,7 +22,7 @@ __kernel void k_perturb_cell_kernel_main(__private parameters par,
   state st = init_state_with_ice(par, c, cice);
 
   //cosine squared, r in meters
-  float r_h = 12000.0f;
+  float r_h = 10000.0f;
   float r_v = 1400.0f;
 
   float4 arg = (float4)(0.0f);
@@ -33,16 +33,13 @@ __kernel void k_perturb_cell_kernel_main(__private parameters par,
   float theta_vp;
   float offset, len;
   float T;
-  // float Told = st.T;
   offset = 0.0f;
   len = length(arg);
   if (len <= 1.0f) {
     offset = 2.0f*pow(cospi(len*0.5f), 2.0f);
     T = st.T + offset;
 
-    st.rho_v = rhovs(T, par);
     st.rho_d = (st.P-st.rho_v*par.rv*T)/par.rd/T;
-    st.rho_l = 0.0f;
     st.rho   = st.rho_d+st.rho_v+st.rho_l;
     st.rml   = st.rho_d*par.rd+st.rho_v*par.rv;
     st.cpml  = st.rho_d*par.cpd+st.rho_v*par.cpv+st.rho_l*par.cpl;
@@ -64,13 +61,14 @@ __kernel void k_perturb_cell_kernel_main(__private parameters par,
 
     c.s0 = st.sig;
     c.s1 = st.rho;
-    c.s2 = st.rho_v;
-    c.s3 = st.rho_l;
+    // c.s2 = st.rho_v;
+    // c.s3 = st.rho_l;
 
   }
   // state stn = init_state_with_ice(par, c, cice);
 
-  // if (pos.x == 64 && pos.y == 128) printf("%f %f %f %f %f\n", pos.z*par.dz, Told, T, st.sig, stn.sig);
+
+  // if (pos.x == 64 && pos.y == 128) printf("%f %f %f %f %f\n", pos.z*par.dz, the_old, the_new, st.sig, stn.sig);
 
   write_f8(pos.x, pos.y, pos.z, c,    b_target_scalars_0, b_target_scalars_1);
   write_f4(pos.x, pos.y, pos.z, cice, b_target_scalars_2);
