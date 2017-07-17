@@ -61,6 +61,9 @@ int main(int argc, char * argv[]) {
 
   context->used_memory();
 
+  sys->init_from_wrf("test");
+  return 0;
+
   if (s_statePath.length() == 0) {
     logger->log(0, "No state files given\n");
       if (s_profilePath.length() == 0) {
@@ -76,6 +79,7 @@ int main(int argc, char * argv[]) {
     logger->log(0, "Reading state files from %s\n", s_statePath.c_str());
     sys->read_state(s_statePath);
   }
+
   // sys->write_files(0);
   // return 0;
 

@@ -1,6 +1,6 @@
 #include "wrffile.h"
 
-wrffile::wrffile(clcontext *contextn, cllogger *loggern, parameters parn, std::string file_namen, clbuffer *b_target_scalars[3]) {
+wrffile::wrffile(clcontext *contextn, cllogger *loggern, parameters parn, std::string file_namen, clbuffer *b_target_scalars[3], clbuffer *b_target_momenta) {
   context = contextn;
   logger = loggern;
   par = parn;
@@ -40,6 +40,8 @@ wrffile::wrffile(clcontext *contextn, cllogger *loggern, parameters parn, std::s
   wrf.hz[23] = 14000;
   wrf.hz[24] = 16000;
   wrf.hz[25] = 18000;
+
+  wrf.zoffset = 3;
 
   // wrf angular cell size
   wrf.dlat = 0.02227027;
@@ -89,12 +91,26 @@ wrffile::wrffile(clcontext *contextn, cllogger *loggern, parameters parn, std::s
   Q        = new float[wrf.sx*wrf.sy*wrf.sz];
   QC       = new float[wrf.sx*wrf.sy*wrf.sz];
 
-  b_wrf_source_vc[0]  = new clbuffer(context, "b_wrf_source_vc_0", wrf.sx, wrf.sy, wrf.sz);
-  b_wrf_source_vc[1]  = new clbuffer(context, "b_wrf_source_vc_1", wrf.sx, wrf.sy, wrf.sz);
-  b_wrf_source_vc[2]  = new clbuffer(context, "b_wrf_source_vc_2", wrf.sx, wrf.sy, wrf.sz);
+  b_wrf_source_scalars_vc[0]  = new clbuffer(context, "b_wrf_source_scalars_vc_0", wrf.sx, wrf.sy, wrf.sz);
+  b_wrf_source_scalars_vc[1]  = new clbuffer(context, "b_wrf_source_scalars_vc_1", wrf.sx, wrf.sy, wrf.sz);
+  b_wrf_source_velocities_vc  = new clbuffer(context, "b_wrf_source_velocities_vc", wrf.sx, wrf.sy, wrf.sz);
   b_wrf_flux  = new clbuffer(context, "b_wrf_flux", wrf.sx, wrf.sy, 1);
 
-  k_interpolate = new clkernel(context, par, "./kernels/k_initterpolate.cl");
+
+  k_interpolate_scalars = new clkernel(context, par, "./kernels/k_wrf_interpolate_scalars.cl");
+  k_interpolate_scalars->bind_custom("wrfparameters wrf", &wrf, sizeof(wrf)); // whitespaces need to match kernel
+  k_interpolate_scalars->bind("b_wrf_source_scalars_0", b_wrf_source_scalars_vc[0]);
+  k_interpolate_scalars->bind("b_wrf_source_scalars_1", b_wrf_source_scalars_vc[1]);
+  k_interpolate_scalars->bind("b_target_scalars_0", b_target_scalars[0]);
+  k_interpolate_scalars->bind("b_target_scalars_1", b_target_scalars[1]);
+  k_interpolate_scalars->bind("b_target_scalars_2", b_target_scalars[2]);
+
+  k_interpolate_momenta = new clkernel(context, par, "./kernels/k_wrf_interpolate_momenta.cl");
+  k_interpolate_momenta->bind_custom("wrfparameters wrf", &wrf, sizeof(wrf));
+
+  k_interpolate_momenta->bind("b_source_velocites", b_wrf_source_velocities_vc);
+  k_interpolate_momenta->bind("b_scalars_vc", b_target_scalars[0]);
+  k_interpolate_momenta->bind("b_target_momenta", b_target_momenta);
 
   logger->log(0,"Domain in wrf: %g %g %g %g\n",wrf.dx0,wrf.dy0,wrf.dx0+wrf.dsx,wrf.dy0+wrf.dsy);
   logger->log(0,"Cellsize in wrf: %g %g\n",wrf.dx,wrf.dy);
@@ -130,12 +146,9 @@ void wrffile::load(int wrfindex) {
   fread(QC,sizeof(float),wrf.sx*wrf.sy*wrf.sz,f);
   fclose(f);
 
-  for (int x=0; x<wrf.sx; x++)
-  {
-    for (int y=0; y<wrf.sy; y++)
-    {
-      for (int z=0; z<wrf.sz; z++)
-      {
+  for (int x=0; x<wrf.sx; x++) {
+    for (int y=0; y<wrf.sy; y++) {
+      for (int z=0; z<wrf.sz; z++) {
         p =PRESSURE[index(x,y,z)]*100.;
         q =Q[index(x,y,z)];
         qc=QC[index(x,y,z)];
@@ -152,34 +165,20 @@ void wrffile::load(int wrfindex) {
         Cpml =(rhod*par.cpd+rhov*par.cpv+rhoc*par.cpl)/rho;
         sig  =Cpml*log(T)-Rml*log(p);
 
-        b_wrf_source_vc[0]->set(x,y,z,0,u);   // v
-        b_wrf_source_vc[0]->set(x,y,z,1,v);   // u
-        b_wrf_source_vc[0]->set(x,y,z,2,w);   // w
-        b_wrf_source_vc[0]->set(x,y,z,3,0.0);  // unused
+        b_wrf_source_scalars_vc[0]->set(x,y,z,0,sig*rho);  // sig
+        b_wrf_source_scalars_vc[0]->set(x,y,z,1,rho);      // rho
+        b_wrf_source_scalars_vc[0]->set(x,y,z,2,rhov);     // rhov
+        b_wrf_source_scalars_vc[0]->set(x,y,z,3,rhoc);     // rhoc
 
-        b_wrf_source_vc[1]->set(x,y,z,0,sig*rho);  // sig
-        b_wrf_source_vc[1]->set(x,y,z,1,rho);  // rho
-        b_wrf_source_vc[1]->set(x,y,z,2,rhov); // rhov
-        b_wrf_source_vc[1]->set(x,y,z,3,rhoc); // rhoc
+        b_wrf_source_scalars_vc[1]->set(x,y,z,0,0.0);            // rhor
+        b_wrf_source_scalars_vc[1]->set(x,y,z,1,1000e6*rho);     // nd
+        b_wrf_source_scalars_vc[1]->set(x,y,z,2,800e6*1e5*rhoc); // nc
+        b_wrf_source_scalars_vc[1]->set(x,y,z,3,0.0);            // nr
 
-        b_wrf_source_vc[2]->set(x,y,z,0,0.0);  // rhoc // rhor?
-        b_wrf_source_vc[2]->set(x,y,z,1,800e6*1e5*rhoc);  // nc
-        b_wrf_source_vc[2]->set(x,y,z,2,0.0);  // rhos
-        b_wrf_source_vc[2]->set(x,y,z,3,1000e6*rho); // Nv
-
-        // template
-        // (*cRhs).s0 += dsig;
-        // (*cRhs).s1 += drho;
-        // (*cRhs).s2 += drho_v;
-        // (*cRhs).s3 += drho_c;
-        // (*cRhs).s4 += drho_r;
-        // (*cRhs).s5 += dn_d;
-        // (*cRhs).s6 += dn_c;
-        // (*cRhs).s7 += dn_r;
-        // (*cRhs_ice).s0 += drho_i;
-        // (*cRhs_ice).s1 += drho_s;
-        // (*cRhs_ice).s2 += dn_i;
-        // (*cRhs_ice).s3 += dn_s;
+        b_wrf_source_velocities_vc->set(x,y,z,0,u);    // v
+        b_wrf_source_velocities_vc->set(x,y,z,1,v);    // u
+        b_wrf_source_velocities_vc->set(x,y,z,2,w);    // w
+        b_wrf_source_velocities_vc->set(x,y,z,3,0.0);  // unused
       }
     }
   }
@@ -202,8 +201,12 @@ void wrffile::load(int wrfindex) {
 
   logger->log(0, "total flux hfxm: %g lhm: %g\n",hfxm/wrf.sx/wrf.sy,lhm/wrf.sx/wrf.sy);
 
-  b_wrf_source_vc[0]->ram2device();
-  b_wrf_source_vc[1]->ram2device();
-  b_wrf_source_vc[2]->ram2device();
+  b_wrf_source_scalars_vc[0]->ram2device();
+  b_wrf_source_scalars_vc[1]->ram2device();
+  b_wrf_source_velocities_vc->ram2device();
   b_wrf_flux->ram2device();
+
+  k_interpolate_scalars->step(1,1,1);
+  k_interpolate_momenta->step(1,1,1);
 }
+

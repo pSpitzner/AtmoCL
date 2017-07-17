@@ -11,11 +11,11 @@ void asystem::set_par(int timescheme_) {
 
   // isdac
   par.sx  = 128;     // system size
-  par.sy  = 1;
+  par.sy  = 128;
   par.sz  = 64;
-  par.dx  = 50.0;
-  par.dy  = 50.0;
-  par.dz  = 20.0;
+  par.dx  = 500.0;
+  par.dy  = 500.0;
+  par.dz  = 200.0;
 
   par.ui = 0.0;
   par.vi = 0.0;
@@ -521,16 +521,6 @@ asystem::asystem(clcontext *contextn, cllogger *loggern, int timescheme) {
   v_exporter.push_back(new clexport(context, "VP_temperature","./kernels/exporter/ke_int_temperature.cl",par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  0,0,1  ));
   v_exporter.push_back(new clexport(context, "VP_verlocity_variance","./kernels/exporter/ke_int_velocity_variance.cl",par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  0,0,1  ));
 
-
-  wrfparameters wrf;
-  wrf.sx = 10;
-  wrf.sy = 5;
-  wrf.sz = 3;
-  clkernel *test = new clkernel(context, par, "./kernels/k_test.cl");
-  printf("host: %d %d %d\nsize: %ld\t%ld\n", wrf.sx, wrf.sy, wrf.sz, sizeof(wrf),sizeof(wrfparameters));
-  test->bind_custom( "wrf", &wrf, sizeof(wrf));
-  test->step(1,1,1);
-  printf("done\n");
 }
 
 asystem::~asystem() {
@@ -620,6 +610,14 @@ void asystem::init_from_file(std::string s_filePath) {
 
   k_init_scalars->step(par.sx, par.sy, par.sz);
   k_init_momenta->step(par.sx, par.sy, par.sz);
+}
+
+void asystem::init_from_wrf(std::string s_filePath) {
+  s_filePath = "/Users/paul/AtmoCL_Ref/input/wrfout_wrf4km_asam";
+  wrffile *importer = new wrffile(context, logger, par, s_filePath, bf_scalars_vc_a, bf_momenta_fc_a);
+  importer->load(10);
+  context->finish();
+
 }
 
 void asystem::equilibrate() {

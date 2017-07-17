@@ -65,6 +65,7 @@ typedef struct {
   float dsx,dsy;
   float dx0,dy0;
   float hz[26];
+  int zoffset;
 
 } wrfparameters;
 

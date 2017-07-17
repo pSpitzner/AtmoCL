@@ -20,6 +20,7 @@
 #include "clcontext.h"
 #include "clkernel.h"
 #include "clexport.h"
+#include "wrffile.h"
 #include "parameters.h"
 
 class asystem {
@@ -94,6 +95,7 @@ class asystem {
     void set_par(int timescheme);
     void init_from_kernel();
     void init_from_file(std::string s_filePath);
+    void init_from_wrf(std::string s_filePath);
 
     void equilibrate();
     void mis_step();

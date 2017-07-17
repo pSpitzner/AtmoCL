@@ -28,18 +28,20 @@ class wrffile {
     float *T2,*PSFC,*U10,*V10,*Q2,*TSK,*HSFC,*RRTOT,*HFX,*LH,*TK,*PRESSURE,*UMET,*VMET,*W,*Q,*QC;
 
     // wrf buffer matching wrf domainsize
-    clbuffer *b_wrf_source_vc[3];
+    clbuffer *b_wrf_source_scalars_vc[2];
+    clbuffer *b_wrf_source_velocities_vc;
     clbuffer *b_wrf_flux;
     clbuffer *b_hz;
 
-    clkernel *k_interpolate;
+    clkernel *k_interpolate_scalars;
+    clkernel *k_interpolate_momenta;
 
 
     std::string file_name;
 
 
 
-    wrffile(clcontext *contextn, cllogger *loggern, parameters parn, std::string file_namen, clbuffer *b_target_scalars[3]);
+    wrffile(clcontext *contextn, cllogger *loggern, parameters parn, std::string file_namen, clbuffer *b_target_scalars[3], clbuffer *b_target_momenta);
     ~wrffile();
     int index(int x, int y, int z);
     void load(int wrfindex=1);
