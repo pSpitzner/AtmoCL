@@ -65,7 +65,7 @@ __kernel void k_wrf_interpolate_momenta_kernel_main(__private parameters par,
   // else         mom.s2 = rho*ip.s2;
   mom.s2 = 0.0f;
 
-  printf("momenta: %.2f %.2f %.2f->%.2f\n", rho, rho_xl, ip.s0,mom.s0);
+  // printf("momenta: %.2f %.2f %.2f->%.2f\n", rho, rho_xl, ip.s0,mom.s0);
 
   write_f4(pos.x, pos.y, pos.z, mom,  b_target_momenta);
 }

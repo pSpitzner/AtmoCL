@@ -615,7 +615,7 @@ void asystem::init_from_file(std::string s_filePath) {
 void asystem::init_from_wrf(std::string s_filePath) {
   s_filePath = "/Users/paul/AtmoCL_Ref/input/wrfout_wrf4km_asam";
   wrffile *importer = new wrffile(context, logger, par, s_filePath, bf_scalars_vc_a, bf_momenta_fc_a);
-  importer->load(10);
+  importer->load(1);
   context->finish();
 
 }

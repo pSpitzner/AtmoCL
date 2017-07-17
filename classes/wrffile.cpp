@@ -206,7 +206,7 @@ void wrffile::load(int wrfindex) {
   b_wrf_source_velocities_vc->ram2device();
   b_wrf_flux->ram2device();
 
-  k_interpolate_scalars->step(1,1,1);
-  k_interpolate_momenta->step(1,1,1);
+  k_interpolate_scalars->step(par.sx, par.sy, par.sz);
+  k_interpolate_momenta->step(par.sx, par.sy, par.sz);
 }
 
