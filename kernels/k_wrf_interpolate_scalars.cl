@@ -23,9 +23,7 @@ __kernel void k_wrf_interpolate_scalars_kernel_main(__private parameters par,
                                                     __write_only image3d_t b_target_scalars_1,
                                                     __write_only image3d_t b_target_scalars_2)
 {
-  // position pos = get_pos_bc(par, get_global_id(0), get_global_id(1), get_global_id(2));
-  position pos = get_pos_bc(par, par.sx/2, par.sy/2, par.sz/2);
-  // pos in target domain
+  position pos = get_pos_bc(par, get_global_id(0), get_global_id(1), get_global_id(2));
 
   float dxl,dxr,dyl,dyr,dzl,dzr;
   float f_x, f_y, f_z, f_zl, f_zr;

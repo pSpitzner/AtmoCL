@@ -17,9 +17,7 @@ __kernel void k_wrf_interpolate_momenta_kernel_main(__private parameters par,
                                                     __read_only image3d_t b_scalars_vc,
                                                     __write_only image3d_t b_target_momenta)
 {
-  // position pos = get_pos_bc(par, get_global_id(0), get_global_id(1), get_global_id(2));
-  position pos = get_pos_bc(par, par.sx/2, par.sy/2, par.sz/2);
-  // pos in target domain
+  position pos = get_pos_bc(par, get_global_id(0), get_global_id(1), get_global_id(2));
 
   float dxl,dxr,dyl,dyr,dzl,dzr;
   float f_x, f_y, f_z, f_zl, f_zr;
@@ -65,7 +63,7 @@ __kernel void k_wrf_interpolate_momenta_kernel_main(__private parameters par,
   // else         mom.s2 = rho*ip.s2;
   mom.s2 = 0.0f;
 
-  // printf("momenta: %.2f %.2f %.2f->%.2f\n", rho, rho_xl, ip.s0,mom.s0);
+  // if (pos.x == par.sx/2 && pos.y == par.sy/2) printf("%d | %.2f %.2f %.2f->%.2f\n", pos.z, rho, rho_xl, ip.s0,mom.s0);
 
   write_f4(pos.x, pos.y, pos.z, mom,  b_target_momenta);
 }
