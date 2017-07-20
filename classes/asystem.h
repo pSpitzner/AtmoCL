@@ -62,6 +62,7 @@ class asystem {
 
     clkernel *k_damping;
     clkernel *k_nesting;
+    clkernel *k_debug;
     clkernel *k_clone[4];
 
     clkernel *ks_ext_forcings;

@@ -41,7 +41,7 @@ wrffile::wrffile(clcontext *contextn, cllogger *loggern, parameters parn, std::s
   wrf.hz[24] = 16000;
   wrf.hz[25] = 18000;
 
-  wrf.zoffset = 3;
+  wrf.zoffset = 6;
 
   // wrf angular cell size
   wrf.dlat = 0.02227027;

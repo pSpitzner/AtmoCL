@@ -24,7 +24,7 @@ __kernel void k_wrf_interpolate_momenta_kernel_main(__private parameters par,
   int  xwrf, ywrf, zwrf;
 
   zwrf = 0;
-  while (pos.z*par.dz+wrf.hz[wrf.zoffset]>=wrf.hz[zwrf+wrf.zoffset]) zwrf++;
+  while (wrf.hz[zwrf]<=pos.z*par.dz+0.5*par.dz+wrf.hz[wrf.zoffset]) zwrf++;
   zwrf--;
 
   // no 0.5dx shift to get fc not vc
@@ -39,10 +39,10 @@ __kernel void k_wrf_interpolate_momenta_kernel_main(__private parameters par,
   xwrf = (int)(floor(f_x));
   ywrf = (int)(floor(f_y));
 
-  dzl = ((wrf.hz[wrf.zoffset]+pos.z*par.dz) - wrf.hz[zwrf+wrf.zoffset])
-        /(wrf.hz[zwrf+wrf.zoffset+1] - wrf.hz[zwrf+wrf.zoffset]);
-  dzr = (wrf.hz[zwrf+wrf.zoffset+1] - (wrf.hz[wrf.zoffset]+pos.z*par.dz))
-        /(wrf.hz[zwrf+wrf.zoffset+1] - wrf.hz[zwrf+wrf.zoffset]);
+  dzl = ((wrf.hz[wrf.zoffset]+pos.z*par.dz+0.5*par.dz) - wrf.hz[zwrf])
+        /(wrf.hz[zwrf+1] - wrf.hz[zwrf]);
+  dzr = (wrf.hz[zwrf+1] - (wrf.hz[wrf.zoffset]+pos.z*par.dz+0.5*par.dz))
+        /(wrf.hz[zwrf+1] - wrf.hz[zwrf]);
 
 
   // interpolation done already

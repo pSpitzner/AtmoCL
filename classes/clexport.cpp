@@ -29,15 +29,16 @@ clexport::clexport(clcontext *context_, std::string name_, std::string kname_, p
 
   img_every = 60.0;
   ts_every  = 60.0;
-  vp_every  = 10.0*120.0;
+  // vp_every  = 10.0*120.0;
+  vp_every = 60.0;
   t_img = int(std::ceil(img_every/par.dT));
   t_ts  = int(std::ceil( ts_every/par.dT));
   t_vp  = int(std::ceil( vp_every/par.dT));
 
   // overwrite for exporting every step
-  // t_img = 1;
-  // t_ts = 1;
-  // t_vp = 1;
+  t_img = 1;
+  t_ts = 1;
+  t_vp = 1;
 
   logger->log(1, "%s size: %03d   %03d   %03d\n",  s_name.c_str(), kx, ky, kz);
   logger->log(1, "%s mode: img %d   ts %d   vp %d\n",s_name.c_str(), img, ts, vp);

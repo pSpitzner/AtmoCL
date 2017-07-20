@@ -267,6 +267,7 @@ asystem::asystem(clcontext *contextn, cllogger *loggern, int timescheme) {
   kf_copy[3]              = new clkernel(context, par, "./kernels/k_copy_one.cl");
   k_damping               = new clkernel(context, par, "./kernels/k_damping.cl");
   k_nesting               = new clkernel(context, par, "./kernels/k_nesting_isdac.cl");
+  k_debug                 = new clkernel(context, par, "./kernels/k_debug.cl");
   k_clone[0]              = new clkernel(context, par, "./kernels/k_clone.cl");
   k_clone[1]              = new clkernel(context, par, "./kernels/k_clone.cl");
   k_clone[2]              = new clkernel(context, par, "./kernels/k_clone.cl");
@@ -298,6 +299,11 @@ asystem::asystem(clcontext *contextn, cllogger *loggern, int timescheme) {
   k_nesting->bind("b_target_scalars_2", bf_scalars_vc_b[2]);
   k_nesting->bind("b_source_momenta",   bf_momenta_fc_a);
   k_nesting->bind("b_target_momenta",   bf_momenta_fc_b);
+
+  k_debug->bind("bf_scalars_vc_a_0", bf_scalars_vc_a[0]);
+  k_debug->bind("bf_scalars_vc_a_1", bf_scalars_vc_a[1]);
+  k_debug->bind("bf_scalars_vc_a_2", bf_scalars_vc_a[2]);
+  k_debug->bind("bf_momenta_fc_a", bf_momenta_fc_a);
 
   // slow
   ks_ext_forcings->bind("b_source_scalars_0", bf_scalars_vc_a[0]);
@@ -519,7 +525,7 @@ asystem::asystem(clcontext *contextn, cllogger *loggern, int timescheme) {
   v_exporter.push_back(new clexport(context, "VP_qi",    "./kernels/exporter/ke_int_qi.cl",par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  0,0,1  ));
   v_exporter.push_back(new clexport(context, "VP_thetal","./kernels/exporter/ke_int_thetal.cl",par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  0,0,1  ));
   v_exporter.push_back(new clexport(context, "VP_temperature","./kernels/exporter/ke_int_temperature.cl",par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  0,0,1  ));
-  v_exporter.push_back(new clexport(context, "VP_verlocity_variance","./kernels/exporter/ke_int_velocity_variance.cl",par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  0,0,1  ));
+  v_exporter.push_back(new clexport(context, "VP_velocity_variance","./kernels/exporter/ke_int_velocity_variance.cl",par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  0,0,1  ));
 
 }
 

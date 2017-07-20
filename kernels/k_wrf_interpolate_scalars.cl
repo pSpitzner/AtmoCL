@@ -30,11 +30,12 @@ __kernel void k_wrf_interpolate_scalars_kernel_main(__private parameters par,
   int  xwrf, ywrf, zwrf;
 
   zwrf = 0;
-  while (pos.z*par.dz+wrf.hz[wrf.zoffset]>=wrf.hz[zwrf+wrf.zoffset]) {
+  while (wrf.hz[zwrf]<=pos.z*par.dz+0.5*par.dz+wrf.hz[wrf.zoffset]) {
+    // if ( pos.x == par.sx/2 && pos.y == par.sy/2 && pos.z == 1) printf("%d %f %f\n", zwrf, wrf.hz[zwrf],pos.z*par.dz+wrf.hz[wrf.zoffset]);
     zwrf++;
-    // printf("%f %d\n", pos.z*par.dz+wrf.hz[zwrf+wrf.zoffset], zwrf);
   }
   zwrf--;
+  // if ( pos.x == par.sx/2 && pos.y == par.sy/2 && pos.z == 1) printf("%f %f %f\n", wrf.hz[zwrf], wrf.hz[wrf.zoffset] + pos.z*par.dz+0.5*par.dz, wrf.hz[zwrf+1]);
 
   // printf("lat0: %.2f\n", wrf.lat0);
   // printf("lon0: %.2f\n", wrf.lon0);
@@ -62,31 +63,32 @@ __kernel void k_wrf_interpolate_scalars_kernel_main(__private parameters par,
   xwrf = (int)(floor(f_x));
   ywrf = (int)(floor(f_y));
 
-  dzl = ((wrf.hz[wrf.zoffset]+pos.z*par.dz+0.5*par.dz) - wrf.hz[zwrf+wrf.zoffset])
-        /(wrf.hz[zwrf+wrf.zoffset+1] - wrf.hz[zwrf+wrf.zoffset]);
-  dzr = (wrf.hz[zwrf+wrf.zoffset+1] - (wrf.hz[wrf.zoffset]+pos.z*par.dz+0.5*par.dz))
-        /(wrf.hz[zwrf+wrf.zoffset+1] - wrf.hz[zwrf+wrf.zoffset]);
+  dzl = ((wrf.hz[wrf.zoffset]+pos.z*par.dz+0.5*par.dz) - wrf.hz[zwrf])
+        /(wrf.hz[zwrf+1] - wrf.hz[zwrf]);
+  dzr = (wrf.hz[zwrf+1] - (wrf.hz[wrf.zoffset]+pos.z*par.dz+0.5*par.dz))
+        /(wrf.hz[zwrf+1] - wrf.hz[zwrf]);
 
   float4 ip_0, ip_1;
 
-  ip_0 = interpolate(dxl, dyl, dzl, dxr, dyr, dzr, xwrf, ywrf, zwrf+wrf.zoffset, b_wrf_source_scalars_0);
-  ip_1 = interpolate(dxl, dyl, dzl, dxr, dyr, dzr, xwrf, ywrf, zwrf+wrf.zoffset, b_wrf_source_scalars_1);
+  ip_0 = interpolate(dxl, dyl, dzl, dxr, dyr, dzr, xwrf, ywrf, zwrf, b_wrf_source_scalars_0);
+  ip_1 = interpolate(dxl, dyl, dzl, dxr, dyr, dzr, xwrf, ywrf, zwrf, b_wrf_source_scalars_1);
 
   // printf("pos: %.2f(+%.2f) %.2f(+%.2f) %.2f(+%.2f+%.2f)\n", pos.x*par.dx,0.5f*par.dx, pos.y*par.dy,0.5f*par.dx, pos.z*par.dz,0.5f*par.dx, wrf.hz[wrf.zoffset]);
   // printf("hz: %.2f %.2f\n", wrf.hz[zwrf+wrf.zoffset+1], wrf.hz[zwrf+wrf.zoffset]);
-  // printf("dxl|r: %.2f %.2f\n", dzl, dzr);
+  // if (pos.x == par.sx/2 && pos.y == par.sy/2) printf("%.1f %.2f %.2f\n", pos.z*par.dz, dzl, dzr);
   // printf("f_x|y: %f %f\n", f_x, f_y);
   // printf("x|y|zwrf: %d %d %d\n", xwrf, ywrf,zwrf);
   // printf("s_i: %.2f\nfrom:\n", ip_0.s0);
   // //test
-  // printf("%.2f %.2f %.2f | %.2f\n", (1.0f-dxl),(1.0f-dyl),(1.0f-dzl), read_f4(xwrf  ,ywrf  ,zwrf  , b_wrf_source_scalars_0).s0);
-  // printf("%.2f %.2f %.2f | %.2f\n", (1.0f-dxr),(1.0f-dyl),(1.0f-dzl), read_f4(xwrf+1,ywrf  ,zwrf  , b_wrf_source_scalars_0).s0);
-  // printf("%.2f %.2f %.2f | %.2f\n", (1.0f-dxl),(1.0f-dyr),(1.0f-dzl), read_f4(xwrf  ,ywrf+1,zwrf  , b_wrf_source_scalars_0).s0);
-  // printf("%.2f %.2f %.2f | %.2f\n", (1.0f-dxr),(1.0f-dyr),(1.0f-dzl), read_f4(xwrf+1,ywrf+1,zwrf  , b_wrf_source_scalars_0).s0);
-  // printf("%.2f %.2f %.2f | %.2f\n", (1.0f-dxl),(1.0f-dyl),(1.0f-dzr), read_f4(xwrf  ,ywrf  ,zwrf+1, b_wrf_source_scalars_0).s0);
-  // printf("%.2f %.2f %.2f | %.2f\n", (1.0f-dxr),(1.0f-dyl),(1.0f-dzr), read_f4(xwrf+1,ywrf  ,zwrf+1, b_wrf_source_scalars_0).s0);
-  // printf("%.2f %.2f %.2f | %.2f\n", (1.0f-dxl),(1.0f-dyr),(1.0f-dzr), read_f4(xwrf  ,ywrf+1,zwrf+1, b_wrf_source_scalars_0).s0);
-  // printf("%.2f %.2f %.2f | %.2f\n", (1.0f-dxr),(1.0f-dyr),(1.0f-dzr), read_f4(xwrf+1,ywrf+1,zwrf+1, b_wrf_source_scalars_0).s0);
+  if ((dzl < 0.0 || dzl > 1.0 )) printf("%4d %4d %4d | %4d %4d %4d | %.2f %.2f %.2f | %.2f\n", xwrf, ywrf, zwrf, pos.x, pos.y, pos.z, (1.0f-dxl),(1.0f-dyl),(1.0f-dzl), read_f4(xwrf  ,ywrf  ,zwrf  , b_wrf_source_scalars_0).s0);
+  // if ( pos.x == par.sx/2 && pos.y == par.sy/2 && (dzl < 0.0 || dzl > 1.0 )) printf("%4d %4d %4d | %4d %4d %4d | %.2f %.2f | %.2f %.2f %.2f\n", xwrf, ywrf, zwrf, pos.x, pos.y, pos.z, dzl, dzr, (wrf.hz[wrf.zoffset]+pos.z*par.dz+0.5*par.dz), wrf.hz[zwrf+wrf.zoffset], wrf.hz[zwrf+wrf.zoffset+1]);
+  // printf("%4d %4d %4d | %4d %4d %4d | %.2f %.2f %.2f | %.2f\n", xwrf, ywrf, zwrf, pos.x, pos.y, pos.z, (1.0f-dxr),(1.0f-dyl),(1.0f-dzl), read_f4(xwrf+1,ywrf  ,zwrf  , b_wrf_source_scalars_0).s0);
+  // printf("%4d %4d %4d | %4d %4d %4d | %.2f %.2f %.2f | %.2f\n", xwrf, ywrf, zwrf, pos.x, pos.y, pos.z, (1.0f-dxl),(1.0f-dyr),(1.0f-dzl), read_f4(xwrf  ,ywrf+1,zwrf  , b_wrf_source_scalars_0).s0);
+  // printf("%4d %4d %4d | %4d %4d %4d | %.2f %.2f %.2f | %.2f\n", xwrf, ywrf, zwrf, pos.x, pos.y, pos.z, (1.0f-dxr),(1.0f-dyr),(1.0f-dzl), read_f4(xwrf+1,ywrf+1,zwrf  , b_wrf_source_scalars_0).s0);
+  // printf("%4d %4d %4d | %4d %4d %4d | %.2f %.2f %.2f | %.2f\n", xwrf, ywrf, zwrf, pos.x, pos.y, pos.z, (1.0f-dxl),(1.0f-dyl),(1.0f-dzr), read_f4(xwrf  ,ywrf  ,zwrf+1, b_wrf_source_scalars_0).s0);
+  // printf("%4d %4d %4d | %4d %4d %4d | %.2f %.2f %.2f | %.2f\n", xwrf, ywrf, zwrf, pos.x, pos.y, pos.z, (1.0f-dxr),(1.0f-dyl),(1.0f-dzr), read_f4(xwrf+1,ywrf  ,zwrf+1, b_wrf_source_scalars_0).s0);
+  // printf("%4d %4d %4d | %4d %4d %4d | %.2f %.2f %.2f | %.2f\n", xwrf, ywrf, zwrf, pos.x, pos.y, pos.z, (1.0f-dxl),(1.0f-dyr),(1.0f-dzr), read_f4(xwrf  ,ywrf+1,zwrf+1, b_wrf_source_scalars_0).s0);
+  // printf("%4d %4d %4d | %4d %4d %4d | %.2f %.2f %.2f | %.2f\n", xwrf, ywrf, zwrf, pos.x, pos.y, pos.z, (1.0f-dxr),(1.0f-dyr),(1.0f-dzr), read_f4(xwrf+1,ywrf+1,zwrf+1, b_wrf_source_scalars_0).s0);
 
   float8 c;
   float4 cice;
