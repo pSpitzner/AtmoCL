@@ -18,13 +18,13 @@ __private float4 map_rgba(float var, float offset, float factor) {
 }
 
 __kernel void ke_rho_c_kernel_main(__private parameters par,
-                          __private uint ref,
-                          __private uint dim,
-                          __read_only image3d_t b_source_scalars_0,
-                          __read_only image3d_t b_source_scalars_1,
-                          __read_only image3d_t b_source_scalars_2,
-                          __read_only image3d_t b_source_momenta,
-                          __write_only image3d_t b_target)
+                                   __private uint ref,
+                                   __private uint dim,
+                                   __read_only image3d_t b_source_scalars_0,
+                                   __read_only image3d_t b_source_scalars_1,
+                                   __read_only image3d_t b_source_scalars_2,
+                                   __read_only image3d_t b_source_momenta,
+                                   __write_only image3d_t b_target)
 {
   position pos = get_pos_bc(par, get_global_id(0), get_global_id(1), get_global_id(2));
 
@@ -35,6 +35,7 @@ __kernel void ke_rho_c_kernel_main(__private parameters par,
 
 
   float4 rgba;
-  rgba = map_rgba(c.s3, 0.0f, 1e3f);
+  // rgba = map_rgba(c.s3, 0.0f, 1e3f);
+  rgba = map_rgba(c.s3, 0.0f, 1e2f);
   write_f4(pos.x, pos.y, pos.z, rgba, b_target);
 }
