@@ -501,28 +501,38 @@ asystem::asystem(clcontext *contextn, cllogger *loggern, int timescheme) {
   // ----------------------------------------------------------------- //
   // exporter //
   // ----------------------------------------------------------------- //
+  // syntax: (... "name", "src", ... int direction_xz/xy/zy, int offset, bool img_, bool ts_, bool vp_)
 
-  // exporter[0] = new clexport(context, "YZ", "./kernels/exporter/ke_render.cl", par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], 0, par.sx/2);
-  // exporter[1] = new clexport(context, "XZ", "./kernels/exporter/ke_render.cl", par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], 1, par.sy/2);
-  // exporter[2] = new clexport(context, "XY", "./kernels/exporter/ke_render.cl", par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], 2, par.sz/2);
-
+  // cutplanes XZ
   v_exporter.push_back(new clexport(context, "XZ_w",     "./kernels/exporter/ke_w.cl",     par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,1,0  ));
 
-  v_exporter.push_back(new clexport(context, "XZ_rho_c", "./kernels/exporter/ke_rho_c.cl", par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,1,0  ));
-  v_exporter.push_back(new clexport(context, "XZ_rho_v", "./kernels/exporter/ke_rho_v.cl", par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,1,0  ));
-  v_exporter.push_back(new clexport(context, "XZ_rho_r", "./kernels/exporter/ke_rho_r.cl", par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,1,0  ));
-  v_exporter.push_back(new clexport(context, "XZ_rho_i", "./kernels/exporter/ke_rho_i.cl", par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,1,1  ));
-  v_exporter.push_back(new clexport(context, "XZ_rho_s", "./kernels/exporter/ke_rho_s.cl", par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,1,1  ));
+  v_exporter.push_back(new clexport(context, "XZ_rho_c", "./kernels/exporter/ke_rho_c.cl", par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,0,0  ));
+  v_exporter.push_back(new clexport(context, "XZ_rho_v", "./kernels/exporter/ke_rho_v.cl", par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,0,0  ));
+  v_exporter.push_back(new clexport(context, "XZ_rho_r", "./kernels/exporter/ke_rho_r.cl", par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,0,0  ));
+  v_exporter.push_back(new clexport(context, "XZ_rho_i", "./kernels/exporter/ke_rho_i.cl", par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,0,0  ));
+  v_exporter.push_back(new clexport(context, "XZ_rho_s", "./kernels/exporter/ke_rho_s.cl", par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,0,0  ));
 
-  v_exporter.push_back(new clexport(context, "XZ_n_c",   "./kernels/exporter/ke_n_c.cl",   par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,1,0  ));
-  v_exporter.push_back(new clexport(context, "XZ_n_r",   "./kernels/exporter/ke_n_r.cl",   par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,1,0  ));
-  v_exporter.push_back(new clexport(context, "XZ_n_d",   "./kernels/exporter/ke_n_d.cl",   par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,1,0  ));
+  v_exporter.push_back(new clexport(context, "XZ_n_c",   "./kernels/exporter/ke_n_c.cl",   par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,0,0  ));
+  v_exporter.push_back(new clexport(context, "XZ_n_r",   "./kernels/exporter/ke_n_r.cl",   par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,0,0  ));
+  v_exporter.push_back(new clexport(context, "XZ_n_d",   "./kernels/exporter/ke_n_d.cl",   par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,0,0  ));
 
-  v_exporter.push_back(new clexport(context, "XZ_n_i",   "./kernels/exporter/ke_n_i.cl",   par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,1,1  ));
-  v_exporter.push_back(new clexport(context, "XZ_n_s",   "./kernels/exporter/ke_n_s.cl",   par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,1,1  ));
+  v_exporter.push_back(new clexport(context, "XZ_n_i",   "./kernels/exporter/ke_n_i.cl",   par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,0,0  ));
+  v_exporter.push_back(new clexport(context, "XZ_n_s",   "./kernels/exporter/ke_n_s.cl",   par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,0,0  ));
 
-  v_exporter.push_back(new clexport(context, "XY_lwp",   "./kernels/exporter/ke_int_lwp.cl",   par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 2, par.sz/2,  1,1,0  ));
+  //cutplanes XY (top view)
+  int z0 = 0; while(par.dz*z0<2000.0)z0++;
+  v_exporter.push_back(new clexport(context, "XY_w_2km",   "./kernels/exporter/ke_w.cl",   par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 2, z0,  1,0,0  ));
+  v_exporter.push_back(new clexport(context, "XY_uv_ground",   "./kernels/exporter/ke_uv.cl",   par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 2, 1,  1,0,0  ));
 
+  // integrated XZ
+  v_exporter.push_back(new clexport(context, "XZ_int_cloud",     "./kernels/exporter/ke_int_cloud.cl",     par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,0,0  ));
+  v_exporter.push_back(new clexport(context, "XZ_int_rho_c",     "./kernels/exporter/ke_int_rho_c.cl",     par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,1,1  ));
+  v_exporter.push_back(new clexport(context, "XZ_int_rho_r",     "./kernels/exporter/ke_int_rho_r.cl",     par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,1,1  ));
+  v_exporter.push_back(new clexport(context, "XZ_int_rho_i",     "./kernels/exporter/ke_int_rho_i.cl",     par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,1,1  ));
+  v_exporter.push_back(new clexport(context, "XZ_int_rho_s",     "./kernels/exporter/ke_int_rho_s.cl",     par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,1,1  ));
+
+  // integrated XY
+  v_exporter.push_back(new clexport(context, "XY_int_lwp",   "./kernels/exporter/ke_int_lwp.cl",   par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 2, par.sz/2,  1,1,0  ));
 
   // vertical profiles
   v_exporter.push_back(new clexport(context, "VP_ql",    "./kernels/exporter/ke_int_ql.cl",par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  0,0,1  ));

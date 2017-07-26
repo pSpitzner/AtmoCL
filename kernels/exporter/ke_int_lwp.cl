@@ -44,11 +44,13 @@ __kernel void ke_int_lwp_kernel_main(__private parameters par,
     for (int z = 0; z < par.sz; z++) {
       rho_l += read_f4(pos.x, pos.y, z, b_source_scalars_0).s3*par.dz; // rho_c
       rho_l += read_f4(pos.x, pos.y, z, b_source_scalars_1).s0*par.dz; // rho_r
+      rho_l += read_f4(pos.x, pos.y, z, b_source_scalars_2).s0*par.dz; // rho_i
+      rho_l += read_f4(pos.x, pos.y, z, b_source_scalars_2).s1*par.dz; // rho_s
     }
   }
 
 
-  // float4 rgba = map_rgba(rho_l, 0.0f, 5*1e0f);
-  float4 rgba = map_rgba(rho_l, 0.0f, 20*1e0f);
+  // float4 rgba = map_rgba(rho_l, 0.0f, 20.0f*1e0f);
+  float4 rgba = map_rgba(rho_l, 0.0f, 1.0f/1e1f);
   write_f4(pos.x, pos.y, pos.z, rgba, b_target);
 }

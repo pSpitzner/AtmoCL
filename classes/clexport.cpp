@@ -29,7 +29,8 @@ clexport::clexport(clcontext *context_, std::string name_, std::string kname_, p
 
   img_every = 60.0;
   ts_every  = 60.0;
-  vp_every  = 10.0*120.0;
+  // vp_every  = 10.0*120.0;
+  vp_every = 60.0;
   t_img = int(std::ceil(img_every/par.dT));
   t_ts  = int(std::ceil( ts_every/par.dT));
   t_vp  = int(std::ceil( vp_every/par.dT));
@@ -52,7 +53,7 @@ clexport::clexport(clcontext *context_, std::string name_, std::string kname_, p
     ret = system(("mkdir -p " + s_ts_path).c_str());
     s_ts_path += s_name + ".ts";
     ts_stream.open(s_ts_path, std::ofstream::out);
-    ts_stream << "#new entry every " << ts_every << " seconds" << std::endl;
+    ts_stream << "#dt=" << ts_every << "\tseconds" << std::endl;
     ts_stream << "#iteration\t" << s_name << std::endl;
     ts_stream << std::scientific;
     ts_stream << std::setprecision(10);
@@ -102,7 +103,8 @@ void clexport::write_files(int it) {
       ss_vpName << "/" << std::setw(5) << std::setfill('0') << it/t_vp << ".vp";
       vp_stream.open(ss_vpName.str(), std::ofstream::out);
       vp_stream << std::fixed << std::setprecision(2);
-      vp_stream << "#new file every " << vp_every << " seconds" << std::endl;
+      vp_stream << "#dt=" << vp_every << "\tseconds" << std::endl;
+      vp_stream << "#dm=" << par.dz << "\tmeters" << std::endl;
       vp_stream << "#height(m)\t" << s_name << std::endl;
 
       // also write averaged profiling information in this increment
