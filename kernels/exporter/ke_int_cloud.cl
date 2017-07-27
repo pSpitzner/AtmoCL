@@ -51,7 +51,7 @@ __kernel void ke_int_cloud_kernel_main(__private parameters par,
   float ref_c = 1e-1f;
   float ref_r = 3e-1f;
   float ref_i = 5e-1f;
-  float ref_s = 1e-1f;
+  float ref_s = 5e-1f;
 
 
   float a_c = max(0.0f, (rho_c < ref_c ? rho_c/ref_c*255.0f : 255.0f));

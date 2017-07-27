@@ -721,7 +721,7 @@ void asystem::mis_step(int damping, int kx, int ky, int kz) {
   }
 
   write_files(frame_index);
-  if (frame_index*par.dT == 3600.0) {
+  if (fmod(frame_index*par.dT, 3600.0) == 0) {
     int hour = (int)(frame_index*par.dT/3600.0);
     write_state("./snapshots/"+std::to_string(hour)+"h");
   }
