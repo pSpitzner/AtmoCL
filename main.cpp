@@ -80,8 +80,8 @@ int main(int argc, char * argv[]) {
   // sys->write_files(0);
   // return 0;
 
-  logger->log(2, "Adding Perturbation\n");
-  sys->perturb();
+  // logger->log(2, "Adding Perturbation\n");
+  // sys->perturb();
 
   // return 0;
 

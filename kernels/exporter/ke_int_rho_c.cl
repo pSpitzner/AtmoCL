@@ -40,11 +40,11 @@ __kernel void ke_int_rho_c_kernel_main(__private parameters par,
     rho_c/=(float)(par.sz);
   }
 
-  float ref_c = 1e-1f;
+  float ref_c = 5e-3f;
 
   float a_c = max(0.0f, (rho_c < ref_c ? rho_c/ref_c*255.0f : 255.0f));
 
-  float3 bg = float3(0.0f, 0.0f, 0.0f);
+  float3 bg = (float3)(0.0f, 0.0f, 0.0f);
   float4 rgba_c = (float4)(120.0f, 120.0f, 120.0f, a_c)/255.0f;
 
   float3 result = bg;

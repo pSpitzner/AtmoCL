@@ -36,7 +36,6 @@ __kernel void ke_rho_s_kernel_main(__private parameters par,
   // printf("%f %f %f %f %f %f %f %f\n", c.s0, c.s1, c.s2, c.s3, c.s4, c.s5, c.s6, c.s7);
 
   float4 rgba;
-  // rgba = map_rgba(c.s1, 0.0f, 1e5f);
-  rgba = map_rgba(c.s1, 0.0f, 1e3f);
+  rgba = map_rgba(c.s1, 0.0f, 1e8f);
   write_f4(pos.x, pos.y, pos.z, rgba, b_target);
 }

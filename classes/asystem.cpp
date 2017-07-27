@@ -10,12 +10,12 @@ void asystem::set_par(int timescheme_) {
   // par.dz  = 50.0;
 
   // isdac
-  par.sx  = 256;     // system size
+  par.sx  = 128;     // system size
   par.sy  = 128;
   par.sz  = 64;
-  par.dx  = 600.0;
-  par.dy  = 600.0;
-  par.dz  = 300.0;
+  par.dx  = 50.0;
+  par.dy  = 50.0;
+  par.dz  = 20.0;
 
   par.ui = 0.0;
   par.vi = 0.0;
@@ -267,7 +267,7 @@ asystem::asystem(clcontext *contextn, cllogger *loggern, int timescheme) {
   kf_copy[2]              = new clkernel(context, par, "./kernels/k_copy_one.cl");
   kf_copy[3]              = new clkernel(context, par, "./kernels/k_copy_one.cl");
   k_damping               = new clkernel(context, par, "./kernels/k_damping.cl");
-  k_nesting               = new clkernel(context, par, "./kernels/k_nesting_cell.cl");
+  k_nesting               = new clkernel(context, par, "./kernels/k_nesting_isdac.cl");
   k_clone[0]              = new clkernel(context, par, "./kernels/k_clone.cl");
   k_clone[1]              = new clkernel(context, par, "./kernels/k_clone.cl");
   k_clone[2]              = new clkernel(context, par, "./kernels/k_clone.cl");
@@ -520,8 +520,8 @@ asystem::asystem(clcontext *contextn, cllogger *loggern, int timescheme) {
   v_exporter.push_back(new clexport(context, "XZ_n_s",   "./kernels/exporter/ke_n_s.cl",   par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,0,0  ));
 
   //cutplanes XY (top view)
-  int z0 = 0; while(par.dz*z0<2000.0)z0++;
-  v_exporter.push_back(new clexport(context, "XY_w_2km",   "./kernels/exporter/ke_w.cl",   par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 2, z0,  1,0,0  ));
+  int z0 = 0; while(par.dz*z0<600.0)z0++;
+  v_exporter.push_back(new clexport(context, "XY_w_600m",   "./kernels/exporter/ke_w.cl",   par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 2, z0,  1,0,0  ));
   v_exporter.push_back(new clexport(context, "XY_uv_ground",   "./kernels/exporter/ke_uv.cl",   par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 2, 1,  1,0,0  ));
 
   // integrated XZ
@@ -707,12 +707,12 @@ void asystem::mis_step() {
 
 void asystem::mis_step(int damping, int kx, int ky, int kz) {
 
-  // ks_ext_forcings->bind("frame_index", frame_index);
-  // ks_ext_forcings->step(kx, ky, kz);
-  // kf_copy[0]->step(kx, ky, kz);
-  // kf_copy[1]->step(kx, ky, kz);
-  // kf_copy[2]->step(kx, ky, kz);
-  // kf_copy[3]->step(kx, ky, kz);
+  ks_ext_forcings->bind("frame_index", frame_index);
+  ks_ext_forcings->step(kx, ky, kz);
+  kf_copy[0]->step(kx, ky, kz);
+  kf_copy[1]->step(kx, ky, kz);
+  kf_copy[2]->step(kx, ky, kz);
+  kf_copy[3]->step(kx, ky, kz);
 
   if (par.timescheme == 0) {
     for (int s=0; s<3; s++) {
@@ -735,7 +735,7 @@ void asystem::mis_step(int damping, int kx, int ky, int kz) {
   }
 
   write_files(frame_index);
-  if (frame_index*par.dT == 3600.0) {
+  if (fmod(frame_index*par.dT, 3600.0) == 0) {
     int hour = (int)(frame_index*par.dT/3600.0);
     write_state("./snapshots/"+std::to_string(hour)+"h");
   }

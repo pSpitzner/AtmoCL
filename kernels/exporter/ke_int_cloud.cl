@@ -48,10 +48,10 @@ __kernel void ke_int_cloud_kernel_main(__private parameters par,
     rho_s /= (float)(par.sy);
   }
 
-  float ref_c = 1e-1f;
-  float ref_r = 3e-1f;
-  float ref_i = 5e-1f;
-  float ref_s = 1e-1f;
+  float ref_c = 5e-3f;
+  float ref_r = 3e-6f;
+  float ref_i = 5e-5f;
+  float ref_s = 5e-8f;
 
 
   float a_c = max(0.0f, (rho_c < ref_c ? rho_c/ref_c*255.0f : 255.0f));
@@ -59,7 +59,7 @@ __kernel void ke_int_cloud_kernel_main(__private parameters par,
   float a_i = max(0.0f, (rho_i < ref_i ? rho_i/ref_i*255.0f : 255.0f));
   float a_s = max(0.0f, (rho_s < ref_s ? rho_s/ref_s*255.0f : 255.0f));
 
-  float3 bg = float3(0.0f, 0.0f, 0.0f);
+  float3 bg = (float3)(0.0f, 0.0f, 0.0f);
   float4 rgba_c = (float4)(120.0f, 120.0f, 120.0f, a_c)/255.0f;
   float4 rgba_r = (float4)( 10.0f, 120.0f, 255.0f, a_r)/255.0f;
   float4 rgba_i = (float4)(255.0f, 255.0f, 255.0f, a_i)/255.0f;
