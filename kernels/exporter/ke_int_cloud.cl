@@ -1,8 +1,8 @@
 __private float3 add_rgba_to_rgb(float3 bg, float4 src) {
   float3 target;
-  target.r = ((1.0f - src.a) * bg.r) + (src.a * src.r);
-  target.g = ((1.0f - src.a) * bg.g) + (src.a * src.g);
-  target.b = ((1.0f - src.a) * bg.b) + (src.a * src.b);
+  target.s0 = ((1.0f - src.s3) * bg.s0) + (src.s3 * src.s0);
+  target.s1 = ((1.0f - src.s3) * bg.s1) + (src.s3 * src.s1);
+  target.s2 = ((1.0f - src.s3) * bg.s2) + (src.s3 * src.s2);
   return target;
 }
 
@@ -71,7 +71,7 @@ __kernel void ke_int_cloud_kernel_main(__private parameters par,
   result = add_rgba_to_rgb(result, rgba_s);
   result = add_rgba_to_rgb(result, rgba_r);
   result = result*255.0f;
-  // if (a_c != 0.0f) printf("%d %d | %e %e | %f %f %f\n", pos.z, pos.x, a_c, rho_c, result.r, result.g, result.b);
+  // if (a_c != 0.0f) printf("%d %d | %e %e | %f %f %f\n", pos.z, pos.x, a_c, rho_c, result.s0, result.s1, result.s2);
 
   float4 rgba = (float4)(result, 0.0f);
   write_f4(pos.x, pos.y, pos.z, rgba, b_target);
