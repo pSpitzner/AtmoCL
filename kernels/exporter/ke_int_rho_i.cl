@@ -1,8 +1,8 @@
 __private float3 add_rgba_to_rgb(float3 bg, float4 src) {
   float3 target;
-  target.r = ((1.0f - src.a) * bg.r) + (src.a * src.r);
-  target.g = ((1.0f - src.a) * bg.g) + (src.a * src.g);
-  target.b = ((1.0f - src.a) * bg.b) + (src.a * src.b);
+  target.s0 = ((1.0f - src.s3) * bg.s0) + (src.s3 * src.s0);
+  target.s1 = ((1.0f - src.s3) * bg.s1) + (src.s3 * src.s1);
+  target.s2 = ((1.0f - src.s3) * bg.s2) + (src.s3 * src.s2);
   return target;
 }
 
