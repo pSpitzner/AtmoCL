@@ -44,7 +44,7 @@ __kernel void ke_int_rho_s_kernel_main(__private parameters par,
 
   float a_s = max(0.0f, (rho_s < ref_s ? rho_s/ref_s*255.0f : 255.0f));
 
-  float3 bg = float3(0.0f, 0.0f, 0.0f);
+  float3 bg = (float3)(0.0f, 0.0f, 0.0f);
   float4 rgba_s = (float4)(120.0f, 255.0f, 255.0f, a_s)/255.0f;
 
   float3 result = bg;
