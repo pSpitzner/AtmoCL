@@ -33,7 +33,7 @@ class asystem {
     long frame_index;
     long fast_index;
 
-
+    // used during time integration fast and slow
     clbuffer *b_temp[4];
 
     clbuffer *bf_momenta_fc_a;
@@ -85,6 +85,19 @@ class asystem {
 
     // again 3 stages, 3 fields
     clkernel *kf_step_scalars[3][3];
+
+    // wrf
+    clbuffer *bwrf_src[4];      // orig field from file
+    clbuffer *bwrf_tgt_old[4];  // old field for nesting
+    clbuffer *bwrf_tgt_new[4];  // new field for nesting (after wrf equilibrating)
+    clbuffer *bwrf_sys_tmp[4];  // backup of system state when memory is used to equilibrate wrf
+
+    clkernel *kwrf_copy_src_to_sys[4];
+    clkernel *kwrf_copy_sys_to_tmp[4];
+    clkernel *kwrf_copy_tmp_to_sys[4];
+    clkernel *kwrf_copy_sys_to_tgt[4];
+    clkernel *kwrf_copy_new_to_old[4];
+
 
     // clexport *exporter[3];
     std::vector<clexport *> v_exporter;
