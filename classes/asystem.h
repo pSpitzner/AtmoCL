@@ -98,6 +98,8 @@ class asystem {
     clkernel *kwrf_copy_sys_to_tgt[4];
     clkernel *kwrf_copy_new_to_old[4];
 
+    wrffile *importer;
+
 
     // clexport *exporter[3];
     std::vector<clexport *> v_exporter;
@@ -109,7 +111,7 @@ class asystem {
     void set_par(int timescheme);
     void init_from_kernel();
     void init_from_file(std::string s_filePath);
-    void init_from_wrf(std::string s_filePath);
+    void read_wrf(int wrf_index);
 
     void equilibrate();
     void mis_step();

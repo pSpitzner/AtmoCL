@@ -5,7 +5,7 @@ float rhovs(float T, parameters par) {
 }
 
 __kernel void k_wrf_nesting_kernel_main(__private parameters par,
-                                        __private uint damping_strength,
+                                        __private uint frame_index,
                                         __read_only image3d_t b_source_scalars_0,
                                         __read_only image3d_t b_source_scalars_1,
                                         __read_only image3d_t b_source_scalars_2,

@@ -201,24 +201,6 @@ asystem::asystem(clcontext *contextn, cllogger *loggern, int timescheme) {
   bs_scalars_fc_z[1][2]  = new clbuffer(context, "bs_scalars_fc_z_1_2", par.sx, par.sy, par.sz);
   bs_scalars_fc_z[2][2]  = new clbuffer(context, "bs_scalars_fc_z_2_2", par.sx, par.sy, par.sz);
 
-  // wrf, momenta in [3]
-  bwrf_src[0]            = new clbuffer(context, "bwrf_src_0", par.sx, par.sy, par.sz);
-  bwrf_src[1]            = new clbuffer(context, "bwrf_src_1", par.sx, par.sy, par.sz);
-  bwrf_src[2]            = new clbuffer(context, "bwrf_src_2", par.sx, par.sy, par.sz);
-  bwrf_src[3]            = new clbuffer(context, "bwrf_src_3", par.sx, par.sy, par.sz);
-  bwrf_tgt_old[0]        = new clbuffer(context, "bwrf_tgt_old_0", par.sx, par.sy, par.sz);
-  bwrf_tgt_old[1]        = new clbuffer(context, "bwrf_tgt_old_1", par.sx, par.sy, par.sz);
-  bwrf_tgt_old[2]        = new clbuffer(context, "bwrf_tgt_old_2", par.sx, par.sy, par.sz);
-  bwrf_tgt_old[3]        = new clbuffer(context, "bwrf_tgt_old_3", par.sx, par.sy, par.sz);
-  bwrf_tgt_new[0]        = new clbuffer(context, "bwrf_tgt_new_0", par.sx, par.sy, par.sz);
-  bwrf_tgt_new[1]        = new clbuffer(context, "bwrf_tgt_new_1", par.sx, par.sy, par.sz);
-  bwrf_tgt_new[2]        = new clbuffer(context, "bwrf_tgt_new_2", par.sx, par.sy, par.sz);
-  bwrf_tgt_new[3]        = new clbuffer(context, "bwrf_tgt_new_3", par.sx, par.sy, par.sz);
-  bwrf_sys_tmp[0]        = new clbuffer(context, "bwrf_sys_tmp_0", par.sx, par.sy, par.sz);
-  bwrf_sys_tmp[1]        = new clbuffer(context, "bwrf_sys_tmp_1", par.sx, par.sy, par.sz);
-  bwrf_sys_tmp[2]        = new clbuffer(context, "bwrf_sys_tmp_2", par.sx, par.sy, par.sz);
-  bwrf_sys_tmp[3]        = new clbuffer(context, "bwrf_sys_tmp_3", par.sx, par.sy, par.sz);
-
   // ----------------------------------------------------------------- //
   // kernel //
   // ----------------------------------------------------------------- //
@@ -289,13 +271,6 @@ asystem::asystem(clcontext *contextn, cllogger *loggern, int timescheme) {
   k_clone[1]              = new clkernel(context, par, "./kernels/k_clone.cl");
   k_clone[2]              = new clkernel(context, par, "./kernels/k_clone.cl");
   k_clone[3]              = new clkernel(context, par, "./kernels/k_clone.cl");
-
-  // wrf
-  kwrf_copy_src_to_sys    = new clkernel(contex, par, "./kernels/k_copy_one.cl");
-  kwrf_copy_sys_to_tmp    = new clkernel(contex, par, "./kernels/k_copy_one.cl");
-  kwrf_copy_tmp_to_sys    = new clkernel(contex, par, "./kernels/k_copy_one.cl");
-  kwrf_copy_sys_to_tgt    = new clkernel(contex, par, "./kernels/k_copy_one.cl");
-  kwrf_copy_new_to_old    = new clkernel(contex, par, "./kernels/k_copy_one.cl");
 
   // ----------------------------------------------------------------- //
   // bindings //
@@ -518,37 +493,6 @@ asystem::asystem(clcontext *contextn, cllogger *loggern, int timescheme) {
     kf_step_scalars[2][f]->bind("bf_scalars_vc_b",     bf_scalars_vc_b[f]);
   }
 
-  // wrf
-  for (int i = 0; i < 4; i++) {
-    kwrf_copy_new_to_old[i]->bind("b_source", bwrf_tgt_new[i]);
-    kwrf_copy_new_to_old[i]->bind("b_target", bwrf_tgt_old[i]);
-  }
-  for (int i = 0; i < 3; i++) {
-    kwrf_copy_sys_to_tmp[i]->bind("b_source", bf_scalars_vc_a[i]);
-    kwrf_copy_sys_to_tmp[i]->bind("b_target", bwrf_sys_tmp[i]);
-
-    kwrf_copy_tmp_to_sys[i]->bind("b_source", bwrf_sys_tmp[i]);
-    kwrf_copy_tmp_to_sys[i]->bind("b_target", bf_scalars_vc_a[i]);
-
-    kwrf_copy_sys_to_tgt[i]->bind("b_source", bf_scalars_vc_a[i]);
-    kwrf_copy_sys_to_tgt[i]->bind("b_target", bwrf_tgt_new[i]);
-
-    kwrf_copy_src_to_sys[i]->bind("b_source", bwrf_src[i]);
-    kwrf_copy_src_to_sys[i]->bind("b_target", bf_scalars_vc_a[i]);
-  }
-  // wrf, momenta
-  kwrf_copy_sys_to_tmp[3]->bind("b_source", bf_momenta_fc_a);
-  kwrf_copy_sys_to_tmp[3]->bind("b_target", bwrf_sys_tmp[3]);
-
-  kwrf_copy_tmp_to_sys[3]->bind("b_source", bwrf_sys_tmp[3]);
-  kwrf_copy_tmp_to_sys[3]->bind("b_target", bf_momenta_fc_a);
-
-  kwrf_copy_sys_to_tgt[3]->bind("b_source", bf_momenta_fc_a);
-  kwrf_copy_sys_to_tgt[3]->bind("b_target", bwrf_tgt_new[3]);
-
-  kwrf_copy_src_to_sys[3]->bind("b_source", bwrf_src[3]);
-  kwrf_copy_src_to_sys[3]->bind("b_target", bf_momenta_fc_a);
-
   // ----------------------------------------------------------------- //
   // exporter //
   // ----------------------------------------------------------------- //
@@ -592,6 +536,74 @@ asystem::asystem(clcontext *contextn, cllogger *loggern, int timescheme) {
   v_exporter.push_back(new clexport(context, "VP_thetal","./kernels/exporter/ke_int_thetal.cl",par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  0,0,1  ));
   v_exporter.push_back(new clexport(context, "VP_temperature","./kernels/exporter/ke_int_temperature.cl",par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  0,0,1  ));
   v_exporter.push_back(new clexport(context, "VP_velocity_variance","./kernels/exporter/ke_int_velocity_variance.cl",par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  0,0,1  ));
+
+  // ----------------------------------------------------------------- //
+  // wrf, not exclusively though, nesting and ext_forcings partially done already //
+  // ----------------------------------------------------------------- //
+
+  // buffer, momenta in [3]
+  bwrf_src[0]            = new clbuffer(context, "bwrf_src_0", par.sx, par.sy, par.sz);
+  bwrf_src[1]            = new clbuffer(context, "bwrf_src_1", par.sx, par.sy, par.sz);
+  bwrf_src[2]            = new clbuffer(context, "bwrf_src_2", par.sx, par.sy, par.sz);
+  bwrf_src[3]            = new clbuffer(context, "bwrf_src_3", par.sx, par.sy, par.sz);
+  bwrf_tgt_old[0]        = new clbuffer(context, "bwrf_tgt_old_0", par.sx, par.sy, par.sz);
+  bwrf_tgt_old[1]        = new clbuffer(context, "bwrf_tgt_old_1", par.sx, par.sy, par.sz);
+  bwrf_tgt_old[2]        = new clbuffer(context, "bwrf_tgt_old_2", par.sx, par.sy, par.sz);
+  bwrf_tgt_old[3]        = new clbuffer(context, "bwrf_tgt_old_3", par.sx, par.sy, par.sz);
+  bwrf_tgt_new[0]        = new clbuffer(context, "bwrf_tgt_new_0", par.sx, par.sy, par.sz);
+  bwrf_tgt_new[1]        = new clbuffer(context, "bwrf_tgt_new_1", par.sx, par.sy, par.sz);
+  bwrf_tgt_new[2]        = new clbuffer(context, "bwrf_tgt_new_2", par.sx, par.sy, par.sz);
+  bwrf_tgt_new[3]        = new clbuffer(context, "bwrf_tgt_new_3", par.sx, par.sy, par.sz);
+  bwrf_sys_tmp[0]        = new clbuffer(context, "bwrf_sys_tmp_0", par.sx, par.sy, par.sz);
+  bwrf_sys_tmp[1]        = new clbuffer(context, "bwrf_sys_tmp_1", par.sx, par.sy, par.sz);
+  bwrf_sys_tmp[2]        = new clbuffer(context, "bwrf_sys_tmp_2", par.sx, par.sy, par.sz);
+  bwrf_sys_tmp[3]        = new clbuffer(context, "bwrf_sys_tmp_3", par.sx, par.sy, par.sz);
+
+  // kernel
+  for (int i = 0; i < 4; i++) {
+    kwrf_copy_src_to_sys[i]    = new clkernel(context, par, "./kernels/k_copy_one.cl");
+    kwrf_copy_sys_to_tmp[i]    = new clkernel(context, par, "./kernels/k_copy_one.cl");
+    kwrf_copy_tmp_to_sys[i]    = new clkernel(context, par, "./kernels/k_copy_one.cl");
+    kwrf_copy_sys_to_tgt[i]    = new clkernel(context, par, "./kernels/k_copy_one.cl");
+    kwrf_copy_new_to_old[i]    = new clkernel(context, par, "./kernels/k_copy_one.cl");
+  }
+
+  // bindings
+  k_nesting->bind("bwrf_tgt_new", bwrf_tgt_new);
+  k_nesting->bind("bwrf_tgt_old", bwrf_tgt_old);
+
+  for (int i = 0; i < 4; i++) {
+    kwrf_copy_new_to_old[i]->bind("b_source", bwrf_tgt_new[i]);
+    kwrf_copy_new_to_old[i]->bind("b_target", bwrf_tgt_old[i]);
+  }
+  for (int i = 0; i < 3; i++) {
+    kwrf_copy_sys_to_tmp[i]->bind("b_source", bf_scalars_vc_a[i]);
+    kwrf_copy_sys_to_tmp[i]->bind("b_target", bwrf_sys_tmp[i]);
+
+    kwrf_copy_tmp_to_sys[i]->bind("b_source", bwrf_sys_tmp[i]);
+    kwrf_copy_tmp_to_sys[i]->bind("b_target", bf_scalars_vc_a[i]);
+
+    kwrf_copy_sys_to_tgt[i]->bind("b_source", bf_scalars_vc_a[i]);
+    kwrf_copy_sys_to_tgt[i]->bind("b_target", bwrf_tgt_new[i]);
+
+    kwrf_copy_src_to_sys[i]->bind("b_source", bwrf_src[i]);
+    kwrf_copy_src_to_sys[i]->bind("b_target", bf_scalars_vc_a[i]);
+  }
+
+  kwrf_copy_sys_to_tmp[3]->bind("b_source", bf_momenta_fc_a);
+  kwrf_copy_sys_to_tmp[3]->bind("b_target", bwrf_sys_tmp[3]);
+
+  kwrf_copy_tmp_to_sys[3]->bind("b_source", bwrf_sys_tmp[3]);
+  kwrf_copy_tmp_to_sys[3]->bind("b_target", bf_momenta_fc_a);
+
+  kwrf_copy_sys_to_tgt[3]->bind("b_source", bf_momenta_fc_a);
+  kwrf_copy_sys_to_tgt[3]->bind("b_target", bwrf_tgt_new[3]);
+
+  kwrf_copy_src_to_sys[3]->bind("b_source", bwrf_src[3]);
+  kwrf_copy_src_to_sys[3]->bind("b_target", bf_momenta_fc_a);
+
+  // passing pointers like that seems wrong. needs fixing
+  importer = new wrffile(context, logger, par, "../AtmoCL_Ref/input/wrfout_wrf4km_asam", &bwrf_src[0], bwrf_src[3]);
 
 }
 
@@ -684,19 +696,25 @@ void asystem::init_from_file(std::string s_filePath) {
   k_init_momenta->step(par.sx, par.sy, par.sz);
 }
 
-void asystem::init_from_wrf(std::string s_filePath) {
-  s_filePath = "../AtmoCL_Ref/input/wrfout_wrf4km_asam";
-  wrffile *importer = new wrffile(context, logger, par, s_filePath, bf_scalars_vc_a, bf_momenta_fc_a);
-  importer->load(1);
-  context->finish();
+void asystem::read_wrf(int wrf_index) {
+  // wrf files start at wrf_index=1 with dt=15min
+  // call this with wrf_index=2 to init
 
-  kwrf_copy_new_to_old->step(par.sx, par.sy, par.sz);
-  // load bwrf_src now!
-  kwrf_copy_sys_to_tmp->step(par.sx, par.sy, par.sz);
-  kwrf_copy_src_to_sys->step(par.sx, par.sy, par.sz);
+  if (wrf_index==2) {
+    // load first wrf file and use it as starting state
+    importer->load(1);
+    for (int i = 0; i < 4; i++) kwrf_copy_src_to_sys[i]->step(par.sx, par.sy, par.sz);
+    equilibrate();
+    for (int i = 0; i < 4; i++) kwrf_copy_sys_to_tgt[i]->step(par.sx, par.sy, par.sz);
+  }
+
+  for (int i = 0; i < 4; i++) kwrf_copy_new_to_old[i]->step(par.sx, par.sy, par.sz);
+  importer->load(wrf_index);
+  for (int i = 0; i < 4; i++) kwrf_copy_sys_to_tmp[i]->step(par.sx, par.sy, par.sz);
+  for (int i = 0; i < 4; i++) kwrf_copy_src_to_sys[i]->step(par.sx, par.sy, par.sz);
   equilibrate();
-  kwrf_copy_sys_to_tgt->step(par.sx, par.sy, par.sz);
-  kwrf_copy_tmp_to_sys->step(par.sx, par.sy, par.sz);
+  for (int i = 0; i < 4; i++) kwrf_copy_sys_to_tgt[i]->step(par.sx, par.sy, par.sz);
+  for (int i = 0; i < 4; i++) kwrf_copy_tmp_to_sys[i]->step(par.sx, par.sy, par.sz);
 
 }
 
@@ -764,6 +782,8 @@ void asystem::mis_step(int damping, int kx, int ky, int kz) {
   // kf_copy[2]->step(kx, ky, kz);
   // kf_copy[3]->step(kx, ky, kz);
 
+  k_nesting->bind("frame_index", frame_index);
+
   if (par.timescheme == 0) {
     for (int s=0; s<3; s++) {
       slow_stage(0, kx, ky, kz);
@@ -774,7 +794,6 @@ void asystem::mis_step(int damping, int kx, int ky, int kz) {
       slow_stage(s, kx, ky, kz);
       for (int i=0; i<par.nsi[s]; i++) {
         fast_stage(s, kx, ky, kz);
-        // k_nesting->bind("damping_strength", frame_index);
         k_nesting->step(kx, ky, kz);
         kf_copy[0]->step(kx, ky, kz);
         kf_copy[1]->step(kx, ky, kz);
