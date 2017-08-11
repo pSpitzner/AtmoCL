@@ -4,9 +4,13 @@ mkdir ./output/ 2>/dev/null
 mkdir ./output/logs/ 2>/dev/null
 mkdir ./output/tsv/ 2>/dev/null
 mkdir ./output/buf/ 2>/dev/null
-# rm -r ./output/img/* 2>/dev/null
 find ./output/ -name '*.png' -type f -delete 2>/dev/null
 find ./output/ -name '*.vp' -type f -delete 2>/dev/null
+find ./output/ -name '*.ts' -type f -delete 2>/dev/null
+# find ./output/ -name '*.log' -type f -delete 2>/dev/null
+rm -r ./output/img/* 2>/dev/null
+rm -r ./output/verticalprofiles/* 2>/dev/null
+rm -r ./output/timeseries/* 2>/dev/null
 # rm ./output/logs/* 2>/dev/null
 rm ./abort 2>/dev/null
 ./executable "$@"
