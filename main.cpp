@@ -89,7 +89,7 @@ int main(int argc, char * argv[]) {
 
 
   int iterations = 50000;
-  for (int i = 0; i < iterations; i++) {
+  for (int i = 2; i < iterations; i++) {
     logger->start_new_timer();
     sys->mis_step();
 

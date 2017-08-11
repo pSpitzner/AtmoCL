@@ -207,7 +207,6 @@ asystem::asystem(clcontext *contextn, cllogger *loggern, int timescheme) {
 
   k_init_scalars          = new clkernel(context, par, "./kernels/k_init_scalars_dycoms.cl");
   k_init_momenta          = new clkernel(context, par, "./kernels/k_init_momenta.cl");
-  ks_ext_forcings         = new clkernel(context, par, "./kernels/k_wrf_flux.cl");
   ks_copy[0][0]           = new clkernel(context, par, "./kernels/k_copy_one.cl");
   ks_copy[0][1]           = new clkernel(context, par, "./kernels/k_copy_one.cl");
   ks_copy[0][2]           = new clkernel(context, par, "./kernels/k_copy_one.cl");
@@ -264,8 +263,6 @@ asystem::asystem(clcontext *contextn, cllogger *loggern, int timescheme) {
   kf_copy[1]              = new clkernel(context, par, "./kernels/k_copy_one.cl");
   kf_copy[2]              = new clkernel(context, par, "./kernels/k_copy_one.cl");
   kf_copy[3]              = new clkernel(context, par, "./kernels/k_copy_one.cl");
-  k_damping               = new clkernel(context, par, "./kernels/k_damping.cl");
-  k_nesting               = new clkernel(context, par, "./kernels/k_wrf_nesting.cl");
   k_debug                 = new clkernel(context, par, "./kernels/k_debug.cl");
   k_clone[0]              = new clkernel(context, par, "./kernels/k_clone.cl");
   k_clone[1]              = new clkernel(context, par, "./kernels/k_clone.cl");
@@ -287,32 +284,10 @@ asystem::asystem(clcontext *contextn, cllogger *loggern, int timescheme) {
   k_init_momenta->bind("bf_scalars_vc_a_0", bf_scalars_vc_a[0]);
   k_init_momenta->bind("bf_momenta_fc_a", bf_momenta_fc_a);
 
-  k_damping->bind("b_source_momenta",   bf_momenta_fc_a);
-  k_damping->bind("b_target_momenta",   bf_momenta_fc_b);
-
-  k_nesting->bind("b_source_scalars_0", bf_scalars_vc_a[0]);
-  k_nesting->bind("b_source_scalars_1", bf_scalars_vc_a[1]);
-  k_nesting->bind("b_source_scalars_2", bf_scalars_vc_a[2]);
-  k_nesting->bind("b_target_scalars_0", bf_scalars_vc_b[0]);
-  k_nesting->bind("b_target_scalars_1", bf_scalars_vc_b[1]);
-  k_nesting->bind("b_target_scalars_2", bf_scalars_vc_b[2]);
-  k_nesting->bind("b_source_momenta",   bf_momenta_fc_a);
-  k_nesting->bind("b_target_momenta",   bf_momenta_fc_b);
-
   k_debug->bind("bf_scalars_vc_a_0", bf_scalars_vc_a[0]);
   k_debug->bind("bf_scalars_vc_a_1", bf_scalars_vc_a[1]);
   k_debug->bind("bf_scalars_vc_a_2", bf_scalars_vc_a[2]);
   k_debug->bind("bf_momenta_fc_a", bf_momenta_fc_a);
-
-  // slow
-  ks_ext_forcings->bind("b_source_scalars_0", bf_scalars_vc_a[0]);
-  ks_ext_forcings->bind("b_source_scalars_1", bf_scalars_vc_a[1]);
-  ks_ext_forcings->bind("b_source_scalars_2", bf_scalars_vc_a[2]); // ice
-  ks_ext_forcings->bind("b_source_momenta",   bf_momenta_fc_a);
-  ks_ext_forcings->bind("b_target_scalars_0", bf_scalars_vc_b[0]);
-  ks_ext_forcings->bind("b_target_scalars_1", bf_scalars_vc_b[1]);
-  ks_ext_forcings->bind("b_target_scalars_2", bf_scalars_vc_b[2]); // ice
-  ks_ext_forcings->bind("b_target_momenta",   bf_momenta_fc_b);
 
   // copy scalars [stages][fields]
   for (int s = 0; s < 3; s++) {
@@ -538,7 +513,7 @@ asystem::asystem(clcontext *contextn, cllogger *loggern, int timescheme) {
   v_exporter.push_back(new clexport(context, "VP_velocity_variance","./kernels/exporter/ke_int_velocity_variance.cl",par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  0,0,1  ));
 
   // ----------------------------------------------------------------- //
-  // wrf, not exclusively though, nesting and ext_forcings partially done already //
+  // wrf//
   // ----------------------------------------------------------------- //
 
   // buffer, momenta in [3]
@@ -560,7 +535,10 @@ asystem::asystem(clcontext *contextn, cllogger *loggern, int timescheme) {
   bwrf_sys_tmp[3]        = new clbuffer(context, "bwrf_sys_tmp_3", par.sx, par.sy, par.sz);
 
   // kernel
+  ks_ext_forcings         = new clkernel(context, par, "./kernels/k_wrf_flux.cl");
+  k_damping               = new clkernel(context, par, "./kernels/k_damping.cl");
   for (int i = 0; i < 4; i++) {
+    k_nesting[i]               = new clkernel(context, par, "./kernels/k_wrf_nesting.cl");
     kwrf_copy_src_to_sys[i]    = new clkernel(context, par, "./kernels/k_copy_one.cl");
     kwrf_copy_sys_to_tmp[i]    = new clkernel(context, par, "./kernels/k_copy_one.cl");
     kwrf_copy_tmp_to_sys[i]    = new clkernel(context, par, "./kernels/k_copy_one.cl");
@@ -569,8 +547,28 @@ asystem::asystem(clcontext *contextn, cllogger *loggern, int timescheme) {
   }
 
   // bindings
-  k_nesting->bind("bwrf_tgt_new", bwrf_tgt_new);
-  k_nesting->bind("bwrf_tgt_old", bwrf_tgt_old);
+  k_damping->bind("b_source_momenta",   bf_momenta_fc_a);
+  k_damping->bind("b_target_momenta",   bf_momenta_fc_b);
+
+  for (int i = 0; i < 3; i++) {
+    k_nesting[i]->bind("b_source",  bf_scalars_vc_a[i]);
+    k_nesting[i]->bind("b_target",  bf_scalars_vc_b[i]);
+    k_nesting[i]->bind("bwrf_tgt_new", bwrf_tgt_new[i]);
+    k_nesting[i]->bind("bwrf_tgt_old", bwrf_tgt_old[i]);
+  }
+  k_nesting[3]->bind("b_source",     bf_momenta_fc_a);
+  k_nesting[3]->bind("b_target",     bf_momenta_fc_b);
+  k_nesting[3]->bind("bwrf_tgt_new", bwrf_tgt_new[3]);
+  k_nesting[3]->bind("bwrf_tgt_old", bwrf_tgt_old[3]);
+
+  // ks_ext_forcings->bind("b_source_scalars_0", bf_scalars_vc_a[0]);
+  // ks_ext_forcings->bind("b_source_scalars_1", bf_scalars_vc_a[1]);
+  // ks_ext_forcings->bind("b_source_scalars_2", bf_scalars_vc_a[2]);
+  // ks_ext_forcings->bind("b_source_momenta",   bf_momenta_fc_a);
+  // ks_ext_forcings->bind("b_target_scalars_0", bf_scalars_vc_b[0]);
+  // ks_ext_forcings->bind("b_target_scalars_1", bf_scalars_vc_b[1]);
+  // ks_ext_forcings->bind("b_target_scalars_2", bf_scalars_vc_b[2]);
+  // ks_ext_forcings->bind("b_target_momenta",   bf_momenta_fc_b);
 
   for (int i = 0; i < 4; i++) {
     kwrf_copy_new_to_old[i]->bind("b_source", bwrf_tgt_new[i]);
@@ -604,6 +602,7 @@ asystem::asystem(clcontext *contextn, cllogger *loggern, int timescheme) {
 
   // passing pointers like that seems wrong. needs fixing
   importer = new wrffile(context, logger, par, "../AtmoCL_Ref/input/wrfout_wrf4km_asam", &bwrf_src[0], bwrf_src[3]);
+  wrf_index=2;
 
 }
 
@@ -696,7 +695,7 @@ void asystem::init_from_file(std::string s_filePath) {
   k_init_momenta->step(par.sx, par.sy, par.sz);
 }
 
-void asystem::read_wrf(int wrf_index) {
+void asystem::read_wrf(int wrf_index_local) {
   // wrf files start at wrf_index=1 with dt=15min
   // call this with wrf_index=2 to init
 
@@ -715,7 +714,9 @@ void asystem::read_wrf(int wrf_index) {
   equilibrate();
   for (int i = 0; i < 4; i++) kwrf_copy_sys_to_tgt[i]->step(par.sx, par.sy, par.sz);
   for (int i = 0; i < 4; i++) kwrf_copy_tmp_to_sys[i]->step(par.sx, par.sy, par.sz);
+  // context->finish();
 
+  wrf_index++;
 }
 
 void asystem::equilibrate() {
@@ -726,7 +727,7 @@ void asystem::equilibrate() {
 
   // kf_microphys->bind("phys", (unsigned int)(2)); // only enable condensation
 
-  int equil_steps = 5000;
+  int equil_steps = 100;
 
   for (int f = 0; f < equil_steps; f++) {
     if (f%10==0) logger->log(2,"\rEquilibrating  -  %d/%d",f,equil_steps);
@@ -742,9 +743,10 @@ void asystem::equilibrate() {
         for (int i=0; i<par.nsi[s]; i++) {
           fast_stage(s, kx, ky, kz);
           k_damping->step(kx, ky, kz);
-          kf_copy[0]->step(kx, ky, kz);
-          kf_copy[1]->step(kx, ky, kz);
-          kf_copy[2]->step(kx, ky, kz);
+          // damping only swaps momenta
+          // kf_copy[0]->step(kx, ky, kz);
+          // kf_copy[1]->step(kx, ky, kz);
+          // kf_copy[2]->step(kx, ky, kz);
           kf_copy[3]->step(kx, ky, kz);
         }
         // strip to full
@@ -765,7 +767,7 @@ void asystem::equilibrate() {
   }
   // kf_microphys->bind("phys", (unsigned int)(1023));
 
-  logger->log(2,"\rEquilibrating  -  done\n");
+  logger->log(2,"\nEquilibrating  -  done\n");
 }
 
 void asystem::mis_step() {
@@ -774,6 +776,9 @@ void asystem::mis_step() {
 }
 
 void asystem::mis_step(int damping, int kx, int ky, int kz) {
+  float wrfdt = 15.0*60.0;
+  // for now assume dT/wrfdt is dividable evenly
+  if (fmod(frame_index*par.dT, wrfdt) == 0) read_wrf(-1);
 
   // ks_ext_forcings->bind("frame_index", frame_index);
   // ks_ext_forcings->step(kx, ky, kz);
@@ -782,7 +787,7 @@ void asystem::mis_step(int damping, int kx, int ky, int kz) {
   // kf_copy[2]->step(kx, ky, kz);
   // kf_copy[3]->step(kx, ky, kz);
 
-  k_nesting->bind("frame_index", frame_index);
+  for (int i = 0; i < 4; i++) k_nesting[i]->bind("frame_index", frame_index);
 
   if (par.timescheme == 0) {
     for (int s=0; s<3; s++) {
@@ -794,7 +799,10 @@ void asystem::mis_step(int damping, int kx, int ky, int kz) {
       slow_stage(s, kx, ky, kz);
       for (int i=0; i<par.nsi[s]; i++) {
         fast_stage(s, kx, ky, kz);
-        k_nesting->step(kx, ky, kz);
+        k_nesting[0]->step(kx, ky, kz);
+        k_nesting[1]->step(kx, ky, kz);
+        k_nesting[2]->step(kx, ky, kz);
+        k_nesting[3]->step(kx, ky, kz);
         kf_copy[0]->step(kx, ky, kz);
         kf_copy[1]->step(kx, ky, kz);
         kf_copy[2]->step(kx, ky, kz);

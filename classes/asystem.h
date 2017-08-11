@@ -31,6 +31,7 @@ class asystem {
     cl_int ret;
     int debugStepCount;
     long frame_index;
+    long wrf_index;
     long fast_index;
 
     // used during time integration fast and slow
@@ -60,12 +61,9 @@ class asystem {
     clkernel *k_init_scalars;
     clkernel *k_init_momenta;
 
-    clkernel *k_damping;
-    clkernel *k_nesting;
     clkernel *k_debug;
     clkernel *k_clone[4];
 
-    clkernel *ks_ext_forcings;
     clkernel *ks_f2c;
     clkernel *ks_c2f[3];
     clkernel *ks_adv_momenta;
@@ -92,6 +90,9 @@ class asystem {
     clbuffer *bwrf_tgt_new[4];  // new field for nesting (after wrf equilibrating)
     clbuffer *bwrf_sys_tmp[4];  // backup of system state when memory is used to equilibrate wrf
 
+    clkernel *k_damping;
+    clkernel *ks_ext_forcings;
+    clkernel *k_nesting[4];
     clkernel *kwrf_copy_src_to_sys[4];
     clkernel *kwrf_copy_sys_to_tmp[4];
     clkernel *kwrf_copy_tmp_to_sys[4];
@@ -111,7 +112,7 @@ class asystem {
     void set_par(int timescheme);
     void init_from_kernel();
     void init_from_file(std::string s_filePath);
-    void read_wrf(int wrf_index);
+    void read_wrf(int wrf_index_local);
 
     void equilibrate();
     void mis_step();

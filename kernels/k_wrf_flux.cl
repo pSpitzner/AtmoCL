@@ -1,4 +1,4 @@
-__kernel void k_ext_forcings_isdac_kernel_main(__private parameters par,
+__kernel void k_wrf_flux_kernel_main(__private parameters par,
                                                __private uint frame_index,
                                                __read_only image3d_t b_source_scalars_0,
                                                __read_only image3d_t b_source_scalars_1,
