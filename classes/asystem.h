@@ -93,6 +93,7 @@ class asystem {
     clkernel *k_damping;
     clkernel *ks_ext_forcings;
     clkernel *k_nesting[4];
+    clkernel *kwrf_finish;
     clkernel *kwrf_copy_src_to_sys[4];
     clkernel *kwrf_copy_sys_to_tmp[4];
     clkernel *kwrf_copy_tmp_to_sys[4];

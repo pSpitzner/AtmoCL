@@ -537,6 +537,7 @@ asystem::asystem(clcontext *contextn, cllogger *loggern, int timescheme) {
   // kernel
   ks_ext_forcings         = new clkernel(context, par, "./kernels/k_wrf_flux.cl");
   k_damping               = new clkernel(context, par, "./kernels/k_damping.cl");
+  kwrf_finish             = new clkernel(context, par, "./kernels/k_wrf_finish.cl");
   for (int i = 0; i < 4; i++) {
     k_nesting[i]               = new clkernel(context, par, "./kernels/k_wrf_nesting.cl");
     kwrf_copy_src_to_sys[i]    = new clkernel(context, par, "./kernels/k_copy_one.cl");
@@ -549,6 +550,11 @@ asystem::asystem(clcontext *contextn, cllogger *loggern, int timescheme) {
   // bindings
   k_damping->bind("b_source_momenta",   bf_momenta_fc_a);
   k_damping->bind("b_target_momenta",   bf_momenta_fc_b);
+
+  kwrf_finish->bind("bwrf_src_momenta",   bwrf_src[3]);
+  kwrf_finish->bind("bsys_src_scalars_0", bf_scalars_vc_a[0]);
+  kwrf_finish->bind("bsys_src_momenta",   bf_momenta_fc_a);
+  kwrf_finish->bind("bwrf_tgt_momenta",   bwrf_tgt_new[3]);
 
   for (int i = 0; i < 3; i++) {
     k_nesting[i]->bind("b_source",  bf_scalars_vc_a[i]);
@@ -704,7 +710,8 @@ void asystem::read_wrf(int wrf_index_local) {
     importer->load(1);
     for (int i = 0; i < 4; i++) kwrf_copy_src_to_sys[i]->step(par.sx, par.sy, par.sz);
     equilibrate();
-    for (int i = 0; i < 4; i++) kwrf_copy_sys_to_tgt[i]->step(par.sx, par.sy, par.sz);
+    for (int i = 0; i < 3; i++) kwrf_copy_sys_to_tgt[i]->step(par.sx, par.sy, par.sz);
+    kwrf_finish->step(par.sx, par.sy, par.sz);
   }
 
   for (int i = 0; i < 4; i++) kwrf_copy_new_to_old[i]->step(par.sx, par.sy, par.sz);
@@ -712,9 +719,11 @@ void asystem::read_wrf(int wrf_index_local) {
   for (int i = 0; i < 4; i++) kwrf_copy_sys_to_tmp[i]->step(par.sx, par.sy, par.sz);
   for (int i = 0; i < 4; i++) kwrf_copy_src_to_sys[i]->step(par.sx, par.sy, par.sz);
   equilibrate();
-  for (int i = 0; i < 4; i++) kwrf_copy_sys_to_tgt[i]->step(par.sx, par.sy, par.sz);
+  for (int i = 0; i < 3; i++) kwrf_copy_sys_to_tgt[i]->step(par.sx, par.sy, par.sz);
+  kwrf_finish->step(par.sx, par.sy, par.sz);
   for (int i = 0; i < 4; i++) kwrf_copy_tmp_to_sys[i]->step(par.sx, par.sy, par.sz);
   // context->finish();
+
 
   wrf_index++;
 }
