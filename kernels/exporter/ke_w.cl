@@ -34,7 +34,7 @@ __kernel void ke_w_kernel_main(__private parameters par,
   else if (dim == 1) w = (read_f4(pos.x    , pos.y+ref, pos.z,     b_source_momenta)).s2/(read_f4(pos.x    , pos.y+ref, pos.z,     b_source_scalars_0)).s1;
   else if (dim == 2) w = (read_f4(pos.x    , pos.y,     pos.z+ref, b_source_momenta)).s2/(read_f4(pos.x    , pos.y,     pos.z+ref, b_source_scalars_0)).s1;
 
-  // float4 rgba = map_rgba(w, 0.0f, 1000.0f);
-  float4 rgba = map_rgba(w, 0.0f, 1.0f/22.0f);
+  float4 rgba = map_rgba(w, 0.0f, 100.0f);
+  // float4 rgba = map_rgba(w, 0.0f, 1.0f/22.0f);
   write_f4(pos.x, pos.y, pos.z, rgba, b_target);
 }

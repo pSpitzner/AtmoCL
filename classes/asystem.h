@@ -89,6 +89,8 @@ class asystem {
     clbuffer *bwrf_tgt_old[4];  // old field for nesting
     clbuffer *bwrf_tgt_new[4];  // new field for nesting (after wrf equilibrating)
     clbuffer *bwrf_sys_tmp[4];  // backup of system state when memory is used to equilibrate wrf
+    clbuffer *bwrf_flux_old;    // 2D flux buffers
+    clbuffer *bwrf_flux_new;
 
     clkernel *k_damping;
     clkernel *ks_ext_forcings;
@@ -99,6 +101,7 @@ class asystem {
     clkernel *kwrf_copy_tmp_to_sys[4];
     clkernel *kwrf_copy_sys_to_tgt[4];
     clkernel *kwrf_copy_new_to_old[4];
+    clkernel *kwrf_copy_flux;
 
     wrffile *importer;
 

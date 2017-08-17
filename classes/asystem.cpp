@@ -538,6 +538,7 @@ asystem::asystem(clcontext *contextn, cllogger *loggern, int timescheme) {
   ks_ext_forcings         = new clkernel(context, par, "./kernels/k_wrf_flux.cl");
   k_damping               = new clkernel(context, par, "./kernels/k_damping.cl");
   kwrf_finish             = new clkernel(context, par, "./kernels/k_wrf_finish.cl");
+  kwrf_copy_flux          = new clkernel(context, par, "./kernels/k_copy_one.cl");
   for (int i = 0; i < 4; i++) {
     k_nesting[i]               = new clkernel(context, par, "./kernels/k_wrf_nesting.cl");
     kwrf_copy_src_to_sys[i]    = new clkernel(context, par, "./kernels/k_copy_one.cl");
@@ -576,6 +577,9 @@ asystem::asystem(clcontext *contextn, cllogger *loggern, int timescheme) {
   // ks_ext_forcings->bind("b_target_scalars_2", bf_scalars_vc_b[2]);
   // ks_ext_forcings->bind("b_target_momenta",   bf_momenta_fc_b);
 
+  kwrf_copy_flux->bind("b_source", bwrf_flux_new);
+  kwrf_copy_flux->bind("b_target", bwrf_flux_old);
+
   for (int i = 0; i < 4; i++) {
     kwrf_copy_new_to_old[i]->bind("b_source", bwrf_tgt_new[i]);
     kwrf_copy_new_to_old[i]->bind("b_target", bwrf_tgt_old[i]);
@@ -607,7 +611,7 @@ asystem::asystem(clcontext *contextn, cllogger *loggern, int timescheme) {
   kwrf_copy_src_to_sys[3]->bind("b_target", bf_momenta_fc_a);
 
   // passing pointers like that seems wrong. needs fixing
-  importer = new wrffile(context, logger, par, "../AtmoCL_Ref/input/wrfout_wrf4km_asam", &bwrf_src[0], bwrf_src[3]);
+  importer = new wrffile(context, logger, par, "../AtmoCL_Ref/input/wrfout_wrf4km_asam", &bwrf_src[0], bwrf_src[3], bwrf_flux_new);
   wrf_index=2;
 
 }
@@ -711,6 +715,7 @@ void asystem::read_wrf(int wrf_index_local) {
     for (int i = 0; i < 4; i++) kwrf_copy_src_to_sys[i]->step(par.sx, par.sy, par.sz);
     equilibrate();
     for (int i = 0; i < 3; i++) kwrf_copy_sys_to_tgt[i]->step(par.sx, par.sy, par.sz);
+    kwrf_copy_flux->step(par.sx, par.sy, 0);
     kwrf_finish->step(par.sx, par.sy, par.sz);
   }
 
@@ -720,6 +725,7 @@ void asystem::read_wrf(int wrf_index_local) {
   for (int i = 0; i < 4; i++) kwrf_copy_src_to_sys[i]->step(par.sx, par.sy, par.sz);
   equilibrate();
   for (int i = 0; i < 3; i++) kwrf_copy_sys_to_tgt[i]->step(par.sx, par.sy, par.sz);
+  kwrf_copy_flux->step(par.sx, par.sy, 0);
   kwrf_finish->step(par.sx, par.sy, par.sz);
   for (int i = 0; i < 4; i++) kwrf_copy_tmp_to_sys[i]->step(par.sx, par.sy, par.sz);
   // context->finish();
@@ -736,7 +742,7 @@ void asystem::equilibrate() {
 
   // kf_microphys->bind("phys", (unsigned int)(2)); // only enable condensation
 
-  int equil_steps = 100;
+  int equil_steps = 500;
 
   for (int f = 0; f < equil_steps; f++) {
     if (f%10==0) logger->log(2,"\rEquilibrating  -  %d/%d",f,equil_steps);

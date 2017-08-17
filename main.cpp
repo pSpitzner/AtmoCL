@@ -61,7 +61,7 @@ int main(int argc, char * argv[]) {
 
   context->used_memory();
 
-  sys->read_wrf(2);
+  // sys->read_wrf(2);
   // return 0;
   /*
   if (s_statePath.length() == 0) {

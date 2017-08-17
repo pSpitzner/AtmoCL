@@ -35,13 +35,13 @@ class wrffile {
 
     clkernel *k_interpolate_scalars;
     clkernel *k_interpolate_momenta;
+    clkernel *k_interpolate_flux;
 
 
     std::string file_name;
 
 
-
-    wrffile(clcontext *contextn, cllogger *loggern, parameters parn, std::string file_namen, clbuffer *b_target_scalars[3], clbuffer *b_target_momenta);
+    wrffile(clcontext *contextn, cllogger *loggern, parameters parn, std::string file_namen, clbuffer *b_target_scalars[3], clbuffer *b_target_momenta, clbuffer *b_target_flux);
     ~wrffile();
     int index(int x, int y, int z);
     void load(int wrfindex=1);

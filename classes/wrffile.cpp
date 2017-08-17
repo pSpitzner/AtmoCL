@@ -1,6 +1,6 @@
 #include "wrffile.h"
 
-wrffile::wrffile(clcontext *contextn, cllogger *loggern, parameters parn, std::string file_namen, clbuffer *b_target_scalars[3], clbuffer *b_target_momenta) {
+wrffile::wrffile(clcontext *contextn, cllogger *loggern, parameters parn, std::string file_namen, clbuffer *b_target_scalars[3], clbuffer *b_target_momenta, clbuffer *b_target_flux) {
   context = contextn;
   logger = loggern;
   par = parn;
@@ -107,10 +107,14 @@ wrffile::wrffile(clcontext *contextn, cllogger *loggern, parameters parn, std::s
 
   k_interpolate_momenta = new clkernel(context, par, "./kernels/k_wrf_interpolate_momenta.cl");
   k_interpolate_momenta->bind_custom("wrfparameters wrf", &wrf, sizeof(wrf));
-
   k_interpolate_momenta->bind("b_source_velocites", b_wrf_source_velocities_vc);
   k_interpolate_momenta->bind("b_scalars_vc", b_target_scalars[0]);
   k_interpolate_momenta->bind("b_target_momenta", b_target_momenta);
+
+  k_interpolate_flux = new clkernel(context, par, "./kernels/k_wrf_interpolate_flux.cl");
+  k_interpolate_flux->bind_custom("wrfparameters wrf", &wrf, sizeof(wrf));
+  k_interpolate_flux->bind("b_wrf_flux", b_wrf_flux);
+  k_interpolate_flux->bind("b_sys_flux", b_target_flux);
 
   logger->log(0,"Domain in wrf: %g %g %g %g\n",wrf.dx0,wrf.dy0,wrf.dx0+wrf.dsx,wrf.dy0+wrf.dsy);
   logger->log(0,"Cellsize in wrf: %g %g\n",wrf.dx,wrf.dy);
@@ -208,5 +212,6 @@ void wrffile::load(int wrfindex) {
 
   k_interpolate_scalars->step(par.sx, par.sy, par.sz);
   k_interpolate_momenta->step(par.sx, par.sy, par.sz);
+  k_interpolate_flux->step(par.sx, par.sy, 1);
 }
 
