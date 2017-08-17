@@ -533,6 +533,8 @@ asystem::asystem(clcontext *contextn, cllogger *loggern, int timescheme) {
   bwrf_sys_tmp[1]        = new clbuffer(context, "bwrf_sys_tmp_1", par.sx, par.sy, par.sz);
   bwrf_sys_tmp[2]        = new clbuffer(context, "bwrf_sys_tmp_2", par.sx, par.sy, par.sz);
   bwrf_sys_tmp[3]        = new clbuffer(context, "bwrf_sys_tmp_3", par.sx, par.sy, par.sz);
+  bwrf_flux_new          = new clbuffer(context, "bwrf_flux_new", par.sx, par.sy, 1);
+  bwrf_flux_old          = new clbuffer(context, "bwrf_flux_old", par.sx, par.sy, 1);
 
   // kernel
   ks_ext_forcings         = new clkernel(context, par, "./kernels/k_wrf_flux.cl");
@@ -715,7 +717,7 @@ void asystem::read_wrf(int wrf_index_local) {
     for (int i = 0; i < 4; i++) kwrf_copy_src_to_sys[i]->step(par.sx, par.sy, par.sz);
     equilibrate();
     for (int i = 0; i < 3; i++) kwrf_copy_sys_to_tgt[i]->step(par.sx, par.sy, par.sz);
-    kwrf_copy_flux->step(par.sx, par.sy, 0);
+    kwrf_copy_flux->step(par.sx, par.sy, 1);
     kwrf_finish->step(par.sx, par.sy, par.sz);
   }
 
@@ -725,7 +727,7 @@ void asystem::read_wrf(int wrf_index_local) {
   for (int i = 0; i < 4; i++) kwrf_copy_src_to_sys[i]->step(par.sx, par.sy, par.sz);
   equilibrate();
   for (int i = 0; i < 3; i++) kwrf_copy_sys_to_tgt[i]->step(par.sx, par.sy, par.sz);
-  kwrf_copy_flux->step(par.sx, par.sy, 0);
+  kwrf_copy_flux->step(par.sx, par.sy, 1);
   kwrf_finish->step(par.sx, par.sy, par.sz);
   for (int i = 0; i < 4; i++) kwrf_copy_tmp_to_sys[i]->step(par.sx, par.sy, par.sz);
   // context->finish();

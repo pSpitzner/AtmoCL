@@ -136,7 +136,7 @@ void clkernel::bind_custom(std::string s_kernelArg, void *s, size_t custom_size)
   // provides direct access to the opencl api so to say
   size_t pos = get_pos_of_argument_from_src(s_kernelArg);
   ret = clSetKernelArg(kernel, pos, custom_size, s);
-  logger->log(0, ret, "binding custom data type to kernel %s at argument %d to %s\n",  s_name.c_str(), pos, s_kernelArg.c_str());
+  logger->log(1, ret, "binding custom data type to kernel %s at argument %d to %s\n",  s_name.c_str(), pos, s_kernelArg.c_str());
 }
 
 void clkernel::bind(const int pos, clbuffer *b) {
