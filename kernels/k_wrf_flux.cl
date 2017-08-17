@@ -21,6 +21,7 @@ __kernel void k_wrf_flux_kernel_main(__private parameters par,
   float wrfdt = 15.0f*60.0f;
   float weight = fmod((float)(frame_index)*par.dT/wrfdt,wrfdt);
   float4 flux = (1.0f-weight)*wrf_old + (weight)*wrf_new;
+  float heat_flux, moist_flux;
 
   // should always be true, only cal this kernel for ground layer
   if (pos.s_zl==-1) {
@@ -30,7 +31,7 @@ __kernel void k_wrf_flux_kernel_main(__private parameters par,
   }
   printf("%d %d %d %f\n", pos.x, pos.y, pos.z, heat_flux);
 
-  float4 cRhs = (float4)(0.0f);
+  float8 cRhs = (float8)(0.0f);
   // d(rhosig) nach drho_v  // trockene dichte weg, wasserdampf hin
   cRhs.s0 += (st.lnT*(par.cpv-par.cpd)-st.lnP*(par.rv-par.rd))*moist_flux;
   cRhs.s2 += moist_flux;
