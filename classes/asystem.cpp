@@ -570,14 +570,12 @@ asystem::asystem(clcontext *contextn, cllogger *loggern, int timescheme) {
   k_nesting[3]->bind("bwrf_tgt_new", bwrf_tgt_new[3]);
   k_nesting[3]->bind("bwrf_tgt_old", bwrf_tgt_old[3]);
 
-  // ks_ext_forcings->bind("b_source_scalars_0", bf_scalars_vc_a[0]);
-  // ks_ext_forcings->bind("b_source_scalars_1", bf_scalars_vc_a[1]);
-  // ks_ext_forcings->bind("b_source_scalars_2", bf_scalars_vc_a[2]);
-  // ks_ext_forcings->bind("b_source_momenta",   bf_momenta_fc_a);
-  // ks_ext_forcings->bind("b_target_scalars_0", bf_scalars_vc_b[0]);
-  // ks_ext_forcings->bind("b_target_scalars_1", bf_scalars_vc_b[1]);
-  // ks_ext_forcings->bind("b_target_scalars_2", bf_scalars_vc_b[2]);
-  // ks_ext_forcings->bind("b_target_momenta",   bf_momenta_fc_b);
+  ks_ext_forcings->bind("b_source_scalars_0", bf_scalars_vc_a[0]);
+  ks_ext_forcings->bind("b_source_scalars_1", bf_scalars_vc_a[1]);
+  ks_ext_forcings->bind("b_source_scalars_2", bf_scalars_vc_a[2]);
+  ks_ext_forcings->bind("b_target_scalars_0", bf_scalars_vc_b[0]);
+  ks_ext_forcings->bind("bwrf_flux_new", bwrf_flux_new);
+  ks_ext_forcings->bind("bwrf_flux_old", bwrf_flux_old);
 
   kwrf_copy_flux->bind("b_source", bwrf_flux_new);
   kwrf_copy_flux->bind("b_target", bwrf_flux_old);
@@ -797,9 +795,10 @@ void asystem::mis_step(int damping, int kx, int ky, int kz) {
   // for now assume dT/wrfdt is dividable evenly
   if (fmod(frame_index*par.dT, wrfdt) == 0) read_wrf(-1);
 
-  // ks_ext_forcings->bind("frame_index", frame_index);
-  // ks_ext_forcings->step(kx, ky, kz);
-  // kf_copy[0]->step(kx, ky, kz);
+
+  ks_ext_forcings->bind("frame_index", frame_index);
+  ks_ext_forcings->step(kx, ky, 1);
+  kf_copy[0]->step(kx, ky, 1);
   // kf_copy[1]->step(kx, ky, kz);
   // kf_copy[2]->step(kx, ky, kz);
   // kf_copy[3]->step(kx, ky, kz);
