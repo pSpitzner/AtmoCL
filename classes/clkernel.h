@@ -27,6 +27,8 @@ class clkernel
     std::string s_sourceCode;
     std::vector<std::string> v_argCl;
     std::vector<clbuffer *> v_argBuffer;
+    int binding_count;
+    bool bindings_checked;
 
     clcontext *context;
     cllogger *logger;
@@ -41,6 +43,7 @@ class clkernel
     void bind(std::string s_kernelArg, unsigned int myInt);
     void bind(std::string s_kernelArg, clbuffer *b);
     void bind_custom(std::string s_kernelArg, void *s, size_t custom_size);
+    void check_bindings();
 
        // void bind(const int pos, float dt);
     void set_par(parameters parn);

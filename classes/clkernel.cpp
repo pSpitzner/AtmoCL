@@ -43,6 +43,8 @@ clkernel::clkernel(clcontext *context, parameters parn, std::string filePath, st
   logger->log(1, ret, "%s\tCreating kernel from program\n",s_name.c_str());
 
   set_par(parn);
+  binding_count = 0;
+  bindings_checked = false;
 }
 
 clkernel::~clkernel() {
@@ -122,6 +124,15 @@ void clkernel::set_par(parameters parn) {
   //  logger->log(1, ret, "Setting parameters: %d %f", par.sx, par.dt );
 }
 
+void clkernel::check_bindings() {
+  std::string::size_type start = s_sourceCode.find("kernel_main(", 0);
+  std::string::size_type end = s_sourceCode.find(")", start);
+  std::string s_argList = s_sourceCode.substr(start,end-start);
+  int needed_bindings = std::count(s_argList.begin(), s_argList.end(), ',');
+  if ( binding_count != needed_bindings) logger->log(0, "ERROR: Missing Bindings for %s (%d/%d)\n", s_name.c_str(), binding_count, needed_bindings);
+  bindings_checked = true;
+}
+
 size_t clkernel::get_pos_of_argument_from_src(std::string s_kernelArg) {
   // find the index of kernel argument in kernel source
   std::string::size_type start = s_sourceCode.find("kernel_main(", 0);
@@ -136,11 +147,13 @@ void clkernel::bind_custom(std::string s_kernelArg, void *s, size_t custom_size)
   // provides direct access to the opencl api so to say
   size_t pos = get_pos_of_argument_from_src(s_kernelArg);
   ret = clSetKernelArg(kernel, pos, custom_size, s);
+  binding_count++;
   logger->log(1, ret, "binding custom data type to kernel %s at argument %d to %s\n",  s_name.c_str(), pos, s_kernelArg.c_str());
 }
 
 void clkernel::bind(const int pos, clbuffer *b) {
   ret = clSetKernelArg(kernel, pos, sizeof(b->buffer), (void *) &b->buffer);
+  binding_count++;
   // logger->log(1, ret, "binding to %d: buffer %s with size %d\n", pos, b->s_name.c_str(), sizeof(b->buffer));
 }
 
@@ -149,6 +162,7 @@ void clkernel::bind(std::string s_kernelArg, unsigned int myInt) {
   size_t pos = get_pos_of_argument_from_src(s_kernelArg);
 
   ret = clSetKernelArg(kernel, pos, sizeof(unsigned int), (void *) &myInt);
+  binding_count++;
   logger->log(1, ret, "binding int to kernel %s at argument %d - int %d to %s\n",  s_name.c_str(), pos, myInt, s_kernelArg.c_str());
 }
 
@@ -166,10 +180,12 @@ void clkernel::bind() {
 void clkernel::bind(std::string s_kernelArg, clbuffer *b) {
   size_t pos = get_pos_of_argument_from_src(s_kernelArg);
   ret = clSetKernelArg(kernel, pos, sizeof(b->buffer), (void *) &b->buffer);
+  binding_count++;
   logger->log(1, ret, "binding buffer to kernel %s at argument %d - buffer %s to %s\n",  s_name.c_str(), pos, b->s_name.c_str(), s_kernelArg.c_str());
 }
 
 void clkernel::step(int kx, int ky, int kz) {
+  if (!bindings_checked) check_bindings();
   // specify dimensions, number of kernels
   //  std::cout << par.sx << "" << par.sy << std::endl;
   size_t global_item_size[3] = {size_t(kx), size_t(ky), size_t(kz)};
