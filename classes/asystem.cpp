@@ -407,6 +407,7 @@ asystem::asystem(clcontext *contextn, cllogger *loggern, int timescheme) {
   kf_microphys->bind("bRhs_mp_vc_1",      b_temp[1]);
   kf_microphys->bind("bRhs_mp_vc_2",      b_temp[2]); // ice
   kf_microphys->bind("phys",              (unsigned int)(1023)); // enable all per default
+  kf_microphys->check_bindings();
 
   for (int f = 0; f < 3; f++) {
     kf_step_scalars[0][f]->bind("bf_scalars_vc_a",     bf_scalars_vc_a[f]);
