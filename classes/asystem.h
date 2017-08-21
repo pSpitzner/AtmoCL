@@ -102,6 +102,7 @@ class asystem {
     clkernel *kwrf_copy_sys_to_tgt[4];
     clkernel *kwrf_copy_new_to_old[4];
     clkernel *kwrf_copy_flux;
+    clkernel *kwrf_copy_tgt_to_sys[4]; // only needed for init
 
     wrffile *importer;
 

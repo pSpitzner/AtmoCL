@@ -25,9 +25,11 @@ __kernel void k_wrf_finish_kernel_main(__private parameters par,
   float u = 2.0f*wrf_mom.s0/(wrf_rho_xl+wrf_rho);
   float v = 2.0f*wrf_mom.s1/(wrf_rho_yl+wrf_rho);
 
+
   float tgt_rho_u = 0.5f*(sys_rho_xl+sys_rho)*u;
   float tgt_rho_v = 0.5f*(sys_rho_yl+sys_rho)*v;
 
+  // if (pos.x == par.sx/2 && pos.y == par.sy/2 && pos.z == par.sz/2) printf("%f %f %f\n", tgt_rho_u, tgt_rho_v, sys_rho_w);
 
   write_f4(pos.x, pos.y, pos.z, (float4)(tgt_rho_u, tgt_rho_v, sys_rho_w, 0.0f),  bwrf_tgt_momenta);
 }

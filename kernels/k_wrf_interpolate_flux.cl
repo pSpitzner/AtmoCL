@@ -8,9 +8,9 @@ __private float4 interpolate(float dxl, float dyl, float dxr, float dyr, int xwr
 }
 
 __kernel void k_wrf_interpolate_flux_kernel_main(__private parameters par,
-                                                    __private wrfparameters wrf,
-                                                    __read_only image3d_t b_wrf_flux,
-                                                    __write_only image3d_t b_sys_flux)
+                                                 __private wrfparameters wrf,
+                                                 __read_only image3d_t b_wrf_flux,
+                                                 __write_only image3d_t b_sys_flux)
 {
   position pos = get_pos_bc(par, get_global_id(0), get_global_id(1), get_global_id(2));
 

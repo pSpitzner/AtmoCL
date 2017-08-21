@@ -548,6 +548,7 @@ asystem::asystem(clcontext *contextn, cllogger *loggern, int timescheme) {
     kwrf_copy_tmp_to_sys[i]    = new clkernel(context, par, "./kernels/k_copy_one.cl");
     kwrf_copy_sys_to_tgt[i]    = new clkernel(context, par, "./kernels/k_copy_one.cl");
     kwrf_copy_new_to_old[i]    = new clkernel(context, par, "./kernels/k_copy_one.cl");
+    kwrf_copy_tgt_to_sys[i]    = new clkernel(context, par, "./kernels/k_copy_one.cl");
   }
 
   // bindings
@@ -594,6 +595,8 @@ asystem::asystem(clcontext *contextn, cllogger *loggern, int timescheme) {
 
     kwrf_copy_sys_to_tgt[i]->bind("b_source", bf_scalars_vc_a[i]);
     kwrf_copy_sys_to_tgt[i]->bind("b_target", bwrf_tgt_new[i]);
+    kwrf_copy_tgt_to_sys[i]->bind("b_source", bwrf_tgt_new[i]);
+    kwrf_copy_tgt_to_sys[i]->bind("b_target", bf_scalars_vc_a[i]);
 
     kwrf_copy_src_to_sys[i]->bind("b_source", bwrf_src[i]);
     kwrf_copy_src_to_sys[i]->bind("b_target", bf_scalars_vc_a[i]);
@@ -607,6 +610,8 @@ asystem::asystem(clcontext *contextn, cllogger *loggern, int timescheme) {
 
   kwrf_copy_sys_to_tgt[3]->bind("b_source", bf_momenta_fc_a);
   kwrf_copy_sys_to_tgt[3]->bind("b_target", bwrf_tgt_new[3]);
+  kwrf_copy_tgt_to_sys[3]->bind("b_source", bwrf_tgt_new[3]);
+  kwrf_copy_tgt_to_sys[3]->bind("b_target", bf_momenta_fc_a);
 
   kwrf_copy_src_to_sys[3]->bind("b_source", bwrf_src[3]);
   kwrf_copy_src_to_sys[3]->bind("b_target", bf_momenta_fc_a);
@@ -716,8 +721,9 @@ void asystem::read_wrf(int wrf_index_local) {
     for (int i = 0; i < 4; i++) kwrf_copy_src_to_sys[i]->step(par.sx, par.sy, par.sz);
     equilibrate();
     for (int i = 0; i < 3; i++) kwrf_copy_sys_to_tgt[i]->step(par.sx, par.sy, par.sz);
+    kwrf_finish->step(par.sx, par.sy, par.sz); // copies momenta
     kwrf_copy_flux->step(par.sx, par.sy, 1);
-    kwrf_finish->step(par.sx, par.sy, par.sz);
+    for (int i = 0; i < 4; i++) kwrf_copy_tgt_to_sys[i]->step(par.sx, par.sy, par.sz); // only do this at the beginning to have an initial state
   }
 
   for (int i = 0; i < 4; i++) kwrf_copy_new_to_old[i]->step(par.sx, par.sy, par.sz);
@@ -726,10 +732,9 @@ void asystem::read_wrf(int wrf_index_local) {
   for (int i = 0; i < 4; i++) kwrf_copy_src_to_sys[i]->step(par.sx, par.sy, par.sz);
   equilibrate();
   for (int i = 0; i < 3; i++) kwrf_copy_sys_to_tgt[i]->step(par.sx, par.sy, par.sz);
+  kwrf_finish->step(par.sx, par.sy, par.sz); // copies momenta
   kwrf_copy_flux->step(par.sx, par.sy, 1);
-  kwrf_finish->step(par.sx, par.sy, par.sz);
   for (int i = 0; i < 4; i++) kwrf_copy_tmp_to_sys[i]->step(par.sx, par.sy, par.sz);
-  // context->finish();
 
 
   wrf_index++;
@@ -797,9 +802,9 @@ void asystem::mis_step(int damping, int kx, int ky, int kz) {
   if (fmod(frame_index*par.dT, wrfdt) == 0) read_wrf(-1);
 
 
-//   ks_ext_forcings->bind("frame_index", frame_index);
-//   ks_ext_forcings->step(kx, ky, 1);
-//   kf_copy[0]->step(kx, ky, 1);
+  //   ks_ext_forcings->bind("frame_index", frame_index);
+  //   ks_ext_forcings->step(kx, ky, 1);
+  //   kf_copy[0]->step(kx, ky, 1);
   // kf_copy[1]->step(kx, ky, kz);
   // kf_copy[2]->step(kx, ky, kz);
   // kf_copy[3]->step(kx, ky, kz);

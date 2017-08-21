@@ -25,8 +25,8 @@ __kernel void ke_uv_kernel_main(__private parameters par,
   // u = 0.5;
   // v = 1;
 
-  float umax = 1.0f; // [m/s]
-  float vmax = 1.0f;
+  float umax = 10.0f; // [m/s]
+  float vmax = 10.0f;
   u= (u < umax ? u/umax : 1.0f);
   v= (v < umax ? v/vmax : 1.0f);
 
