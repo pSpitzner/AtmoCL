@@ -16,11 +16,11 @@ __kernel void k_wrf_nesting_kernel_main(__private parameters par,
 
   // if (pos.x == 3 && pos.y == 3 && pos.z == 3) printf("%d %f %f\n", frame_index, weight, wrfdt);
 
-  if (pos.x < 4 || pos.y < 4 || pos.z < 4 ||
-      pos.x > par.sx-5 || pos.y > par.sy-5 || pos.z > par.sz-5 ) {
-    sys = (1.0f-weight)*wrf_old + (weight)*wrf_new;
-  }
-
+  // if (pos.x < 4 || pos.y < 4 || pos.z < 4 ||
+  //     pos.x > par.sx-5 || pos.y > par.sy-5 || pos.z > par.sz-5 ) {
+  //   sys = (1.0f-weight)*wrf_old + (weight)*wrf_new;
+  // }
+  sys = (1.0f-weight)*wrf_old + (weight)*wrf_new;
 
 
 }
