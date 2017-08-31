@@ -110,7 +110,7 @@ class asystem {
     // clexport *exporter[3];
     std::vector<clexport *> v_exporter;
 
-    asystem(clcontext *contextn, cllogger *loggern, int timescheme = 1);
+    asystem(clcontext *contextn, cllogger *loggern, std::string s_wrf_path, int timescheme = 1);
     ~asystem();
 
     void read_single_profile(clbuffer *b, FILE *f, int c, float dz, float offset = 0.0);

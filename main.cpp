@@ -26,6 +26,7 @@ int main(int argc, char * argv[]) {
   // std::string s_profilePath = "./profiles/data125";
   std::string s_profilePath = "./profiles/dycoms_2";
   std::string s_statePath = "";
+  std::string s_wrf_path = "";
   int timescheme = 1;
   int device = 0;
 
@@ -38,6 +39,8 @@ int main(int argc, char * argv[]) {
       s_profilePath = (argv[i+1]);
     } else if (std::string(argv[i]) == "-b") {
       s_statePath = (argv[i+1]);
+    } else if (std::string(argv[i]) == "-wrf") {
+      s_wrf_path = (argv[i+1]);
     } else if (std::string(argv[i]) == "-rk3") {
       timescheme = 0;
     } else if (std::string(argv[i]) == "-mis") {
@@ -52,7 +55,7 @@ int main(int argc, char * argv[]) {
 
   logger  = new cllogger(1, profiling_enabled);
   context = new clcontext(logger, device, profiling_enabled);
-  sys     = new asystem(context, logger, timescheme);
+  sys     = new asystem(context, logger, s_wrf_path, timescheme);
   long long ns;
 
   // context->info();

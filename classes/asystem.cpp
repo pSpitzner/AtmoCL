@@ -123,7 +123,7 @@ void asystem::set_par(int timescheme_) {
   par.nsi[2] = std::ceil((par.b[2][0] + par.b[2][1] + par.b[2][2])*par.ns);
 }
 
-asystem::asystem(clcontext *contextn, cllogger *loggern, int timescheme) {
+asystem::asystem(clcontext *contextn, cllogger *loggern, std::string s_wrf_path, int timescheme) {
   context = contextn;
   logger = loggern;
   debugStepCount = 0;
@@ -617,7 +617,7 @@ asystem::asystem(clcontext *contextn, cllogger *loggern, int timescheme) {
   kwrf_copy_src_to_sys[3]->bind("b_target", bf_momenta_fc_a);
 
   // passing pointers like that seems wrong. needs fixing
-  importer = new wrffile(context, logger, par, "../AtmoCL_Ref/input/wrfout_wrf4km_asam", &bwrf_src[0], bwrf_src[3], bwrf_flux_new);
+  importer = new wrffile(context, logger, par, s_wrf_path, &bwrf_src[0], bwrf_src[3], bwrf_flux_new);
   wrf_index=2;
 
 }
