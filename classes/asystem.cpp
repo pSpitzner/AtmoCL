@@ -12,8 +12,8 @@ void asystem::set_par(int timescheme_) {
   par.sx  = 128;     // system size
   par.sy  = 128;
   par.sz  = 64;
-  par.dx  = 500.0;
-  par.dy  = 500.0;
+  par.dx  = 1000.0;
+  par.dy  = 1000.0;
   par.dz  = 200.0;
 
   par.ui = 0.0;
@@ -748,7 +748,7 @@ void asystem::equilibrate() {
 
   // kf_microphys->bind("phys", (unsigned int)(2)); // only enable condensation
 
-  int equil_steps = 500;
+  int equil_steps = 1;
 
   for (int f = 0; f < equil_steps; f++) {
     if (f%10==0) logger->log(2,"\rEquilibrating  -  %d/%d",f,equil_steps);

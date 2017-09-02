@@ -74,7 +74,7 @@ clcontext::clcontext(cllogger *loggern, int device_nr, bool profiling_enabled)
   cl_device_info(device_id);
 
   /* Create OpenCL Context */
-  context = clCreateContext(NULL, 1, &device_id, clLogMessagesToStdoutAPPLE, NULL, &ret);
+  context = clCreateContext(NULL, 1, &device_id, NULL, NULL, &ret);
 
 
   /* Create command queue */
