@@ -21,6 +21,7 @@ __kernel void k_wrf_nesting_kernel_main(__private parameters par,
   //   sys = (1.0f-weight)*wrf_old + (weight)*wrf_new;
   // }
   sys = (1.0f-weight)*wrf_old + (weight)*wrf_new;
+  // if (pos.x == 1 && pos.z == 1 && pos.y == 1) printf("%d %f %f\n", frame_index, wrf_old.s0, wrf_new.s0);
 
   write_f4(pos.x, pos.y, pos.z, sys, b_target);
 }
