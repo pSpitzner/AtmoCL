@@ -22,6 +22,6 @@ __kernel void k_wrf_nesting_kernel_main(__private parameters par,
   // }
   sys = (1.0f-weight)*wrf_old + (weight)*wrf_new;
 
-
+  write_f4(pos.x, pos.y, pos.z, sys, b_target;
 }
 
