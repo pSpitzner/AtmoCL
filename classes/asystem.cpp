@@ -819,9 +819,10 @@ void asystem::mis_step(int damping, int kx, int ky, int kz) {
     }
   } else if (par.timescheme == 1) {
     for (int s=0; s<3; s++) {
-      slow_stage(s, kx, ky, kz);
-      for (int i=0; i<par.nsi[s]; i++) {
-        fast_stage(s, kx, ky, kz);
+      // slow_stage(s, kx, ky, kz);
+      // for (int i=0; i<par.nsi[s]; i++) {
+      for (int i=0; i<1; i++) {
+        // fast_stage(s, kx, ky, kz);
         k_nesting[0]->step(kx, ky, kz);
         k_nesting[1]->step(kx, ky, kz);
         k_nesting[2]->step(kx, ky, kz);
