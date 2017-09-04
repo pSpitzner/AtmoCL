@@ -578,6 +578,7 @@ asystem::asystem(clcontext *contextn, cllogger *loggern, std::string s_wrf_path,
   ks_ext_forcings->bind("b_target_scalars_0", bf_scalars_vc_b[0]);
   ks_ext_forcings->bind("bwrf_flux_new", bwrf_flux_new);
   ks_ext_forcings->bind("bwrf_flux_old", bwrf_flux_old);
+  ks_ext_forcings->bind("frame_index", (unsigned int)(0));
 
   kwrf_copy_flux->bind("b_source", bwrf_flux_new);
   kwrf_copy_flux->bind("b_target", bwrf_flux_old);
