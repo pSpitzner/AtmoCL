@@ -803,9 +803,9 @@ void asystem::mis_step(int damping, int kx, int ky, int kz) {
   if (fmod(frame_index*par.dT, wrfdt) == 0) read_wrf(-1);
 
 
-    ks_ext_forcings->bind("frame_index", frame_index);
-    ks_ext_forcings->step(kx, ky, 1);
-    kf_copy[0]->step(kx, ky, 1);
+    // ks_ext_forcings->bind("frame_index", frame_index);
+    // ks_ext_forcings->step(kx, ky, 1);
+    // kf_copy[0]->step(kx, ky, 1);
   // kf_copy[1]->step(kx, ky, kz);
   // kf_copy[2]->step(kx, ky, kz);
   // kf_copy[3]->step(kx, ky, kz);
