@@ -89,7 +89,7 @@ int main(int argc, char * argv[]) {
   logger->log(2, "Estimating remaining time...\n");
 
 
-  int iterations = 50000;
+  int iterations = 28800;
   for (int i = 0; i < iterations; i++) {
     logger->start_new_timer();
     sys->mis_step();
