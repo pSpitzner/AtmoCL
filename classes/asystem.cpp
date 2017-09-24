@@ -512,12 +512,12 @@ asystem::asystem(clcontext *contextn, cllogger *loggern, int timescheme) {
   v_exporter.push_back(new clexport(context, "XZ_rho_i", "./kernels/exporter/ke_rho_i.cl", par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,0,0  ));
   v_exporter.push_back(new clexport(context, "XZ_rho_s", "./kernels/exporter/ke_rho_s.cl", par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,0,0  ));
 
-  v_exporter.push_back(new clexport(context, "XZ_n_c",   "./kernels/exporter/ke_n_c.cl",   par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,0,0  ));
-  v_exporter.push_back(new clexport(context, "XZ_n_r",   "./kernels/exporter/ke_n_r.cl",   par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,0,0  ));
-  v_exporter.push_back(new clexport(context, "XZ_n_d",   "./kernels/exporter/ke_n_d.cl",   par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,0,0  ));
+  v_exporter.push_back(new clexport(context, "XZ_n_c",   "./kernels/exporter/ke_n_c.cl",   par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,1,0  ));
+  v_exporter.push_back(new clexport(context, "XZ_n_r",   "./kernels/exporter/ke_n_r.cl",   par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,1,0  ));
+  v_exporter.push_back(new clexport(context, "XZ_n_d",   "./kernels/exporter/ke_n_d.cl",   par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,1,0  ));
 
-  v_exporter.push_back(new clexport(context, "XZ_n_i",   "./kernels/exporter/ke_n_i.cl",   par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,0,0  ));
-  v_exporter.push_back(new clexport(context, "XZ_n_s",   "./kernels/exporter/ke_n_s.cl",   par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,0,0  ));
+  v_exporter.push_back(new clexport(context, "XZ_n_i",   "./kernels/exporter/ke_n_i.cl",   par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,1,0  ));
+  v_exporter.push_back(new clexport(context, "XZ_n_s",   "./kernels/exporter/ke_n_s.cl",   par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,1,0  ));
 
   //cutplanes XY (top view)
   int z0 = 0; while(par.dz*z0<600.0)z0++;
