@@ -533,6 +533,7 @@ asystem::asystem(clcontext *contextn, cllogger *loggern, int timescheme) {
 
   // integrated XY
   v_exporter.push_back(new clexport(context, "XY_int_lwp",   "./kernels/exporter/ke_int_lwp.cl",   par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 2, par.sz/2,  1,1,0  ));
+  v_exporter.push_back(new clexport(context, "XY_int_iwp",   "./kernels/exporter/ke_int_iwp.cl",   par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 2, par.sz/2,  1,1,0  ));
 
   // vertical profiles
   v_exporter.push_back(new clexport(context, "VP_ql",    "./kernels/exporter/ke_int_ql.cl",par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  0,0,1  ));
