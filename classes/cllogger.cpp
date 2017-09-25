@@ -27,10 +27,10 @@ cllogger::cllogger(int logleveln, bool profilingn, std::string s_outputn) {
   s_logPath = s_output + "logs/";
 
   printf("Cleaning old files...\n");
-  // clean old files if present by deleting directories
+  // clean old files if present. deleting directories may be slow on network drive, delete files first
   int ret;
-  // ret = system(("find "+s_output+" -name '*.png' -type f -delete 2>/dev/null").c_str());
-  // ret = system(("find "+s_output+" -name '*.vp' -type f -delete 2>/dev/null").c_str());
+  ret = system(("find "+s_output+" -name '*.png' -type f -delete 2>/dev/null").c_str());
+  ret = system(("find "+s_output+" -name '*.vp' -type f -delete 2>/dev/null").c_str());
   ret = system(("rm -r "+s_output+"img/ 2>/dev/null").c_str());
   ret = system(("rm -r "+s_output+"timeseries/ 2>/dev/null").c_str());
   ret = system(("rm -r "+s_output+"verticalprofiles/ 2>/dev/null").c_str());
