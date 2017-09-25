@@ -59,15 +59,16 @@ In this example, to choose the GPU one would type
 ./run -dev 1
 ```
 
+There is also a ```-profiling``` option, which forces the host to wait for the device to finish every step before enqueuing the next. It also creates additional logs for performance measuring and may help debugging. Try this if you are running into problems.
+
+Any generated output is written into an output folder that you can change with ```-o```, the default is ```./output/%YYYY-%mm-%dd```. Symlinks are followed.
+According subdirectories are created for images ```img```, ```timeseries```, ```verticalprofiles```, ```logs``` and ```snapshots```.
+
 If you run for the first time, a snapshot of the initial profile will be created after equilibrating (and every full hour) and saved in a snapshots folder. Such profiles can be imported using the ```-b``` argument.
 
 ```
-./run -dev 1 -b ./snapshots/equil/
+./run -dev 1 -b ./output/oldrun/snapshots/equil/
 ```
-
-There is also a ```-profiling``` option, which forces the host to wait for the device to finish every step before enqueuing the next. It also creates additional logs for performance measuring and may help debugging. Try this if you are running into problems.
-
-Any generated output is written into the ```output``` folder, which you can change into a symlink to save elsewhere. According subdirectories are created for images ```img```, ```timeseries```, ```verticalprofiles``` and ```logs```.
 
 ## Changing Settings
 
