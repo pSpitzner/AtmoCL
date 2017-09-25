@@ -1,9 +1,8 @@
 #include "cllogger.h"
 
-cllogger::cllogger(int logleveln, bool profilingn, std::string path, std::string filenamen) {
+cllogger::cllogger(int logleveln, bool profilingn, std::string s_outputn) {
   t_measured = 0;
   t_avg = 0.0;
-  Log_path = path;
   loglevel = logleveln;
   profiling = profilingn;
   // 0: only log lvl 0 infos to screen
@@ -12,26 +11,50 @@ cllogger::cllogger(int logleveln, bool profilingn, std::string path, std::string
     return;
   }
 
-  std::time_t now = std::time(NULL);
   char mbstr[100];
+  char datestr[100];
+  std::time_t now = std::time(NULL);
   std::strftime(mbstr, sizeof(mbstr), "%Y-%m-%d_%H-%M-%S", std::localtime(&now));
-  // filename = path + mbstr + filenamen + ".log";
-  int ret = system(("mkdir -p " + Log_path).c_str());
-  filename = Log_path + "AtmoCL.log";
+  std::strftime(datestr, sizeof(datestr), "%Y-%m-%d", std::localtime(&now));
+
+  if (s_outputn == "") { // set default
+    s_output = "./output/" + std::string(datestr) + "/";
+  } else {
+    std::string::size_type found = s_outputn.find_last_of("/");
+    if (found == s_outputn.length()-1) s_output = s_outputn;
+    else s_output = s_outputn + "/";
+  }
+  s_logPath = s_output + "logs/";
+
+  printf("Cleaning old files...\n");
+  // clean old files if present by deleting directories
+  int ret;
+  // ret = system(("find "+s_output+" -name '*.png' -type f -delete 2>/dev/null").c_str());
+  // ret = system(("find "+s_output+" -name '*.vp' -type f -delete 2>/dev/null").c_str());
+  ret = system(("rm -r "+s_output+"img/ 2>/dev/null").c_str());
+  ret = system(("rm -r "+s_output+"timeseries/ 2>/dev/null").c_str());
+  ret = system(("rm -r "+s_output+"verticalprofiles/ 2>/dev/null").c_str());
+
+
+
+
+  ret = system(("mkdir -p " + s_logPath).c_str());
+  std::string filename = s_logPath + "AtmoCL.log";
 
   if (profiling) {
-    Profiling_stream.open(Log_path + "Profiling.log", std::ofstream::out);
+    Profiling_stream.open(s_logPath + "Profiling.log", std::ofstream::out);
     int mysize = 5000*100;
     v_kernel_name.reserve(mysize);
     v_note.reserve(mysize);
     v_time.reserve(mysize);
   }
 
-  LogFile = fopen(filename.c_str(), "a");
+  LogFile = fopen(filename.c_str(), "w");
   // fseek(LogFile, 0, SEEK_SET); // overwrite
   // ofs.open(path+filename.c_str(), std::ofstream::out);
 
   log(0, "------------------ %s ------------------\n", mbstr);
+  log(0, "Writing files to %s\n\n", s_output.c_str());
 
   // profiling
   if (profiling) Profiling_stream << "------------------ " << std::string(mbstr) << " ------------------\n";
@@ -173,7 +196,7 @@ void cllogger::log(int msglvl, cl_int err, const char* comment, ... )
 
 void cllogger::open_debugstream(std::string s_debug, int step) {
   std::stringstream Temp;
-  Temp << Log_path << "Debug_" << s_debug << "_" << std::setw(5) << std::setfill('0') << step << ".log";
+  Temp << s_logPath << "Debug_" << s_debug << "_" << std::setw(5) << std::setfill('0') << step << ".log";
   Debug_stream.open(Temp.str(), std::ofstream::out); //needs c++11 oterwise try .c_str()
 }
 
@@ -324,7 +347,7 @@ void cllogger::avg_plog() {
       fast_time += v_totl_fast.at(i);
     }
 
-    ProfAvg_stream.open(Log_path + "Profiling_Average_fast.log", std::ofstream::out | std::ofstream::trunc);
+    ProfAvg_stream.open(s_logPath + "Profiling_Average_fast.log", std::ofstream::out | std::ofstream::trunc);
     ProfAvg_stream << std::setw(25) << std::left << "#process";
     ProfAvg_stream << std::setw(20) << std::right << "total_time";
     ProfAvg_stream << std::setw(20) << std::right << "average_time";
@@ -350,7 +373,7 @@ void cllogger::avg_plog() {
       slow_time += v_totl_slow.at(i);
     }
 
-    ProfAvg_stream.open(Log_path + "Profiling_Average_slow.log", std::ofstream::out | std::ofstream::trunc);
+    ProfAvg_stream.open(s_logPath + "Profiling_Average_slow.log", std::ofstream::out | std::ofstream::trunc);
     ProfAvg_stream << std::setw(25) << std::left << "#process";
     ProfAvg_stream << std::setw(20) << std::right << "total_time";
     ProfAvg_stream << std::setw(20) << std::right << "average_time";
@@ -376,7 +399,7 @@ void cllogger::avg_plog() {
       other_time += v_totl_other.at(i);
     }
 
-    ProfAvg_stream.open(Log_path + "Profiling_Average_other.log", std::ofstream::out | std::ofstream::trunc);
+    ProfAvg_stream.open(s_logPath + "Profiling_Average_other.log", std::ofstream::out | std::ofstream::trunc);
     ProfAvg_stream << std::setw(25) << std::left << "#process";
     ProfAvg_stream << std::setw(20) << std::right << "total_time";
     ProfAvg_stream << std::setw(20) << std::right << "average_time";
