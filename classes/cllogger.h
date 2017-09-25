@@ -29,11 +29,11 @@ class cllogger {
     // 1 log file only
     // 2 screen only
 
-    cllogger(int logleveln = 0, bool profiling=false, std::string path = "./output/logs/",std::string filenamen = "");
+    cllogger(int logleveln, bool profiling, std::string s_outputn);
     ~cllogger();
     int loglevel;
-    std::string Log_path;
-    std::string filename;
+    std::string s_output; // general output folder - other classes will access this
+    std::string s_logPath; // subfolder for logs
     std::ofstream Debug_stream;
     std::ofstream Profiling_stream;
     std::ofstream ProfAvg_stream;

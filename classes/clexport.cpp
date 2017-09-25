@@ -44,10 +44,10 @@ clexport::clexport(clcontext *context_, std::string name_, std::string kname_, p
   logger->log(1, "%s writing files every: %d (%2.0fs)   %d (%2.0fs)   %d (%2.0fs)\n",s_name.c_str(), t_img, img_every, t_ts, ts_every, t_vp, vp_every);
 
   int ret; // just to shut up warnings from the compiler
-  s_img_path = "./output/img/" + s_name;
+  s_img_path = logger->s_output+"img/" + s_name;
   if (img) ret = system(("mkdir -p " + s_img_path).c_str());
 
-  s_ts_path = "./output/timeseries/";
+  s_ts_path = logger->s_output+"timeseries/";
   if (ts) {
     ret = system(("mkdir -p " + s_ts_path).c_str());
     s_ts_path += s_name + ".ts";
@@ -58,7 +58,7 @@ clexport::clexport(clcontext *context_, std::string name_, std::string kname_, p
     ts_stream << std::setprecision(10);
   }
 
-  s_vp_path = "./output/verticalprofiles/" + s_name;
+  s_vp_path = logger->s_output+"verticalprofiles/" + s_name;
   if (vp) ret = system(("mkdir -p " + s_vp_path).c_str());
 
   be_export_images.push_back(new clbuffer(context, "be_" + s_name, kx, ky, kz));

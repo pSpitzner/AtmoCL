@@ -26,6 +26,7 @@ int main(int argc, char * argv[]) {
   // std::string s_profilePath = "./profiles/data125";
   std::string s_profilePath = "./profiles/dycoms_2";
   std::string s_statePath = "";
+  std::string s_output = "";
   int timescheme = 1;
   int device = 0;
 
@@ -38,6 +39,8 @@ int main(int argc, char * argv[]) {
       s_profilePath = (argv[i+1]);
     } else if (std::string(argv[i]) == "-b") {
       s_statePath = (argv[i+1]);
+    } else if (std::string(argv[i]) == "-o") {
+      s_output = (argv[i+1]);
     } else if (std::string(argv[i]) == "-rk3") {
       timescheme = 0;
     } else if (std::string(argv[i]) == "-mis") {
@@ -50,7 +53,7 @@ int main(int argc, char * argv[]) {
   asystem *sys;
 
 
-  logger  = new cllogger(1, profiling_enabled);
+  logger  = new cllogger(1, profiling_enabled, s_output);
   context = new clcontext(logger, device, profiling_enabled);
   sys     = new asystem(context, logger, timescheme);
   long long ns;
@@ -71,7 +74,7 @@ int main(int argc, char * argv[]) {
       }
     logger->log(0, "Equilibrating...");
     sys->equilibrate();
-    sys->write_state("./snapshots/equil");
+    sys->write_state("equil");
   } else {
     logger->log(0, "Reading state files from %s\n", s_statePath.c_str());
     sys->read_state(s_statePath);
