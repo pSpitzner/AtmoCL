@@ -656,11 +656,12 @@ void asystem::equilibrate() {
         // write_files(frame_index*3+s);
       }
     }
-    write_files(frame_index);
+    // write_files(frame_index);
     frame_index += 1;
   }
   kf_microphys->bind("phys", (unsigned int)(1023));
   logger->log(2,"\rEquilibrating  -  done\n");
+  frame_index = 0;
 }
 
 void asystem::mis_step() {
