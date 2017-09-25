@@ -660,12 +660,13 @@ void asystem::write_files(int step) {
 }
 
 void asystem::write_state(std::string s_filename) {
-  logger->log(0, "Writing states to %s\n", s_filename.c_str());
-  int ret = system(("mkdir -p " + s_filename).c_str());
-  bf_scalars_vc_a[0]->write_raw(s_filename+"/s0.dat");
-  bf_scalars_vc_a[1]->write_raw(s_filename+"/s1.dat");
-  bf_scalars_vc_a[2]->write_raw(s_filename+"/s2.dat");
-  bf_momenta_fc_a   ->write_raw(s_filename+"/m0.dat");
+  std::string s_filePath = logger->s_output+"snapshots/"+s_filename;
+  logger->log(0, "\nWriting states to %s\n", s_filePath.c_str());
+  int ret = system(("mkdir -p " + s_filePath).c_str());
+  bf_scalars_vc_a[0]->write_raw(s_filePath+"/s0.dat");
+  bf_scalars_vc_a[1]->write_raw(s_filePath+"/s1.dat");
+  bf_scalars_vc_a[2]->write_raw(s_filePath+"/s2.dat");
+  bf_momenta_fc_a   ->write_raw(s_filePath+"/m0.dat");
 }
 
 void asystem::read_state(std::string s_filename) {
@@ -838,7 +839,7 @@ void asystem::mis_step(int damping, int kx, int ky, int kz) {
   write_files(frame_index);
   if (fmod(frame_index*par.dT, 3600.0) == 0) {
     int hour = (int)(frame_index*par.dT/3600.0);
-    write_state("./snapshots/"+std::to_string(hour)+"h");
+    write_state(std::to_string(hour)+"h");
   }
   frame_index += 1;
 }
