@@ -18,17 +18,24 @@ sudo apt-get install libgd-dev
 
 - Depending on your hardware you have to install OpenCL drivers according to your vendor. Coming Soon.
 
-## Compiling the Source
-Open a terminal, change into the ```AtmoCL``` folder and type
+## Downloading and Compiling
+Either download through the browser or
 
 ```
+git clone https://github.com/pSpitzner/AtmoCL.git
+```
+
+Change into the ```AtmoCL``` folder and
+
+```
+cd AtmoCL
 make
 ```
 
-to get the ```executable``` if successful. Possibly you have to adjust the path to linked libraries and includes, depending on where you installed OpenCL and libgd. Note that this is platform dependant, edit the right ones.
+to get the ```executable```. Possibly you have to adjust the path to linked libraries and includes, depending on where you installed OpenCL and libgd. Note that this is platform dependant, edit the right ones.
 
 ## Running the Program
-If you have a look into the ```run``` file, you will see that this just calls the ```executable``` for and does some cleanup work. Start the program using
+If you have a look into the ```run``` file, you will see that this just calls the ```executable``` and does some cleanup work. Start the program using
 
 ```
 ./run
@@ -46,13 +53,13 @@ Available CL Devices (choose via '-dev i')
   Apple - OpenCL 1.2 (Nov  1 2016 21:34:57)
 ```
 
-In this example, too choose the GPU one would type
+In this example, to choose the GPU one would type
 
 ```
 ./run -dev 1
 ```
 
-If you run for the first time, a snapshot of the initial testcase profile will be created after equilibrating and saved in a snapshots folder. Such profiles can be imported using the ```-b``` argument.
+If you run for the first time, a snapshot of the initial profile will be created after equilibrating (and every full hour) and saved in a snapshots folder. Such profiles can be imported using the ```-b``` argument.
 
 ```
 ./run -dev 1 -b ./snapshots/equil/
@@ -107,3 +114,17 @@ img_every = 60.0;   // write image files every 60 seconds
 ts_every  = 60.0;   // make an entry into timeseries
 vp_every  = 120.0;  // write a vertical profile every 120s
 ```
+
+#### Branches and Test Cases
+Presently, the repo contains the following branches: ```cell```, ```isdac``` and ```wrf```, the former are test cases and the latter is our first draft to import wrf files.
+So far, the [cell](https://doi.org/10.1175/1520-0493(1982)110<0504:TDONSC>2.0.CO;2) works as expected.
+[Isdac](http://dx.doi.org/10.1002/2013MS000282) produces qualitatively matching results but needs further work. (```N_i``` isnt fixed to desired value yet, simulation includes ice microphysics at all times).
+
+To run a test case, checkout the branch, make and run, i.e.
+```
+git checkout cell
+make clean; make
+./run
+```
+
+
