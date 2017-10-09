@@ -520,7 +520,7 @@ asystem::asystem(clcontext *contextn, cllogger *loggern, int timescheme) {
   v_exporter.push_back(new clexport(context, "XZ_n_s",   "./kernels/exporter/ke_n_s.cl",   par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,1,0  ));
 
   //cutplanes XY (top view)
-  int z0 = 0; while(par.dz*z0<600.0)z0++;
+  int z0 = 0; while (par.dz*z0<600.0)z0++;
   v_exporter.push_back(new clexport(context, "XY_w_600m",   "./kernels/exporter/ke_w.cl",   par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 2, z0,  1,0,0  ));
   v_exporter.push_back(new clexport(context, "XY_uv_ground",   "./kernels/exporter/ke_uv.cl",   par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 2, 1,  1,0,0  ));
 
@@ -740,8 +740,10 @@ void asystem::mis_step(int damping, int kx, int ky, int kz) {
   write_files(frame_index);
   if (fmod(frame_index*par.dT, 3600.0) == 0) {
     int hour = (int)(frame_index*par.dT/3600.0);
-    if (hour==2) kf_microphys->bind("phys", (unsigned int)(2047)); // enable all after 2hours, according to paper
-    logger->log(2, "\nEnabeling Ice physics now\n");
+    if (hour==2) {
+      kf_microphys->bind("phys", (unsigned int)(2047)); // enable all after 2hours, according to paper
+      logger->log(2, "\nEnabeling Ice physics now\n");
+    }
     write_state(std::to_string(hour)+"h");
   }
   frame_index += 1;
