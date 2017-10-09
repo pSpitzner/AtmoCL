@@ -40,7 +40,7 @@ __kernel void ke_int_rho_s_kernel_main(__private parameters par,
     rho_s/=(float)(par.sz);
   }
 
-  float ref_s = 5e-8f;
+  float ref_s = 2e-6f;
 
   float a_s = max(0.0f, (rho_s < ref_s ? rho_s/ref_s*255.0f : 255.0f));
 
