@@ -24,10 +24,10 @@ __kernel void ke_int_cloud_kernel_main(__private parameters par,
   // YZ
   if (dim == 0) {
     for (int x = 0; x < par.sx; x++) {
-      rho_c += read_f4(x, pos.y, pos.z, b_source_scalars_0).s3*par.dz;
-      rho_r += read_f4(x, pos.y, pos.z, b_source_scalars_1).s0*par.dz;
-      rho_i += read_f4(x, pos.y, pos.z, b_source_scalars_2).s0*par.dz;
-      rho_s += read_f4(x, pos.y, pos.z, b_source_scalars_2).s1*par.dz;
+      rho_c += read_f4(x, pos.y, pos.z, b_source_scalars_0).s3;
+      rho_r += read_f4(x, pos.y, pos.z, b_source_scalars_1).s0;
+      rho_i += read_f4(x, pos.y, pos.z, b_source_scalars_2).s0;
+      rho_s += read_f4(x, pos.y, pos.z, b_source_scalars_2).s1;
     }
     rho_c /= (float)(par.sx);
     rho_r /= (float)(par.sx);
@@ -37,10 +37,10 @@ __kernel void ke_int_cloud_kernel_main(__private parameters par,
   // XZ
   else if (dim == 1) {
     for (int y = 0; y < par.sy; y++) {
-      rho_c += read_f4(pos.x, y, pos.z, b_source_scalars_0).s3*par.dz;
-      rho_r += read_f4(pos.x, y, pos.z, b_source_scalars_1).s0*par.dz;
-      rho_i += read_f4(pos.x, y, pos.z, b_source_scalars_2).s0*par.dz;
-      rho_s += read_f4(pos.x, y, pos.z, b_source_scalars_2).s1*par.dz;
+      rho_c += read_f4(pos.x, y, pos.z, b_source_scalars_0).s3;
+      rho_r += read_f4(pos.x, y, pos.z, b_source_scalars_1).s0;
+      rho_i += read_f4(pos.x, y, pos.z, b_source_scalars_2).s0;
+      rho_s += read_f4(pos.x, y, pos.z, b_source_scalars_2).s1;
     }
     rho_c /= (float)(par.sy);
     rho_r /= (float)(par.sy);
