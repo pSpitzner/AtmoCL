@@ -21,21 +21,21 @@ __kernel void ke_int_rho_c_kernel_main(__private parameters par,
   // YZ
   if (dim == 0) {
     for (int x = 0; x < par.sx; x++) {
-      rho_c += read_f4(x, pos.y, pos.z, b_source_scalars_0).s3*par.dz;
+      rho_c += read_f4(x, pos.y, pos.z, b_source_scalars_0).s3;
     }
     rho_c/=(float)(par.sx);
   }
   // XZ
   else if (dim == 1) {
     for (int y = 0; y < par.sy; y++) {
-      rho_c += read_f4(pos.x, y, pos.z, b_source_scalars_0).s3*par.dz;
+      rho_c += read_f4(pos.x, y, pos.z, b_source_scalars_0).s3;
     }
     rho_c/=(float)(par.sy);
   }
   // XY
   else if (dim == 2) {
     for (int z = 0; z < par.sz; z++) {
-      rho_c += read_f4(pos.x, pos.y, z, b_source_scalars_0).s3*par.dz;
+      rho_c += read_f4(pos.x, pos.y, z, b_source_scalars_0).s3;
     }
     rho_c/=(float)(par.sz);
   }
