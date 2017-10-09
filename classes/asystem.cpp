@@ -416,7 +416,7 @@ asystem::asystem(clcontext *contextn, cllogger *loggern, int timescheme) {
   kf_microphys->bind("bRhs_mp_vc_0",      b_temp[0]);
   kf_microphys->bind("bRhs_mp_vc_1",      b_temp[1]);
   kf_microphys->bind("bRhs_mp_vc_2",      b_temp[2]); // ice
-  kf_microphys->bind("phys",              (unsigned int)(1023)); // enable all per default
+  kf_microphys->bind("phys",              (unsigned int)(2047)); // enable all per default
 
   for (int f = 0; f < 3; f++) {
     kf_step_scalars[0][f]->bind("bf_scalars_vc_a",     bf_scalars_vc_a[f]);
@@ -682,7 +682,7 @@ void asystem::equilibrate() {
     // write_files(frame_index);
     frame_index += 1;
   }
-  kf_microphys->bind("phys", (unsigned int)(1023));
+  kf_microphys->bind("phys", (unsigned int)(2047));
   logger->log(2,"\rEquilibrating  -  done\n");
   frame_index = 0;
 }

@@ -691,6 +691,23 @@ void ice_deposition(parameters par, position pos, state st, float8 *cRhs, float4
 
 }
 
+void isdac_test_nudging(parameters par, position pos, state st, float8 *cRhs, float4 *cRhs_ice) {
+  float S_i=((st.rho_v*par.rv*st.T/st.svi)-1.0f);                //supersaturation wrt. ice
+  float ql = st.rho_l/st.rho_d;
+  float dn_i = 0.0f;
+  float n_i_ref = 1000.0f;
+  float forcing = 0.0f;
+  float limiter = 0.0f;
+  if (S_i >= 0.05f || ql >= 0.000001f) {
+    forcing = n_i_ref-st.n_i;
+    limiter = max(st.n_d, 0.0f);
+    dn_i  = cloudRelaxation*(forcing+limiter-sqrt(forcing*forcing+limiter*limiter));
+  }
+
+  (*cRhs).s5 += -dn_i;
+  (*cRhs_ice).s2 += dn_i;
+
+}
 
 
 __kernel void kf_microphys_kernel_main(__private parameters par,
@@ -734,16 +751,17 @@ __kernel void kf_microphys_kernel_main(__private parameters par,
   float4 cRhs_ice = (float4)(0.0f);
 
   // using bitwise and to enable/disable functions. sum up the integers of the ones to be enabled
-  if (phys &   1) nucleation(par, pos, st, st_zr, &cRhs);
-  if (phys &   2) condensation(par, pos, st, &cRhs);
-  if (phys &   4) autoconversion_and_selfcollection_cloud_rain(par, pos, st, &cRhs);
-  if (phys &   8) rain_sedimentation_and_subsidence(par, pos, st, st_zr, st_zl, &cRhs);
-  if (phys &  16) rain_evaporation(par, pos, st, &cRhs);
-  if (phys &  32) ice_freeze_cloud(par, pos, st, &cRhs, &cRhs_ice);
-  if (phys &  64) selfcollection_ice_to_snow(par, pos, st, &cRhs, &cRhs_ice);
-  if (phys & 128) ice_melt(par, pos, st, &cRhs, &cRhs_ice);
-  if (phys & 256) snow_sedimentation(par, pos, st, st_zr, &cRhs, &cRhs_ice);
-  if (phys & 512) ice_deposition(par, pos, st, &cRhs, &cRhs_ice);
+  if (phys &    1) nucleation(par, pos, st, st_zr, &cRhs);
+  if (phys &    2) condensation(par, pos, st, &cRhs);
+  if (phys &    4) autoconversion_and_selfcollection_cloud_rain(par, pos, st, &cRhs);
+  if (phys &    8) rain_sedimentation_and_subsidence(par, pos, st, st_zr, st_zl, &cRhs);
+  if (phys &   16) rain_evaporation(par, pos, st, &cRhs);
+  if (phys &   32) ice_freeze_cloud(par, pos, st, &cRhs, &cRhs_ice);
+  if (phys &   64) selfcollection_ice_to_snow(par, pos, st, &cRhs, &cRhs_ice);
+  if (phys &  128) ice_melt(par, pos, st, &cRhs, &cRhs_ice);
+  if (phys &  256) snow_sedimentation(par, pos, st, st_zr, &cRhs, &cRhs_ice);
+  if (phys &  512) ice_deposition(par, pos, st, &cRhs, &cRhs_ice);
+  if (phys & 1024) isdac_test_nudging(par, pos, st, &cRhs, &cRhs_ice);
 
   // bulk(par, c, &cRhs);
   // printf("%f %f %f %f\n", cRhs_ice.s0, cRhs_ice.s1, cRhs_ice.s2, cRhs_ice.s3);
