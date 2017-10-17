@@ -670,8 +670,8 @@ void ice_deposition(parameters par, position pos, state st, float8 *cRhs, float4
   float S_i=((st.rho_v*par.rv*st.T/st.svi)-1.0f);                //supersaturation wrt. ice
   if (st.rho_i>0.0f && st.n_i > 0.0f && st.T < par.tr) {
     x_i=min(max(st.rho_i/st.n_i, pt_ice.x_min),pt_ice.x_max);  //mass of ice [kg]
-    D_i=pow(pt_ice.a_geo*x_i, pt_ice.b_geo);                   //diameter-mass relation [m]
-    v_i=pow(pt_ice.a_vel*x_i, pt_ice.b_vel)*sqrt(par.rr/st.rho);     //velocity-mass relation [m s^-1]
+    D_i=pt_ice.a_geo*pow(x_i, pt_ice.b_geo);                   //diameter-mass relation [m]
+    v_i=pt_ice.a_vel*pow(x_i, pt_ice.b_vel)*sqrt(par.rr/st.rho);     //velocity-mass relation [m s^-1]
     G_iv=1.0f/(((par.rv*st.T)/(st.svi*D_V))+(par.lrs0/(K_T*st.T))*((par.lrs0/(par.rv*st.T))-1.0f));
     N_Re=(v_i*D_i)/nu_l;                                       //Reynoldsnumber
     F_vi=pt_ice.a_ven+pt_ice.b_ven*pow(N_sc, n_f)*pow(N_Re, m_f);
