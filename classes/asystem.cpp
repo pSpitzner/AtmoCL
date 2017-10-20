@@ -539,6 +539,7 @@ asystem::asystem(clcontext *contextn, cllogger *loggern, int timescheme) {
   v_exporter.push_back(new clexport(context, "VP_ql",    "./kernels/exporter/ke_int_ql.cl",par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  0,0,1  ));
   v_exporter.push_back(new clexport(context, "VP_qt",    "./kernels/exporter/ke_int_qt.cl",par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  0,0,1  ));
   v_exporter.push_back(new clexport(context, "VP_qi",    "./kernels/exporter/ke_int_qi.cl",par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  0,0,1  ));
+  v_exporter.push_back(new clexport(context, "VP_ni",    "./kernels/exporter/ke_int_ni.cl",par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  0,0,1  ));
   v_exporter.push_back(new clexport(context, "VP_thetal","./kernels/exporter/ke_int_thetal.cl",par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  0,0,1  ));
   v_exporter.push_back(new clexport(context, "VP_theta","./kernels/exporter/ke_int_theta.cl",par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  0,0,1  ));
   v_exporter.push_back(new clexport(context, "VP_humidity","./kernels/exporter/ke_int_humidity.cl",par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  0,0,1  ));
