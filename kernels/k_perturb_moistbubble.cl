@@ -4,18 +4,23 @@ float rhovs(float T, parameters par) {
   return sv/par.rv/T;
 }
 
-__kernel void k_init_scalars_bubble_kernel_main(__private parameters par,
-                                                __write_only image3d_t bf_scalars_vc_a_0,
-                                                __write_only image3d_t bf_scalars_vc_a_1,
-                                                __read_only image3d_t bf_scalars_vc_b_0,
-                                                __read_only image3d_t bf_scalars_vc_b_1)
+__kernel void k_perturb_moistbubble_kernel_main(__private parameters par,
+                                                __read_only image3d_t b_source_scalars_0,
+                                                __read_only image3d_t b_source_scalars_1,
+                                                __read_only image3d_t b_source_scalars_2,
+                                                __read_only image3d_t b_source_momenta,
+                                                __write_only image3d_t b_target_momenta,
+                                                __write_only image3d_t b_target_scalars_0,
+                                                __write_only image3d_t b_target_scalars_1,
+                                                __write_only image3d_t b_target_scalars_2)
 {
   position pos = get_pos_bc(par, get_global_id(0), get_global_id(1), get_global_id(2));
 
   float len, r, offset, T;
   float4 arg;
 
-  float8 c = read_f8(pos.x, pos.y, pos.z, bf_scalars_vc_b_0, bf_scalars_vc_b_1);
+  float8 c = read_f8(pos.x, pos.y, pos.z, b_source_scalars_0, b_source_scalars_1);
+  float4 cice = read_f4(pos.x, pos.y, pos.z, b_source_scalars_2);
   float rhosig = c.s0;
   float rho    = c.s1;
   float rho_v  = c.s2;
@@ -31,7 +36,7 @@ __kernel void k_init_scalars_bubble_kernel_main(__private parameters par,
   r = 2000.0f;
   arg.s0 = ((pos.x+0.5f)*par.dx-par.sx*0.5f*par.dx)/r;
   arg.s1 = ((pos.y+0.5f)*par.dy-par.sy*0.5f*par.dy)/r;
-  arg.s2 = ((pos.z+0.5f)*par.dz-r                )/r;
+  arg.s2 = ((pos.z+0.5f)*par.dz-r                 )/r;
   arg.s3 = 0.0f;
 
   float theta_vp;
@@ -78,11 +83,15 @@ __kernel void k_init_scalars_bubble_kernel_main(__private parameters par,
   output.s2 = rho_v;      // rho_vapour
   output.s3 = rho_l;      // rho_cloud_liquid, (old) bulk: rho_liquid
 
-  output.s4 = 0.0f;       // rho_rain_liquid
-  output.s5 = 600.0e6f;   // n_dirt
-  output.s6 = 0.0f;       // n_cloud
-  output.s7 = 0.0f;       // n_rain
+  output.s4 = c.s4;       // rho_rain_liquid
+  output.s5 = c.s5;       // n_dirt
+  output.s6 = c.s6;       // n_cloud
+  output.s7 = c.s7;       // n_rain
 
-  write_f8(pos.x, pos.y, pos.z, output, bf_scalars_vc_a_0, bf_scalars_vc_a_1);
+  write_f8(pos.x, pos.y, pos.z, output, b_target_scalars_0, b_target_scalars_1);
+  write_f4(pos.x, pos.y, pos.z, cice, b_target_scalars_2);
+
+  float4 mom = read_f4(pos.x, pos.y, pos.z, b_source_momenta);
+  write_f4(pos.x, pos.y, pos.z, mom, b_target_momenta);
 }
 

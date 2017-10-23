@@ -23,9 +23,9 @@ __kernel void k_nesting_moistbubble_kernel_main(__private parameters par,
   float4 cice, mom;
   state st;
   float theta_e, theta_e_prof;
-  float q_t, q_t_prof;
-  float q_v, q_v_prof;
-  float q_l, q_l_prof;
+  float r_t, r_t_prof;
+  float r_v, r_v_prof;
+  float r_l, r_l_prof;
   float z;
   float pd; // partial pressure of dry air
 
@@ -34,23 +34,23 @@ __kernel void k_nesting_moistbubble_kernel_main(__private parameters par,
   mom  = read_f4(pos.x, pos.y, pos.z, b_source_momenta);
   st = init_state_with_ice(par, c, cice);
 
-  q_t = (st.rho_l+st.rho_v)/st.rho;
-  q_v = (st.rho_v)/st.rho;
-  q_l = q_t - q_v;
+  r_t = (st.rho_l+st.rho_v)/st.rho_d;
+  r_v = (st.rho_v)/st.rho_d;
+  r_l = r_t - r_v;
 
   pd = st.rho_d*par.rd*st.T; // ?
-  theta_e = st.T*pow(pd/par.pr,-par.rd/(par.cpd+par.cpl*q_t))*exp(par.lre0*q_v/(par.cpd+par.cpl*q_t));
+  theta_e = st.T*pow(pd/par.pr,-par.rd/(par.cpd+par.cpl*r_t))*exp(par.lre0*r_v/(par.cpd+par.cpl*r_t));
 
   float theta, theta_l;
   theta = exp((st.sig+st.rml*log(par.pr))/st.cpml);
   theta_l = theta - (theta/st.T*par.lr/st.cpml)*st.rho_l/st.rho;
 
   theta_e_prof = 320.0f;
-  q_t_prof = 0.02f;
-  q_v_prof = rhovs(st.T, par)/st.rho;
-  q_l_prof = q_t_prof - q_v_prof;
+  r_t_prof = 0.02f;
+  r_v_prof = rhovs(st.T, par)/st.rho;
+  r_l_prof = r_t_prof - r_v_prof;
 
-  // if (pos.x == par.sx/2 && pos.z == 0) printf("%d %g %g (%g) |%g (%g) %g (%g) | %g | %g\n", pos.z, theta, theta_e, theta_e_prof, q_t, q_t_prof, q_v, q_v_prof, st.P, offset);
+  // if (pos.x == par.sx/2 && pos.z == 0) printf("%d %g %g (%g) |%g (%g) %g (%g) | %g | %g\n", pos.z, theta, theta_e, theta_e_prof, r_t, r_t_prof, r_v, r_v_prof, st.P, offset);
 
   // decrease damping over time
   float ds = (1.0f - 0.3f*exp(-(float)(damping_strength)/20.0f));
@@ -59,8 +59,8 @@ __kernel void k_nesting_moistbubble_kernel_main(__private parameters par,
   // forcing
   // sig
   c.s0 += (theta_e_prof-theta_e)*1e-0f*ds;
-  c.s2 += (q_v_prof-q_v)*1e-2f*ds;
-  c.s3 += (q_l_prof-q_l)*1e-2f*ds;
+  c.s2 += (r_v_prof-r_v)*1e-2f*ds;
+  c.s3 += (r_l_prof-r_l)*1e-2f*ds;
 
   // fix density at ground according to reference pressure
   if (pos.z == 0) c.s1 += (par.pr - st.P)*1.0e-7f*ds;

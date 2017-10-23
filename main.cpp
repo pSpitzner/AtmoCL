@@ -96,6 +96,8 @@ int main(int argc, char * argv[]) {
     logger->log(2,"  -  %d/%d",i,iterations);
   }
 
+  sys->perturb();
+
   double seconds_taken = double(logger->end_last_timer())/1.0E9;
   int hours_taken = int(seconds_taken/3600.0);
   seconds_taken = fmod(seconds_taken,3600.0);
