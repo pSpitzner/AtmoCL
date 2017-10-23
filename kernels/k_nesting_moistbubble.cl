@@ -17,15 +17,13 @@ __kernel void k_nesting_moistbubble_kernel_main(__private parameters par,
 {
   position pos = get_pos_bc(par, get_global_id(0), get_global_id(1), get_global_id(2));
 
-
-
-
   float8 c;
   float4 cice, mom;
   state st;
   float theta_e, theta_e_prof;
   float q_t, q_t_prof;
   float q_v, q_v_prof;
+  float q_l, q_l_prof;
   float z;
   float pd; // partial pressure of dry air
 
@@ -36,6 +34,7 @@ __kernel void k_nesting_moistbubble_kernel_main(__private parameters par,
 
   q_t = (st.rho_l+st.rho_v)/st.rho;
   q_v = (st.rho_v)/st.rho;
+  q_l = q_t - q_v;
 
   pd = st.rho_d*par.rd*st.T; // ?
   theta_e = st.T*pow(pd/par.pr,-par.rd/(par.cpd+par.cpl*q_t))*exp(par.lre0*q_v/(par.cpd+par.cpl*q_t));
@@ -44,9 +43,10 @@ __kernel void k_nesting_moistbubble_kernel_main(__private parameters par,
   theta = exp((st.sig+st.rml*log(par.pr))/st.cpml);
   theta_l = theta - (theta/st.T*par.lr/st.cpml)*st.rho_l/st.rho;
 
-  theta_e_prof = 320.0;
-  q_t_prof = 0.02;
+  theta_e_prof = 320.0f;
+  q_t_prof = 0.02f;
   q_v_prof = rhovs(st.T, par)/st.rho;
+  q_l_prof = q_t_prof - q_v_prof;
 
   float len, r, offset;
   float4 arg;
@@ -54,7 +54,7 @@ __kernel void k_nesting_moistbubble_kernel_main(__private parameters par,
   r = 2000.0f;
   arg.s0 = ((pos.x+0.5f)*par.dx-par.sx*0.5f*par.dx)/r;
   arg.s1 = ((pos.y+0.5f)*par.dy-par.sy*0.5f*par.dy)/r;
-  arg.s2 = ((pos.z+0.5f)*par.dz-r                )/r;
+  arg.s2 = ((pos.z+0.5f)*par.dz-r                 )/r;
   arg.s3 = 0.0f;
 
   offset = 0.0f; // 0.0 < offset < 2.0
@@ -63,7 +63,7 @@ __kernel void k_nesting_moistbubble_kernel_main(__private parameters par,
   theta_e = theta_e*(1.0f+offset/300.0f);
   theta_e_prof = theta_e_prof*(1.0f+offset/300.0f);
 
-  // if (pos.x == par.sx/2) printf("%d %g %g (%g) |%g (%g) %g (%g) | %g | %g\n", pos.z, theta, theta_e, theta_e_prof, q_t, q_t_prof, q_v, q_v_prof, st.P, offset);
+  // if (pos.x == par.sx/2 && pos.z == 0) printf("%d %g %g (%g) |%g (%g) %g (%g) | %g | %g\n", pos.z, theta, theta_e, theta_e_prof, q_t, q_t_prof, q_v, q_v_prof, st.P, offset);
 
   // decrease damping over time
   float ds = (1.0f - 0.3f*exp(-(float)(damping_strength)/20.0f));
@@ -72,8 +72,8 @@ __kernel void k_nesting_moistbubble_kernel_main(__private parameters par,
   // forcing
   // sig
   c.s0 += (theta_e_prof-theta_e)*1e-0f*ds;
-  c.s1 += (q_t_prof-q_t)*1e-1f*ds;
-  c.s2 += (q_v_prof-q_v)*1e-2f*ds; // this guy is super sensitive!
+  c.s2 += (q_v_prof-q_v)*1e-2f*ds;
+  c.s3 += (q_l_prof-q_l)*1e-2f*ds;
 
   // fix density at ground according to reference pressure
   if (pos.z == 0) c.s1 += (par.pr - st.P)*1.0e-7f*ds;

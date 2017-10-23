@@ -399,7 +399,7 @@ asystem::asystem(clcontext *contextn, cllogger *loggern, int timescheme) {
   kf_microphys->bind("bRhs_mp_vc_0",      b_temp[0]);
   kf_microphys->bind("bRhs_mp_vc_1",      b_temp[1]);
   kf_microphys->bind("bRhs_mp_vc_2",      b_temp[2]); // ice
-  kf_microphys->bind("phys",              (unsigned int)(2)); // only condensation for moist heatbubble
+  kf_microphys->bind("phys",              (unsigned int)(0)); // only condensation for moist heatbubble
   kf_microphys->check_bindings();
 
   for (int f = 0; f < 3; f++) {
@@ -496,6 +496,7 @@ asystem::asystem(clcontext *contextn, cllogger *loggern, int timescheme) {
   v_exporter.push_back(new clexport(context, "XZ_rho_r", "./kernels/exporter/ke_rho_r.cl", par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,1,0  ));
   v_exporter.push_back(new clexport(context, "XZ_rho_i", "./kernels/exporter/ke_rho_i.cl", par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,1,1  ));
   v_exporter.push_back(new clexport(context, "XZ_rho_s", "./kernels/exporter/ke_rho_s.cl", par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,1,1  ));
+  v_exporter.push_back(new clexport(context, "XZ_theta_e", "./kernels/exporter/ke_theta_e.cl", par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,1,1  ));
 
   v_exporter.push_back(new clexport(context, "XZ_n_c",   "./kernels/exporter/ke_n_c.cl",   par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,1,0  ));
   v_exporter.push_back(new clexport(context, "XZ_n_r",   "./kernels/exporter/ke_n_r.cl",   par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,1,0  ));
@@ -613,7 +614,7 @@ void asystem::equilibrate() {
   int ky = par.sy;
   int kz = par.sz;
 
-  kf_microphys->bind("phys", (unsigned int)(2)); // only condensation for moist heatbubble
+  kf_microphys->bind("phys", (unsigned int)(0)); // only condensation for moist heatbubble
 
   int equil_steps = 5000;
 
