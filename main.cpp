@@ -81,6 +81,8 @@ int main(int argc, char * argv[]) {
     sys->read_state(s_statePath);
   }
 
+  sys->perturb();
+
   logger->start_new_timer();
   logger->log(2, "Estimating remaining time...\n");
 
@@ -95,8 +97,6 @@ int main(int argc, char * argv[]) {
     logger->log_estimated_time(seconds, i, iterations);
     logger->log(2,"  -  %d/%d",i,iterations);
   }
-
-  sys->perturb();
 
   double seconds_taken = double(logger->end_last_timer())/1.0E9;
   int hours_taken = int(seconds_taken/3600.0);
