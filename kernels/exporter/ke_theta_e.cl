@@ -33,7 +33,7 @@ __kernel void ke_theta_e_kernel_main(__private parameters par,
   state st;
 
   float theta_e = 0.0f;
-  float pd, q_t, q_v;
+  float pd, r_t, r_v;
 
   // YZ
   if      (dim == 0) {
@@ -41,9 +41,9 @@ __kernel void ke_theta_e_kernel_main(__private parameters par,
     c_ice = read_f4(pos.x+ref, pos.y, pos.z, b_source_scalars_2);
     st = init_state_with_ice(par, c, c_ice);
     pd = st.rho_d*par.rd*st.T;
-    q_t = (st.rho_l+st.rho_v)/st.rho;
-    q_v = (st.rho_v)/st.rho;
-    theta_e = st.T*pow(pd/par.pr,-par.rd/(par.cpd+par.cpl*q_t))*exp(par.lre0*q_v/(par.cpd+par.cpl*q_t));
+    r_t = (st.rho_l+st.rho_v)/st.rho_d;
+    r_v = (st.rho_v)/st.rho_d;
+    theta_e = st.T*pow(pd/par.pr,-par.rd/(par.cpd+par.cpl*r_t))*exp(par.lre0*r_v/(par.cpd+par.cpl*r_t));
   }
   // XZ
   else if (dim == 1) {
@@ -51,9 +51,9 @@ __kernel void ke_theta_e_kernel_main(__private parameters par,
     c_ice = read_f4(pos.x, pos.y+ref, pos.z, b_source_scalars_2);
     st = init_state_with_ice(par, c, c_ice);
     pd = st.rho_d*par.rd*st.T;
-    q_t = (st.rho_l+st.rho_v)/st.rho;
-    q_v = (st.rho_v)/st.rho;
-    theta_e = st.T*pow(pd/par.pr,-par.rd/(par.cpd+par.cpl*q_t))*exp(par.lre0*q_v/(par.cpd+par.cpl*q_t));
+    r_t = (st.rho_l+st.rho_v)/st.rho_d;
+    r_v = (st.rho_v)/st.rho_d;
+    theta_e = st.T*pow(pd/par.pr,-par.rd/(par.cpd+par.cpl*r_t))*exp(par.lre0*r_v/(par.cpd+par.cpl*r_t));
   }
 
   // if (pos.x == par.sx/2) printf("%d %d %d %g\n", pos.x, pos.y, pos.z, theta_e);
