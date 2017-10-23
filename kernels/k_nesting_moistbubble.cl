@@ -57,7 +57,6 @@ __kernel void k_nesting_moistbubble_kernel_main(__private parameters par,
   float dm = (1.0f - 0.3f*exp(-(float)(damping_strength)/2000.0f));
 
   // forcing
-  // sig
   c.s0 += (theta_e_prof-theta_e)*1e-0f*ds;
   c.s2 += (r_v_prof-r_v)*1e-2f*ds;
   c.s3 += (r_l_prof-r_l)*1e-2f*ds;
