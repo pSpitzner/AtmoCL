@@ -18,13 +18,13 @@ __private float4 map_rgba(float var, float offset, float factor) {
 }
 
 __kernel void ke_theta_e_kernel_main(__private parameters par,
-                                         __private uint ref,
-                                         __private uint dim,
-                                         __read_only image3d_t b_source_scalars_0,
-                                         __read_only image3d_t b_source_scalars_1,
-                                         __read_only image3d_t b_source_scalars_2,
-                                         __read_only image3d_t b_source_momenta,
-                                         __write_only image3d_t b_target)
+                                     __private uint ref,
+                                     __private uint dim,
+                                     __read_only image3d_t b_source_scalars_0,
+                                     __read_only image3d_t b_source_scalars_1,
+                                     __read_only image3d_t b_source_scalars_2,
+                                     __read_only image3d_t b_source_momenta,
+                                     __write_only image3d_t b_target)
 {
   position pos = get_pos_bc(par, get_global_id(0), get_global_id(1), get_global_id(2));
 
@@ -32,7 +32,8 @@ __kernel void ke_theta_e_kernel_main(__private parameters par,
   float4 c_ice = (float4)(0.0f);
   state st;
 
-  float theta_e, pd, q_t, q_v;
+  float theta_e = 0.0f;
+  float pd, q_t, q_v;
 
   // YZ
   if      (dim == 0) {
@@ -55,7 +56,9 @@ __kernel void ke_theta_e_kernel_main(__private parameters par,
     theta_e = st.T*pow(pd/par.pr,-par.rd/(par.cpd+par.cpl*q_t))*exp(par.lre0*q_v/(par.cpd+par.cpl*q_t));
   }
 
+  // if (pos.x == par.sx/2) printf("%d %d %d %g\n", pos.x, pos.y, pos.z, theta_e);
+
   float4 rgba;
-  rgba = map_rgba(theta_e, -320.0f, 1.0e3f);
+  rgba = map_rgba(theta_e, -320.0f, 0.5f);
   write_f4(pos.x, pos.y, pos.z, rgba, b_target);
 }

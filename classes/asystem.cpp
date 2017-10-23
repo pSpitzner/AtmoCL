@@ -610,8 +610,8 @@ void asystem::init_from_file(std::string s_filePath) {
 
 void asystem::equilibrate() {
   // custom mis step to create initial profile with hydrostaic equilibrium
-  int kx = par.sx;
-  int ky = par.sy;
+  int kx = 1;
+  int ky = 1;
   int kz = par.sz;
 
   kf_microphys->bind("phys", (unsigned int)(0)); // only condensation for moist heatbubble
@@ -638,14 +638,14 @@ void asystem::equilibrate() {
           kf_copy[3]->step(kx, ky, kz);
         }
         // strip to full
-        // k_clone[0]->step(par.sx, par.sy, par.sz);
-        // k_clone[1]->step(par.sx, par.sy, par.sz);
-        // k_clone[2]->step(par.sx, par.sy, par.sz);
-        // k_clone[3]->step(par.sx, par.sy, par.sz);
-        // kf_copy[0]->step(par.sx, par.sy, par.sz);
-        // kf_copy[1]->step(par.sx, par.sy, par.sz);
-        // kf_copy[2]->step(par.sx, par.sy, par.sz);
-        // kf_copy[3]->step(par.sx, par.sy, par.sz);
+        k_clone[0]->step(par.sx, par.sy, par.sz);
+        k_clone[1]->step(par.sx, par.sy, par.sz);
+        k_clone[2]->step(par.sx, par.sy, par.sz);
+        k_clone[3]->step(par.sx, par.sy, par.sz);
+        kf_copy[0]->step(par.sx, par.sy, par.sz);
+        kf_copy[1]->step(par.sx, par.sy, par.sz);
+        kf_copy[2]->step(par.sx, par.sy, par.sz);
+        kf_copy[3]->step(par.sx, par.sy, par.sz);
 
         // write_files(frame_index*3+s);
       }

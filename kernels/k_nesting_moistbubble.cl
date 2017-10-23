@@ -17,6 +17,8 @@ __kernel void k_nesting_moistbubble_kernel_main(__private parameters par,
 {
   position pos = get_pos_bc(par, get_global_id(0), get_global_id(1), get_global_id(2));
 
+  // just create hydrostatic equilibrium according to profile. bubble needs to be added later to 'break' it
+
   float8 c;
   float4 cice, mom;
   state st;
@@ -47,21 +49,6 @@ __kernel void k_nesting_moistbubble_kernel_main(__private parameters par,
   q_t_prof = 0.02f;
   q_v_prof = rhovs(st.T, par)/st.rho;
   q_l_prof = q_t_prof - q_v_prof;
-
-  float len, r, offset;
-  float4 arg;
-  //cosine squared, r in meters
-  r = 2000.0f;
-  arg.s0 = ((pos.x+0.5f)*par.dx-par.sx*0.5f*par.dx)/r;
-  arg.s1 = ((pos.y+0.5f)*par.dy-par.sy*0.5f*par.dy)/r;
-  arg.s2 = ((pos.z+0.5f)*par.dz-r                 )/r;
-  arg.s3 = 0.0f;
-
-  offset = 0.0f; // 0.0 < offset < 2.0
-  len = length(arg);
-  if (len <= 1.0f) offset = 2.0f*pow(cospi(len*0.5f), 2.0f);
-  theta_e = theta_e*(1.0f+offset/300.0f);
-  theta_e_prof = theta_e_prof*(1.0f+offset/300.0f);
 
   // if (pos.x == par.sx/2 && pos.z == 0) printf("%d %g %g (%g) |%g (%g) %g (%g) | %g | %g\n", pos.z, theta, theta_e, theta_e_prof, q_t, q_t_prof, q_v, q_v_prof, st.P, offset);
 
