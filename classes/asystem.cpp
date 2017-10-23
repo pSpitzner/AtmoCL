@@ -201,6 +201,7 @@ asystem::asystem(clcontext *contextn, cllogger *loggern, int timescheme) {
 
   k_init_scalars          = new clkernel(context, par, "./kernels/k_init_scalars_default.cl");
   k_init_momenta          = new clkernel(context, par, "./kernels/k_init_momenta.cl");
+  k_perturb               = new clkernel(context, par, "./kernels/k_perturb_moistbubble.cl");
   ks_ext_forcings         = new clkernel(context, par, "./kernels/k_ext_forcings_isdac.cl");
   ks_copy[0][0]           = new clkernel(context, par, "./kernels/k_copy_one.cl");
   ks_copy[0][1]           = new clkernel(context, par, "./kernels/k_copy_one.cl");
@@ -279,6 +280,15 @@ asystem::asystem(clcontext *contextn, cllogger *loggern, int timescheme) {
 
   k_init_momenta->bind("bf_scalars_vc_a_0", bf_scalars_vc_a[0]);
   k_init_momenta->bind("bf_momenta_fc_a", bf_momenta_fc_a);
+
+  k_perturb->bind("b_source_scalars_0", bf_scalars_vc_a[0]);
+  k_perturb->bind("b_source_scalars_1", bf_scalars_vc_a[1]);
+  k_perturb->bind("b_source_scalars_2", bf_scalars_vc_a[2]);
+  k_perturb->bind("b_target_scalars_0", bf_scalars_vc_b[0]);
+  k_perturb->bind("b_target_scalars_1", bf_scalars_vc_b[1]);
+  k_perturb->bind("b_target_scalars_2", bf_scalars_vc_b[2]);
+  k_perturb->bind("b_source_momenta",   bf_momenta_fc_a);
+  k_perturb->bind("b_target_momenta",   bf_momenta_fc_b);
 
   k_damping->bind("b_source_momenta",   bf_momenta_fc_a);
   k_damping->bind("b_target_momenta",   bf_momenta_fc_b);
@@ -656,6 +666,22 @@ void asystem::equilibrate() {
   kf_microphys->bind("phys", (unsigned int)(2)); // only condensation for moist heatbubble
   logger->log(2,"\rEquilibrating  -  done\n");
   frame_index = 0;
+}
+
+void asystem::perturb() {
+
+  int kx = par.sx;
+  int ky = par.sy;
+  int kz = par.sz;
+  k_perturb->step(kx, ky, kz);
+  kf_copy[0]->step(kx, ky, kz);
+  kf_copy[1]->step(kx, ky, kz);
+  kf_copy[2]->step(kx, ky, kz);
+  kf_copy[3]->step(kx, ky, kz);
+
+  // write_files(v_exporter[0]->t_vp);
+
+  context->finish();
 }
 
 void asystem::mis_step() {
