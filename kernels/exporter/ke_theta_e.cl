@@ -56,6 +56,6 @@ __kernel void ke_theta_e_kernel_main(__private parameters par,
   }
 
   float4 rgba;
-  rgba = map_rgba(0.0f, -320.0f, theta_e);
+  rgba = map_rgba(theta_e, -320.0f, 1.0e3f);
   write_f4(pos.x, pos.y, pos.z, rgba, b_target);
 }
