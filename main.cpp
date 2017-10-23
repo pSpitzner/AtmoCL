@@ -70,7 +70,8 @@ int main(int argc, char * argv[]) {
         logger->log(0, "No profile provided\n");
         return -1;
       } else {
-        sys->init_from_file(s_profilePath);
+        // sys->init_from_file(s_profilePath);
+        sys->init_from_kernel();
       }
     logger->log(0, "Equilibrating...");
     sys->equilibrate();
@@ -79,8 +80,6 @@ int main(int argc, char * argv[]) {
     logger->log(0, "Reading state files from %s\n", s_statePath.c_str());
     sys->read_state(s_statePath);
   }
-  // sys->write_files(0);
-  // return 0;
 
   logger->start_new_timer();
   logger->log(2, "Estimating remaining time...\n");

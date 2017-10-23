@@ -1,21 +1,14 @@
 #include "asystem.h"
 
 void asystem::set_par(int timescheme_) {
-  // dycoms
-  // par.sx  = 128;     // system size
-  // par.sy  = 128;
-  // par.sz  = 32;
-  // par.dx  = 50.0;
-  // par.dy  = 50.0;
-  // par.dz  = 50.0;
 
-  // isdac
-  par.sx  = 128;     // system size
+  // moist heatbubble bryan fritsch
+  par.sx  = 200;     // system size
   par.sy  = 1;
-  par.sz  = 64;
-  par.dx  = 50.0;
-  par.dy  = 50.0;
-  par.dz  = 20.0;
+  par.sz  = 100;
+  par.dx  = 100.0;
+  par.dy  = 100.0;
+  par.dz  = 100.0;
 
   par.ui = 0.0;
   par.vi = 0.0;
@@ -206,7 +199,7 @@ asystem::asystem(clcontext *contextn, cllogger *loggern, int timescheme) {
   // kernel //
   // ----------------------------------------------------------------- //
 
-  k_init_scalars          = new clkernel(context, par, "./kernels/k_init_scalars_dycoms.cl");
+  k_init_scalars          = new clkernel(context, par, "./kernels/k_init_scalars_default.cl");
   k_init_momenta          = new clkernel(context, par, "./kernels/k_init_momenta.cl");
   ks_ext_forcings         = new clkernel(context, par, "./kernels/k_ext_forcings_isdac.cl");
   ks_copy[0][0]           = new clkernel(context, par, "./kernels/k_copy_one.cl");
@@ -266,7 +259,7 @@ asystem::asystem(clcontext *contextn, cllogger *loggern, int timescheme) {
   kf_copy[2]              = new clkernel(context, par, "./kernels/k_copy_one.cl");
   kf_copy[3]              = new clkernel(context, par, "./kernels/k_copy_one.cl");
   k_damping               = new clkernel(context, par, "./kernels/k_damping.cl");
-  k_nesting               = new clkernel(context, par, "./kernels/k_nesting_isdac.cl");
+  k_nesting               = new clkernel(context, par, "./kernels/k_nesting_moistbubble.cl");
   k_clone[0]              = new clkernel(context, par, "./kernels/k_clone.cl");
   k_clone[1]              = new clkernel(context, par, "./kernels/k_clone.cl");
   k_clone[2]              = new clkernel(context, par, "./kernels/k_clone.cl");
@@ -406,7 +399,7 @@ asystem::asystem(clcontext *contextn, cllogger *loggern, int timescheme) {
   kf_microphys->bind("bRhs_mp_vc_0",      b_temp[0]);
   kf_microphys->bind("bRhs_mp_vc_1",      b_temp[1]);
   kf_microphys->bind("bRhs_mp_vc_2",      b_temp[2]); // ice
-  kf_microphys->bind("phys",              (unsigned int)(1023)); // enable all per default
+  kf_microphys->bind("phys",              (unsigned int)(2)); // only condensation for moist heatbubble
   kf_microphys->check_bindings();
 
   for (int f = 0; f < 3; f++) {
@@ -616,11 +609,11 @@ void asystem::init_from_file(std::string s_filePath) {
 
 void asystem::equilibrate() {
   // custom mis step to create initial profile with hydrostaic equilibrium
-  int kx = 1;
-  int ky = 1;
+  int kx = par.sx;
+  int ky = par.sy;
   int kz = par.sz;
 
-  kf_microphys->bind("phys", (unsigned int)(2)); // only enable condensation
+  kf_microphys->bind("phys", (unsigned int)(2)); // only condensation for moist heatbubble
 
   int equil_steps = 5000;
 
@@ -644,14 +637,14 @@ void asystem::equilibrate() {
           kf_copy[3]->step(kx, ky, kz);
         }
         // strip to full
-        k_clone[0]->step(par.sx, par.sy, par.sz);
-        k_clone[1]->step(par.sx, par.sy, par.sz);
-        k_clone[2]->step(par.sx, par.sy, par.sz);
-        k_clone[3]->step(par.sx, par.sy, par.sz);
-        kf_copy[0]->step(par.sx, par.sy, par.sz);
-        kf_copy[1]->step(par.sx, par.sy, par.sz);
-        kf_copy[2]->step(par.sx, par.sy, par.sz);
-        kf_copy[3]->step(par.sx, par.sy, par.sz);
+        // k_clone[0]->step(par.sx, par.sy, par.sz);
+        // k_clone[1]->step(par.sx, par.sy, par.sz);
+        // k_clone[2]->step(par.sx, par.sy, par.sz);
+        // k_clone[3]->step(par.sx, par.sy, par.sz);
+        // kf_copy[0]->step(par.sx, par.sy, par.sz);
+        // kf_copy[1]->step(par.sx, par.sy, par.sz);
+        // kf_copy[2]->step(par.sx, par.sy, par.sz);
+        // kf_copy[3]->step(par.sx, par.sy, par.sz);
 
         // write_files(frame_index*3+s);
       }
@@ -659,7 +652,7 @@ void asystem::equilibrate() {
     // write_files(frame_index);
     frame_index += 1;
   }
-  kf_microphys->bind("phys", (unsigned int)(1023));
+  kf_microphys->bind("phys", (unsigned int)(2)); // only condensation for moist heatbubble
   logger->log(2,"\rEquilibrating  -  done\n");
   frame_index = 0;
 }
