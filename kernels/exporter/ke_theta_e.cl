@@ -59,6 +59,6 @@ __kernel void ke_theta_e_kernel_main(__private parameters par,
   // if (pos.x == par.sx/2) printf("%d %d %d %g\n", pos.x, pos.y, pos.z, theta_e);
 
   float4 rgba;
-  rgba = map_rgba(theta_e, -320.0f, 0.5f);
+  rgba = map_rgba(theta_e, -320.0f, 0.1f);
   write_f4(pos.x, pos.y, pos.z, rgba, b_target);
 }

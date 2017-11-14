@@ -74,8 +74,9 @@ __kernel void k_perturb_moistbubble_kernel_main(__private parameters par,
     // cpml i actually rho*cpml...
     rhosig = cpml*log(theta)-rml*log(par.pr);
   }
-
-  // if (pos.x==par.sx/2 && pos.y== par.sy/2) printf("%d %2.5f %2.5f %2.7f\t%2.2f %2.2f %2.2f\t%2.2v4hlf\n", pos.z, theta_old, theta, theta_old-theta, offset, rhosig, rhosig_old, arg);
+  
+   float pnew = exp(rhosig/(cpml-rml)+log(rml)/(1.0f-rml/cpml));
+  if (pos.x==par.sx/2 && pos.y== par.sy/2) printf("%d %2.5f %2.5f %2.7f\t\t%2.2v4hlf\t%2.2f %2.2f\n", pos.z, theta, offset, rhosig, arg, p, pnew);
 
   float8 output;
   output.s0 = rhosig;     // rho*sig

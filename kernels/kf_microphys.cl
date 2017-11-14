@@ -181,6 +181,8 @@ void condensation(parameters par, position pos, state st, float8 *cRhs) {
   dn_r+=0.01f*min(0.0f, (st.rho_r/pt_rain.x_min-st.n_r));
   dn_r+=0.01f*max(0.0f, (st.rho_r/pt_rain.x_max-st.n_r));
 
+
+  //printf("%2.3f\n", dsig);
   (*cRhs).s0 += dsig;
   (*cRhs).s2 -= drho_c;
   (*cRhs).s3 += drho_c;
@@ -745,6 +747,7 @@ __kernel void kf_microphys_kernel_main(__private parameters par,
   if (phys & 256) snow_sedimentation(par, pos, st, st_zr, &cRhs, &cRhs_ice);
   if (phys & 512) ice_deposition(par, pos, st, &cRhs, &cRhs_ice);
 
+  //printf("phys %d", phys);
   // bulk(par, c, &cRhs);
   // printf("%f %f %f %f\n", cRhs_ice.s0, cRhs_ice.s1, cRhs_ice.s2, cRhs_ice.s3);
 

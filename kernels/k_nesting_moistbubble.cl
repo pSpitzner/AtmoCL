@@ -47,10 +47,10 @@ __kernel void k_nesting_moistbubble_kernel_main(__private parameters par,
 
   theta_e_prof = 320.0f;
   r_t_prof = 0.02f;
-  r_v_prof = rhovs(st.T, par)/st.rho;
+  r_v_prof = rhovs(st.T, par)/st.rho_d;
   r_l_prof = r_t_prof - r_v_prof;
 
-  // if (pos.x == par.sx/2 && pos.z == 0) printf("%d %g %g (%g) |%g (%g) %g (%g) | %g | %g\n", pos.z, theta, theta_e, theta_e_prof, r_t, r_t_prof, r_v, r_v_prof, st.P, offset);
+ //if (pos.z == 5) printf("%d %g %g (%g) |%g (%g) %g (%g) | %g\n", pos.z, theta, theta_e, theta_e_prof, r_t, r_t_prof, r_v, r_v_prof, st.P);
 
   // decrease damping over time
   float ds = (1.0f - 0.3f*exp(-(float)(damping_strength)/20.0f));

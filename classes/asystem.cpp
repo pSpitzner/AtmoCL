@@ -409,7 +409,7 @@ asystem::asystem(clcontext *contextn, cllogger *loggern, int timescheme) {
   kf_microphys->bind("bRhs_mp_vc_0",      b_temp[0]);
   kf_microphys->bind("bRhs_mp_vc_1",      b_temp[1]);
   kf_microphys->bind("bRhs_mp_vc_2",      b_temp[2]); // ice
-  kf_microphys->bind("phys",              (unsigned int)(0)); // only condensation for moist heatbubble
+  kf_microphys->bind("phys",              (unsigned int)(2)); // only condensation for moist heatbubble
   kf_microphys->check_bindings();
 
   for (int f = 0; f < 3; f++) {
@@ -624,7 +624,7 @@ void asystem::equilibrate() {
   int ky = 1;
   int kz = par.sz;
 
-  kf_microphys->bind("phys", (unsigned int)(0)); // only condensation for moist heatbubble
+  kf_microphys->bind("phys", (unsigned int)(2)); // only condensation for moist heatbubble
 
   int equil_steps = 5000;
 
@@ -660,7 +660,7 @@ void asystem::equilibrate() {
         // write_files(frame_index*3+s);
       }
     }
-    // write_files(frame_index);
+    write_files(frame_index);
     frame_index += 1;
   }
   kf_microphys->bind("phys", (unsigned int)(2)); // only condensation for moist heatbubble

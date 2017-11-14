@@ -81,7 +81,7 @@ int main(int argc, char * argv[]) {
     sys->read_state(s_statePath);
   }
 
-  sys->perturb();
+ sys->perturb();
 
   logger->start_new_timer();
   logger->log(2, "Estimating remaining time...\n");
