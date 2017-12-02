@@ -501,6 +501,8 @@ asystem::asystem(clcontext *contextn, cllogger *loggern, int timescheme) {
   // exporter[2] = new clexport(context, "XY", "./kernels/exporter/ke_render.cl", par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], 2, par.sz/2);
 
   v_exporter.push_back(new clexport(context, "XZ_w",     "./kernels/exporter/ke_w.cl",     par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,1,0  ));
+  v_exporter.push_back(new clexport(context, "XZ_u",     "./kernels/exporter/ke_u.cl",     par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,1,0  ));
+  v_exporter.push_back(new clexport(context, "XZ_v",     "./kernels/exporter/ke_v.cl",     par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,1,0  ));
 
   v_exporter.push_back(new clexport(context, "XZ_rho_c", "./kernels/exporter/ke_rho_c.cl", par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,1,0  ));
   v_exporter.push_back(new clexport(context, "XZ_rho_r", "./kernels/exporter/ke_rho_r.cl", par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,1,0  ));
