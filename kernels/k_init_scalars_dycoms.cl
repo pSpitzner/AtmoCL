@@ -12,7 +12,7 @@ __kernel void k_init_scalars_dycoms_kernel_main(__private parameters par,
                                                 __read_only image3d_t bf_scalars_vc_b_1,
                                                 __read_only image3d_t bf_scalars_vc_b_2)
 {
-  position pos = get_pos_bc(par, get_global_id(0), get_global_id(1), get_global_id(2));
+  position pos = get_pos_bc(&par);
 
   float len, r, offset, T;
   float4 arg;

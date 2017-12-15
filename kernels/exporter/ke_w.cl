@@ -18,15 +18,15 @@ __private float4 map_rgba(float var, float offset, float factor) {
 }
 
 __kernel void ke_w_kernel_main(__private parameters par,
-                          __private uint ref,
-                          __private uint dim,
-                          __read_only image3d_t b_source_scalars_0,
-                          __read_only image3d_t b_source_scalars_1,
-                          __read_only image3d_t b_source_scalars_2,
-                          __read_only image3d_t b_source_momenta,
-                          __write_only image3d_t b_target)
+                               __private uint ref,
+                               __private uint dim,
+                               __read_only image3d_t b_source_scalars_0,
+                               __read_only image3d_t b_source_scalars_1,
+                               __read_only image3d_t b_source_scalars_2,
+                               __read_only image3d_t b_source_momenta,
+                               __write_only image3d_t b_target)
 {
-  position pos = get_pos_bc(par, get_global_id(0), get_global_id(1), get_global_id(2));
+  position pos = get_pos_bc(&par);
 
   float w = 0.0f;
 

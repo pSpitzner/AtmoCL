@@ -15,7 +15,7 @@ __kernel void k_nesting_isdac_kernel_main(__private parameters par,
                                           __write_only image3d_t b_target_scalars_2,
                                           __write_only image3d_t b_target_momenta)
 {
-  position pos = get_pos_bc(par, get_global_id(0), get_global_id(1), get_global_id(2));
+  position pos = get_pos_bc(&par);
 
 
 
@@ -30,7 +30,7 @@ __kernel void k_nesting_isdac_kernel_main(__private parameters par,
   c    = read_f8(pos.x, pos.y, pos.z, b_source_scalars_0, b_source_scalars_1);
   cice = read_f4(pos.x, pos.y, pos.z, b_source_scalars_2);
   mom  = read_f4(pos.x, pos.y, pos.z, b_source_momenta);
-  st = init_state_with_ice(par, c, cice);
+  st = init_state_with_ice(&par, &c, &cice);
 
   q_t = (st.rho_l+st.rho_v)/st.rho;
   theta = exp((st.sig+st.rml*log(par.pr))/st.cpml);

@@ -7,7 +7,7 @@ __kernel void ks_adv_scalars_kernel_main(__private parameters par,
                                          __write_only image3d_t bs_scalars_fc_z_s)
 {
 
-  position pos = get_pos_bc(par, get_global_id(0), get_global_id(1), get_global_id(2));
+  position pos = get_pos_bc(&par);
 
   // ----------------------------------------------------------------- //
   // OS X does not support writing into >8 textures. need a workaround //
