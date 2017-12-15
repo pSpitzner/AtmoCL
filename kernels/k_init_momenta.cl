@@ -4,7 +4,7 @@ __kernel void k_init_momenta_kernel_main(__private parameters par,
 {
 
   //periodic bc
-  position pos = get_pos_bc(par, get_global_id(0), get_global_id(1), get_global_id(2));
+  position pos = get_pos_bc(&par);
 
   // setting output
   float4 output = (float4)(0.0f,0.0f,0.0f,0.0f);

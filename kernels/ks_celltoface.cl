@@ -3,7 +3,7 @@ __kernel void ks_celltoface_kernel_main(__private parameters par,
                                         __read_only image3d_t bRhs_m_vc_w,
                                         __write_only image3d_t bsRhs_momenta_fc_s)
 {
-  position pos = get_pos_bc(par, get_global_id(0), get_global_id(1), get_global_id(2));
+  position pos = get_pos_bc(&par);
 
   // pos_ul + posxl_ur
   float u  = (read_imagef(bRhs_m_vc_uv, (int4)(pos.x, pos.y, pos.z, 0)).s0 + read_imagef(bRhs_m_vc_uv, (int4)(pos.xl, pos.y , pos.z , 0)).s1) * 0.5f;

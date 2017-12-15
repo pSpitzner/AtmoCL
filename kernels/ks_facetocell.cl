@@ -3,7 +3,7 @@ __kernel void ks_facetocell_kernel_main(__private parameters par,
                                         __write_only image3d_t b_m_vc_uv,
                                         __write_only image3d_t b_m_vc_w)
 {
-  position pos = get_pos_bc(par, get_global_id(0), get_global_id(1), get_global_id(2));
+  position pos = get_pos_bc(&par);
 
   float ul,vl,ur,vr,wl,wr;
 

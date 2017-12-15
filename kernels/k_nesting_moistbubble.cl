@@ -15,7 +15,7 @@ __kernel void k_nesting_moistbubble_kernel_main(__private parameters par,
                                                 __write_only image3d_t b_target_scalars_2,
                                                 __write_only image3d_t b_target_momenta)
 {
-  position pos = get_pos_bc(par, get_global_id(0), get_global_id(1), get_global_id(2));
+  position pos = get_pos_bc(&par);
 
   // just create hydrostatic equilibrium according to profile. bubble needs to be added later to 'break' it
 
@@ -32,7 +32,7 @@ __kernel void k_nesting_moistbubble_kernel_main(__private parameters par,
   c    = read_f8(pos.x, pos.y, pos.z, b_source_scalars_0, b_source_scalars_1);
   cice = (float4)(0.0f);
   mom  = read_f4(pos.x, pos.y, pos.z, b_source_momenta);
-  st = init_state_with_ice(par, c, cice);
+  st = init_state_with_ice(&par, &c, &cice);
 
   r_t = (st.rho_l+st.rho_v)/st.rho_d;
   r_v = (st.rho_v)/st.rho_d;

@@ -9,7 +9,7 @@ __kernel void k_ext_forcings_isdac_kernel_main(__private parameters par,
                                                __write_only image3d_t b_target_scalars_2,
                                                __write_only image3d_t b_target_momenta)
 {
-  position pos = get_pos_bc(par, get_global_id(0), get_global_id(1), get_global_id(2));
+  position pos = get_pos_bc(&par);
 
   float4 TempScalars_0 = read_imagef(b_source_scalars_0, (int4)(pos.x, pos.y, pos.z, 0));
   float4 TempScalars_1 = read_imagef(b_source_scalars_1, (int4)(pos.x, pos.y, pos.z, 0));
@@ -21,9 +21,9 @@ __kernel void k_ext_forcings_isdac_kernel_main(__private parameters par,
   c = read_f8(pos.x, pos.y, pos.z, b_source_scalars_0, b_source_scalars_1);
   if (include_ice) {
     float4 cice = read_f4(pos.x, pos.y, pos.z, b_source_scalars_2);
-    st = init_state_with_ice(par, c, cice);
+    st = init_state_with_ice(&par, &c, &cice);
   } else {
-    st = init_state(par, c);
+    st = init_state(&par, &c);
   }
 
 

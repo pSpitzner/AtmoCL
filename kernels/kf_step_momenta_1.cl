@@ -7,7 +7,7 @@ __kernel void kf_step_momenta_1_kernel_main(__private parameters par,
                                             __read_only image3d_t bs_momenta_fc_1,
                                             __write_only image3d_t bf_momenta_fc_b)
 {
-  position pos = get_pos_bc(par, get_global_id(0), get_global_id(1), get_global_id(2));
+  position pos = get_pos_bc(&par);
 
   int s = 1;
   float di = par.b[s][0] + par.b[s][1] + par.b[s][2];

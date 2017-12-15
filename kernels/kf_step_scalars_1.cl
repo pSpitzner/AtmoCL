@@ -12,7 +12,7 @@ __kernel void kf_step_scalars_1_kernel_main(__private parameters par,
                                             __read_only image3d_t bRhs_mp_vc,
                                             __write_only image3d_t bf_scalars_vc_b)
 {
-  position pos = get_pos_bc(par, get_global_id(0), get_global_id(1), get_global_id(2));
+  position pos = get_pos_bc(&par);
 
   // ----------------------------------------------------------------- //
   // ice needs treatement, fields are already linked //
@@ -60,8 +60,8 @@ __kernel void kf_step_scalars_1_kernel_main(__private parameters par,
 
   y_s[0]  = read_f4(pos.x, pos.y, pos.z, bs_scalars_vc_0);
   y_s[1]  = read_f4(pos.x, pos.y, pos.z, bs_scalars_vc_1);
-  central_dif(par, pos, &fyn[0], x_c[0], x_cr[0], y_c[0], y_cr[0], z_c[0], z_cr[0]);
-  central_dif(par, pos, &fyn[1], x_c[1], x_cr[1], y_c[1], y_cr[1], z_c[1], z_cr[1]);
+  central_dif(&par, pos, &fyn[0], x_c[0], x_cr[0], y_c[0], y_cr[0], z_c[0], z_cr[0]);
+  central_dif(&par, pos, &fyn[1], x_c[1], x_cr[1], y_c[1], y_cr[1], z_c[1], z_cr[1]);
 
   z_new += mp*par.dtis[s];
   z_new += par.g[s][1]*(y_s[1]-y_s[0])/par.dT/di*par.dtis[s];   // 1,2
