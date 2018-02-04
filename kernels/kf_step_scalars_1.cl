@@ -60,8 +60,8 @@ __kernel void kf_step_scalars_1_kernel_main(__private parameters par,
 
   y_s[0]  = read_f4(pos.x, pos.y, pos.z, bs_scalars_vc_0);
   y_s[1]  = read_f4(pos.x, pos.y, pos.z, bs_scalars_vc_1);
-  central_dif(&par, pos, &fyn[0], x_c[0], x_cr[0], y_c[0], y_cr[0], z_c[0], z_cr[0]);
-  central_dif(&par, pos, &fyn[1], x_c[1], x_cr[1], y_c[1], y_cr[1], z_c[1], z_cr[1]);
+  central_dif(&par, &pos, &fyn[0], &x_c[0], &x_cr[0], &y_c[0], &y_cr[0], &z_c[0], &z_cr[0]);
+  central_dif(&par, &pos, &fyn[1], &x_c[1], &x_cr[1], &y_c[1], &y_cr[1], &z_c[1], &z_cr[1]);
 
   z_new += mp*par.dtis[s];
   z_new += par.g[s][1]*(y_s[1]-y_s[0])/par.dT/di*par.dtis[s];   // 1,2
@@ -69,5 +69,5 @@ __kernel void kf_step_scalars_1_kernel_main(__private parameters par,
   z_new += par.b[s][0]*fyn[0]/di*par.dtis[s];               // 0,1,2
   z_new += par.b[s][1]*fyn[1]/di*par.dtis[s];               // 1,2
 
-  write_f4(pos.x, pos.y, pos.z, z_new, bf_scalars_vc_b);
+  write_f4(pos.x, pos.y, pos.z, &z_new, bf_scalars_vc_b);
 }

@@ -37,5 +37,5 @@ __kernel void ke_n_i_kernel_main(__private parameters par,
 
   float4 rgba;
   rgba = map_rgba(max(0.0f, c.s2), 0.0f, 1.0f/20.0e6f);
-  write_f4(pos.x, pos.y, pos.z, rgba, b_target);
+  write_f4(pos.x, pos.y, pos.z, &rgba, b_target);
 }

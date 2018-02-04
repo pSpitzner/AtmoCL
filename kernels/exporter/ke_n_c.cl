@@ -36,5 +36,5 @@ __kernel void ke_n_c_kernel_main(__private parameters par,
   // clamp manually or use init_state_with_ice...
   float4 rgba;
   rgba = map_rgba(max(0.0f, c.s6), 0.0f, 1.0f/60.0e6f);
-  write_f4(pos.x, pos.y, pos.z, rgba, b_target);
+  write_f4(pos.x, pos.y, pos.z, &rgba, b_target);
 }

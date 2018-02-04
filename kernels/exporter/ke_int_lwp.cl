@@ -50,5 +50,5 @@ __kernel void ke_int_lwp_kernel_main(__private parameters par,
 
   // float4 rgba = map_rgba(rho_l, 0.0f, 5*1e0f);
   float4 rgba = map_rgba(rho_l, 0.0f, 20*1e0f);
-  write_f4(pos.x, pos.y, pos.z, rgba, b_target);
+  write_f4(pos.x, pos.y, pos.z, &rgba, b_target);
 }

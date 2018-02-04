@@ -67,8 +67,8 @@ __kernel void k_nesting_moistbubble_kernel_main(__private parameters par,
   cice = (float4)(0.0f);
   mom *= dm;
 
-  write_f8(pos.x, pos.y, pos.z, c,    b_target_scalars_0, b_target_scalars_1);
-  write_f4(pos.x, pos.y, pos.z, cice, b_target_scalars_2);
-  write_f4(pos.x, pos.y, pos.z, mom,  b_target_momenta);
+  write_f8(pos.x, pos.y, pos.z, &c,    b_target_scalars_0, b_target_scalars_1);
+  write_f4(pos.x, pos.y, pos.z, &cice, b_target_scalars_2);
+  write_f4(pos.x, pos.y, pos.z, &mom,  b_target_momenta);
 }
 

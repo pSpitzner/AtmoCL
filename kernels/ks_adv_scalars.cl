@@ -71,7 +71,7 @@ __kernel void ks_adv_scalars_kernel_main(__private parameters par,
   if (pos.wlf>0.0f) Fz = (  c/3.0f+5.0f/6.0f*czl-czll/6.0f);
   if (pos.wlf<0.0f) Fz = (czl/3.0f+5.0f/6.0f*  c- czr/6.0f);
 
-  write_f4(pos.x, pos.y, pos.z, Fx, bs_scalars_fc_x_s);
-  write_f4(pos.x, pos.y, pos.z, Fy, bs_scalars_fc_y_s);
-  write_f4(pos.x, pos.y, pos.z, Fz, bs_scalars_fc_z_s);
+  write_f4(pos.x, pos.y, pos.z, &Fx, bs_scalars_fc_x_s);
+  write_f4(pos.x, pos.y, pos.z, &Fy, bs_scalars_fc_y_s);
+  write_f4(pos.x, pos.y, pos.z, &Fz, bs_scalars_fc_z_s);
 }

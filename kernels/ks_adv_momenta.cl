@@ -88,5 +88,5 @@ __kernel void ks_adv_momenta_kernel_main(__private parameters par,
   Temp.s6 = 0.0f;
   Temp.s7 = 0.0f;
 
-  write_f8(pos.x, pos.y, pos.z, Temp, bRhs_m_vc_uv, bRhs_m_vc_w);
+  write_f8(pos.x, pos.y, pos.z, &Temp, bRhs_m_vc_uv, bRhs_m_vc_w);
 }
