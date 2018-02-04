@@ -37,5 +37,5 @@ __kernel void ke_rho_c_kernel_main(__private parameters par,
   float4 rgba;
   // rgba = map_rgba(c.s3, 0.0f, 1e3f);
   rgba = map_rgba(c.s3, 0.0f, 2e3f);
-  write_f4(pos.x, pos.y, pos.z, rgba, b_target);
+  write_f4(pos.x, pos.y, pos.z, &rgba, b_target);
 }

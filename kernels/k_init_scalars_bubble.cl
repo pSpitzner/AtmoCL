@@ -83,6 +83,6 @@ __kernel void k_init_scalars_bubble_kernel_main(__private parameters par,
   output.s6 = 0.0f;       // n_cloud
   output.s7 = 0.0f;       // n_rain
 
-  write_f8(pos.x, pos.y, pos.z, output, bf_scalars_vc_a_0, bf_scalars_vc_a_1);
+  write_f8(pos.x, pos.y, pos.z, &output, bf_scalars_vc_a_0, bf_scalars_vc_a_1);
 }
 

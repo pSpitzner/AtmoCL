@@ -55,7 +55,7 @@ __kernel void k_init_scalars_dycoms_kernel_main(__private parameters par,
   }
 
 
-  write_f8(pos.x, pos.y, pos.z, output,     bf_scalars_vc_a_0, bf_scalars_vc_a_1);
-  write_f4(pos.x, pos.y, pos.z, output_ice, bf_scalars_vc_a_2);
+  write_f8(pos.x, pos.y, pos.z, &output,     bf_scalars_vc_a_0, bf_scalars_vc_a_1);
+  write_f4(pos.x, pos.y, pos.z, &output_ice, bf_scalars_vc_a_2);
 }
 

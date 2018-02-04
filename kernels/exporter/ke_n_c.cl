@@ -34,6 +34,5 @@ __kernel void ke_n_c_kernel_main(__private parameters par,
   else if (dim == 2) c = read_f8(pos.x,     pos.y,     pos.z+ref, b_source_scalars_0, b_source_scalars_1);
 
   float4 rgba;
-  rgba = map_rgba(max(0.0f, c.s6), 0.0f, 1.0f/300.0e6f);
-  write_f4(pos.x, pos.y, pos.z, rgba, b_target);
+  write_f4(pos.x, pos.y, pos.z, &rgba, b_target);
 }

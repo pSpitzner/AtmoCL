@@ -49,5 +49,5 @@ __kernel void ke_int_iwp_kernel_main(__private parameters par,
 
 
   float4 rgba = map_rgba(rho_i, 0.0f, 2.0f*1e1f);
-  write_f4(pos.x, pos.y, pos.z, rgba, b_target);
+  write_f4(pos.x, pos.y, pos.z, &rgba, b_target);
 }

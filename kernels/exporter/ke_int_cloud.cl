@@ -74,5 +74,5 @@ __kernel void ke_int_cloud_kernel_main(__private parameters par,
   // if (a_c != 0.0f) printf("%d %d | %e %e | %f %f %f\n", pos.z, pos.x, a_c, rho_c, result.s0, result.s1, result.s2);
 
   float4 rgba = (float4)(result, 0.0f);
-  write_f4(pos.x, pos.y, pos.z, rgba, b_target);
+  write_f4(pos.x, pos.y, pos.z, &rgba, b_target);
 }

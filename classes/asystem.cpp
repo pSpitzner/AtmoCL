@@ -646,7 +646,7 @@ void asystem::equilibrate() {
 
   // kf_microphys->bind("phys", (unsigned int)(2)); // only enable condensation
 
-  int equil_steps = 5000;
+  int equil_steps = 500;
 
   for (int f = 0; f < equil_steps; f++) {
     if (f%10==0) logger->log(2,"\rEquilibrating  -  %d/%d",f,equil_steps);

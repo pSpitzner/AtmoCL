@@ -42,5 +42,5 @@ __kernel void ke_int_thetal_kernel_main(__private parameters par,
 
   // abusing unused alpha channel to get the actual variable in full precision into host memory for further processing
   float4 rgba = (float4)(0.0f, 0.0f, 0.0f, theta_l);
-  write_f4(pos.x, pos.y, pos.z, rgba, b_target);
+  write_f4(pos.x, pos.y, pos.z, &rgba, b_target);
 }

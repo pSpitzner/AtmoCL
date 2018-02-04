@@ -768,6 +768,6 @@ __kernel void kf_microphys_kernel_main(__private parameters par,
   // printf("%f %f %f %f\n", cRhs_ice.s0, cRhs_ice.s1, cRhs_ice.s2, cRhs_ice.s3);
 
 
-  write_f8(pos.x, pos.y, pos.z, cRhs, bRhs_mp_vc_0, bRhs_mp_vc_1);
-  write_f4(pos.x, pos.y, pos.z, cRhs_ice, bRhs_mp_vc_2);
+  write_f8(pos.x, pos.y, pos.z, &cRhs, bRhs_mp_vc_0, bRhs_mp_vc_1);
+  write_f4(pos.x, pos.y, pos.z, &cRhs_ice, bRhs_mp_vc_2);
 }

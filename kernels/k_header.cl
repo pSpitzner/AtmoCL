@@ -49,14 +49,14 @@ __private position get_pos_bc(parameters *par);
 __private state init_state(parameters *par, float8 *c);
 __private state init_state_with_ice(parameters *par, float8 *c, float4 *cice);
 
-void central_dif(parameters *par, position pos, float4 *fyn, float4 x_c, float4 x_cr, float4 y_c, float4 y_cr, float4 z_c, float4 z_cr);
+void central_dif(parameters *par, position *pos, float4 *fyn, float4 *x_c, float4 *x_cr, float4 *y_c, float4 *y_cr, float4 *z_c, float4 *z_cr);
 __private float4 read_f4(int x, int y, int z, __read_only image3d_t buf_0);
 __private float8 read_f8(int x, int y, int z, __read_only image3d_t buf_0, __read_only image3d_t buf_1);
 // __private float4 read_f12(int x, int y, int z, __read_only image3d_t buf_0, __read_only image3d_t buf_1, __read_only image3d_t buf_2);
 // __private float4 read_f16(int x, int y, int z, __read_only image3d_t buf_0, __read_only image3d_t buf_1, __read_only image3d_t buf_2, __read_only image3d_t buf_3);
 
-void write_f4(int x, int y, int z, float4 f, __write_only image3d_t buf_0);
-void write_f8(int x, int y, int z, float8 f, __write_only image3d_t buf_0, __write_only image3d_t buf_1);
+void write_f4(int x, int y, int z, float4 *f, __write_only image3d_t buf_0);
+void write_f8(int x, int y, int z, float8 *f, __write_only image3d_t buf_0, __write_only image3d_t buf_1);
 // void write_f12(int x, int y, int z, float12 f, __write_only image3d_t buf_0, __write_only image3d_t buf_1, __write_only image3d_t buf_2);
 // void write_f16(int x, int y, int z, float16 f, __write_only image3d_t buf_0, __write_only image3d_t buf_1, __write_only image3d_t buf_2, __write_only image3d_t buf_3);
 
@@ -117,7 +117,7 @@ __private position get_pos_bc(parameters *par) {
 __private state init_state(parameters *par, float8 *c) {
   // c does not support default arguments, work around
   float4 *cice = 0;
-  return init_state_with_ice(&par, &c, &cice);
+  return init_state_with_ice(par, c, cice);
 }
 __private state init_state_with_ice(parameters *par, float8 *c, float4 *cice) {
   state st;
@@ -168,21 +168,21 @@ __private float8 read_f8(int x, int y, int z, __read_only image3d_t buf_0, __rea
   return (float8)(f_0, f_1);
 }
 
-void write_f4(int x, int y, int z, float4 f, __write_only image3d_t buf_0) {
+void write_f4(int x, int y, int z, float4 *f, __write_only image3d_t buf_0) {
   int4 pos = (int4)(x, y, z, 0);
-  write_imagef(buf_0, pos, (float4)(f.s0, f.s1, f.s2, f.s3));
+  write_imagef(buf_0, pos, (float4)((*f).s0, (*f).s1, (*f).s2, (*f).s3));
 }
-void write_f8(int x, int y, int z, float8 f, __write_only image3d_t buf_0, __write_only image3d_t buf_1) {
+void write_f8(int x, int y, int z, float8 *f, __write_only image3d_t buf_0, __write_only image3d_t buf_1) {
   int4 pos = (int4)(x, y, z, 0);
-  write_imagef(buf_0, pos, (float4)(f.s0, f.s1, f.s2, f.s3));
-  write_imagef(buf_1, pos, (float4)(f.s4, f.s5, f.s6, f.s7));
+  write_imagef(buf_0, pos, (float4)((*f).s0, (*f).s1, (*f).s2, (*f).s3));
+  write_imagef(buf_1, pos, (float4)((*f).s4, (*f).s5, (*f).s6, (*f).s7));
 }
 
-void central_dif(parameters *par, position pos,
+void central_dif(parameters *par, position *pos,
                  float4 *fyn,
-                 float4 x_c, float4 x_cr,
-                 float4 y_c, float4 y_cr,
-                 float4 z_c, float4 z_cr)
+                 float4 *x_c, float4 *x_cr,
+                 float4 *y_c, float4 *y_cr,
+                 float4 *z_c, float4 *z_cr)
 {
   float4 Fx, Fy, Fz;
   // Fx = (x_c*pos.ulf - x_cr*pos.urf);
@@ -194,9 +194,9 @@ void central_dif(parameters *par, position pos,
   // Fz = (z_c*pos.wlf - z_cr*pos.wrf);
   // Fz /= par->dz;
 
-  Fx = (x_c*pos.ulf/par->dx - x_cr*pos.urf/par->dx);
-  Fy = (y_c*pos.vlf/par->dy - y_cr*pos.vrf/par->dy);
-  Fz = (z_c*pos.wlf/par->dz - z_cr*pos.wrf/par->dz);
+  Fx = ((*x_c)*pos->ulf/par->dx - (*x_cr)*pos->urf/par->dx);
+  Fy = ((*y_c)*pos->vlf/par->dy - (*y_cr)*pos->vrf/par->dy);
+  Fz = ((*z_c)*pos->wlf/par->dz - (*z_cr)*pos->wrf/par->dz);
 
 
   *fyn = Fx + Fy + Fz;
