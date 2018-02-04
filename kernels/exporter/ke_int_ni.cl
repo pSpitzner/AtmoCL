@@ -7,7 +7,7 @@ __kernel void ke_int_ni_kernel_main(__private parameters par,
                                     __read_only image3d_t b_source_momenta,
                                     __write_only image3d_t b_target)
 {
-  position pos = get_pos_bc(par, get_global_id(0), get_global_id(1), get_global_id(2));
+  position pos = get_pos_bc(&par);
 
   float ni = 0.0f;
   float n_temp = 0.0f;
@@ -31,5 +31,5 @@ __kernel void ke_int_ni_kernel_main(__private parameters par,
 
   // abusing unused alpha channel to get the actual variable in full precision into host memory for further processing
   float4 rgba = (float4)(0.0f, 0.0f, 0.0f, ni);
-  write_f4(pos.x, pos.y, pos.z, rgba, b_target);
+  write_f4(pos.x, pos.y, pos.z, &rgba, b_target);
 }

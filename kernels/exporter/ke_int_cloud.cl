@@ -15,7 +15,7 @@ __kernel void ke_int_cloud_kernel_main(__private parameters par,
                                        __read_only image3d_t b_source_momenta,
                                        __write_only image3d_t b_target)
 {
-  position pos = get_pos_bc(par, get_global_id(0), get_global_id(1), get_global_id(2));
+  position pos = get_pos_bc(&par);
 
   float rho_c = 0.0f;
   float rho_r = 0.0f;

@@ -1,17 +1,9 @@
 #include "asystem.h"
 
 void asystem::set_par(int timescheme_) {
-  // dycoms
-  // par.sx  = 128;     // system size
-  // par.sy  = 128;
-  // par.sz  = 32;
-  // par.dx  = 50.0;
-  // par.dy  = 50.0;
-  // par.dz  = 50.0;
-
   // isdac
-  par.sx  = 128;     // system size
-  par.sy  = 128;
+  par.sx  = 128;
+  par.sy  = 16;      // decreased for testing from reference of 128
   par.sz  = 64;
   par.dx  = 50.0;
   par.dy  = 50.0;
@@ -646,7 +638,7 @@ void asystem::equilibrate() {
 
   // kf_microphys->bind("phys", (unsigned int)(2)); // only enable condensation
 
-  int equil_steps = 500;
+  int equil_steps = 5000;
 
   for (int f = 0; f < equil_steps; f++) {
     if (f%10==0) logger->log(2,"\rEquilibrating  -  %d/%d",f,equil_steps);
@@ -684,7 +676,7 @@ void asystem::equilibrate() {
     frame_index += 1;
   }
   kf_microphys->bind("phys", (unsigned int)(31));
-  logger->log(2,"\rEquilibrating  -  done\n");
+  logger->log(2,"\rEquilibrating  -  done (%d)\n", equil_steps);
   frame_index = 0;
 }
 

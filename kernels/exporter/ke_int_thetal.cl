@@ -10,7 +10,7 @@ __kernel void ke_int_thetal_kernel_main(__private parameters par,
   position pos = get_pos_bc(&par);
 
   float8 c     = (float8)(0.0f);
-  float4 c_ice = (float4)(0.0f);
+  float4 cice = (float4)(0.0f);
   state st;
 
   float ql = 0.0f;
@@ -21,8 +21,8 @@ __kernel void ke_int_thetal_kernel_main(__private parameters par,
   if      (dim == 0) {
     for (int x = 0; x < par.sx; x++) {
       c     = read_f8(x, pos.y, pos.z, b_source_scalars_0, b_source_scalars_1);
-      c_ice = read_f4(x, pos.y, pos.z, b_source_scalars_2);
-      st = init_state_with_ice(&par, &c, &c_ice);
+      cice = read_f4(x, pos.y, pos.z, b_source_scalars_2);
+      st = init_state_with_ice(&par, &c, &cice);
       ql = (st.rho_d != 0.0f ? st.rho_l/st.rho_d : 0.0f);
       theta_temp =exp((st.sig+st.rml*log(par.pr))/st.cpml) - st.lv/par.cpd*ql;
       theta_l = ((float)(x)*theta_l + theta_temp)/(float)(x+1);
@@ -32,8 +32,8 @@ __kernel void ke_int_thetal_kernel_main(__private parameters par,
   else if (dim == 1) {
     for (int y = 0; y < par.sy; y++) {
       c     = read_f8(pos.x, y, pos.z, b_source_scalars_0, b_source_scalars_1);
-      c_ice = read_f4(pos.x, y, pos.z, b_source_scalars_2);
-      st = init_state_with_ice(&par, &c, &c_ice);
+      cice = read_f4(pos.x, y, pos.z, b_source_scalars_2);
+      st = init_state_with_ice(&par, &c, &cice);
       ql = (st.rho_d != 0.0f ? st.rho_l/st.rho_d : 0.0f);
       theta_temp =exp((st.sig+st.rml*log(par.pr))/st.cpml) - st.lv/par.cpd*ql;
       theta_l = ((float)(y)*theta_l + theta_temp)/(float)(y+1);

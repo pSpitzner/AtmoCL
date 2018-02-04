@@ -7,7 +7,7 @@ __kernel void ke_uv_kernel_main(__private parameters par,
                                 __read_only image3d_t b_source_momenta,
                                 __write_only image3d_t b_target)
 {
-  position pos = get_pos_bc(par, get_global_id(0), get_global_id(1), get_global_id(2));
+  position pos = get_pos_bc(&par);
 
   float u = 0.0f;
   float v = 0.0f;
@@ -78,5 +78,5 @@ __kernel void ke_uv_kernel_main(__private parameters par,
   float4 rgba = (float4)(fabs(r)*255.0f,fabs(g)*255.0f,fabs(b)*255.0f,0.0f);
 
 
-  write_f4(pos.x, pos.y, pos.z, rgba, b_target);
+  write_f4(pos.x, pos.y, pos.z, &rgba, b_target);
 }

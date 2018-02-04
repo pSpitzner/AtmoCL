@@ -14,12 +14,12 @@ __kernel void k_perturb_cell_kernel_main(__private parameters par,
                                          __write_only image3d_t b_target_scalars_2,
                                          __write_only image3d_t b_target_momenta)
 {
-  position pos = get_pos_bc(par, get_global_id(0), get_global_id(1), get_global_id(2));
+  position pos = get_pos_bc(&par);
 
   float8 c    = read_f8(pos.x, pos.y, pos.z, b_source_scalars_0, b_source_scalars_1);
   float4 cice = read_f4(pos.x, pos.y, pos.z, b_source_scalars_2);
   float4 mom  = read_f4(pos.x, pos.y, pos.z, b_source_momenta);
-  state st = init_state_with_ice(par, c, cice);
+  state st = init_state_with_ice(&par, &c, &cice);
 
   //cosine squared, r in meters
   float r_h = 10000.0f;
@@ -65,7 +65,7 @@ __kernel void k_perturb_cell_kernel_main(__private parameters par,
     // c.s3 = st.rho_l;
 
   }
-  // state stn = init_state_with_ice(par, c, cice);
+  // state stn = init_state_with_ice(&par, &c, &cice);
 
 
   // if (pos.x == 64 && pos.y == 128) printf("%f %f %f %f %f\n", pos.z*par.dz, the_old, the_new, st.sig, stn.sig);
@@ -80,8 +80,8 @@ __kernel void k_perturb_cell_kernel_main(__private parameters par,
 
   mom.s0 = u;
 
-  write_f8(pos.x, pos.y, pos.z, c,    b_target_scalars_0, b_target_scalars_1);
-  write_f4(pos.x, pos.y, pos.z, cice, b_target_scalars_2);
-  write_f4(pos.x, pos.y, pos.z, mom,  b_target_momenta);
+  write_f8(pos.x, pos.y, pos.z, &c,    b_target_scalars_0, b_target_scalars_1);
+  write_f4(pos.x, pos.y, pos.z, &cice, b_target_scalars_2);
+  write_f4(pos.x, pos.y, pos.z, &mom,  b_target_momenta);
 }
 
