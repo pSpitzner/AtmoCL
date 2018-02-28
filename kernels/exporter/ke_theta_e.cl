@@ -43,7 +43,7 @@ __kernel void ke_theta_e_kernel_main(__private parameters par,
     pd = st.rho_d*par.rd*st.T;
     r_t = (st.rho_l+st.rho_v)/st.rho_d;
     r_v = (st.rho_v)/st.rho_d;
-    theta_e = st.T*pow(pd/par.pr,-par.rd/(par.cpd+par.cpl*r_t))*exp(par.lre0*r_v/(par.cpd+par.cpl*r_t));
+    theta_e = st.T*pow(pd/par.pr,-par.rd/(par.cpd+par.cpl*r_t))*exp(par.lre0*r_v/(par.cpd+par.cpl*r_t)/st.T);
   }
   // XZ
   else if (dim == 1) {
@@ -53,12 +53,12 @@ __kernel void ke_theta_e_kernel_main(__private parameters par,
     pd = st.rho_d*par.rd*st.T;
     r_t = (st.rho_l+st.rho_v)/st.rho_d;
     r_v = (st.rho_v)/st.rho_d;
-    theta_e = st.T*pow(pd/par.pr,-par.rd/(par.cpd+par.cpl*r_t))*exp(par.lre0*r_v/(par.cpd+par.cpl*r_t));
+    theta_e = st.T*pow(pd/par.pr,-par.rd/(par.cpd+par.cpl*r_t))*exp(par.lre0*r_v/(par.cpd+par.cpl*r_t)/st.T);
   }
 
   // if (pos.x == par.sx/2) printf("%d %d %d %g\n", pos.x, pos.y, pos.z, theta_e);
   // printf("%d %f\n", pos.z, theta_e);
   float4 rgba;
-  rgba = map_rgba(theta_e, 0.0f, 1e-15f);
+  rgba = map_rgba(theta_e, -320.0f, 1e-1f);
   write_f4(pos.x, pos.y, pos.z, rgba, b_target);
 }
