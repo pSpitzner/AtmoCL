@@ -643,15 +643,6 @@ void asystem::equilibrate() {
           kf_copy[2]->step(kx, ky, kz);
           kf_copy[3]->step(kx, ky, kz);
         }
-        // strip to full
-        k_clone[0]->step(par.sx, par.sy, par.sz);
-        k_clone[1]->step(par.sx, par.sy, par.sz);
-        k_clone[2]->step(par.sx, par.sy, par.sz);
-        k_clone[3]->step(par.sx, par.sy, par.sz);
-        kf_copy[0]->step(par.sx, par.sy, par.sz);
-        kf_copy[1]->step(par.sx, par.sy, par.sz);
-        kf_copy[2]->step(par.sx, par.sy, par.sz);
-        kf_copy[3]->step(par.sx, par.sy, par.sz);
 
         // write_files(frame_index*3+s);
       }
@@ -659,8 +650,20 @@ void asystem::equilibrate() {
     // write_files(frame_index);
     frame_index += 1;
   }
+
+  // strip to full
+  k_clone[0]->step(par.sx, par.sy, par.sz);
+  k_clone[1]->step(par.sx, par.sy, par.sz);
+  k_clone[2]->step(par.sx, par.sy, par.sz);
+  k_clone[3]->step(par.sx, par.sy, par.sz);
+  kf_copy[0]->step(par.sx, par.sy, par.sz);
+  kf_copy[1]->step(par.sx, par.sy, par.sz);
+  kf_copy[2]->step(par.sx, par.sy, par.sz);
+  kf_copy[3]->step(par.sx, par.sy, par.sz);
+
   kf_microphys->bind("phys", (unsigned int)(1023));
   logger->log(2,"\rEquilibrating  -  done\n");
+
   frame_index = 0;
 }
 

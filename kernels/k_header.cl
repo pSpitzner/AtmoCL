@@ -75,20 +75,24 @@ __private position get_pos_bc(parameters *par) {
   pos.y = get_global_id(1);
   pos.z = get_global_id(2);
 
-  // periodic bc
-  pos.xr  = ((pos.x  + 1 == par->sx) ? 0          : pos.x + 1 );
-  pos.xl  = ((pos.x  - 1 < 0)       ? par->sx - 1 : pos.x - 1 );
-  pos.yr  = ((pos.y  + 1 == par->sy) ? 0          : pos.y + 1 );
-  pos.yl  = ((pos.y  - 1 < 0)       ? par->sy - 1 : pos.y - 1 );
-  pos.zr  = ((pos.z  + 1 == par->sz) ? 0          : pos.z + 1 );
-  pos.zl  = ((pos.z  - 1 < 0)       ? par->sz - 1 : pos.z - 1 );
+  size_t sx = get_global_size(0);
+  size_t sy = get_global_size(1);
+  size_t sz = get_global_size(2);
 
-  pos.xrr = ((pos.xr + 1 == par->sx) ? 0          : pos.xr + 1 );
-  pos.xll = ((pos.xl - 1 < 0)       ? par->sx - 1 : pos.xl - 1 );
-  pos.yrr = ((pos.yr + 1 == par->sy) ? 0          : pos.yr + 1 );
-  pos.yll = ((pos.yl - 1 < 0)       ? par->sy - 1 : pos.yl - 1 );
-  pos.zrr = ((pos.zr + 1 == par->sz) ? 0          : pos.zr + 1 );
-  pos.zll = ((pos.zl - 1 < 0)       ? par->sz - 1 : pos.zl - 1 );
+  // periodic bc
+  pos.xr  = ((pos.x  + 1 == sx) ?      0 : pos.x + 1 );
+  pos.xl  = ((pos.x  - 1 < 0)   ? sx - 1 : pos.x - 1 );
+  pos.yr  = ((pos.y  + 1 == sy) ?      0 : pos.y + 1 );
+  pos.yl  = ((pos.y  - 1 < 0)   ? sy - 1 : pos.y - 1 );
+  pos.zr  = ((pos.z  + 1 == sz) ?      0 : pos.z + 1 );
+  pos.zl  = ((pos.z  - 1 < 0)   ? sz - 1 : pos.z - 1 );
+
+  pos.xrr = ((pos.xr + 1 == sx) ?      0 : pos.xr + 1 );
+  pos.xll = ((pos.xl - 1 < 0)   ? sx - 1 : pos.xl - 1 );
+  pos.yrr = ((pos.yr + 1 == sy) ?      0 : pos.yr + 1 );
+  pos.yll = ((pos.yl - 1 < 0)   ? sy - 1 : pos.yl - 1 );
+  pos.zrr = ((pos.zr + 1 == sz) ?      0 : pos.zr + 1 );
+  pos.zll = ((pos.zl - 1 < 0)   ? sz - 1 : pos.zl - 1 );
 
   // fixing select bc
   // 1 normal cell, -1 boundary cell
@@ -106,10 +110,10 @@ __private position get_pos_bc(parameters *par) {
   pos.s_zll = 1;
   pos.s_zrr = 1;
 
-  if (pos.z==par->sz-1) {pos.zr  = pos.z; pos.zrr = pos.zl; pos.s_zr = -1; pos.s_zrr=-1;}
-  if (pos.z==par->sz-2) {pos.zrr = pos.zr; pos.s_zrr=-1;}
-  if (pos.z==       0) {pos.zl  = pos.z; pos.zll = pos.zr; pos.s_zl = -1; pos.s_zll=-1;}
-  if (pos.z==       1) {pos.zll = pos.zl; pos.s_zll=-1;}
+  if (pos.z==sz-1) {pos.zr  = pos.z; pos.zrr = pos.zl; pos.s_zr = -1; pos.s_zrr=-1;}
+  if (pos.z==sz-2) {pos.zrr = pos.zr; pos.s_zrr=-1;}
+  if (pos.z==   0) {pos.zl  = pos.z; pos.zll = pos.zr; pos.s_zl = -1; pos.s_zll=-1;}
+  if (pos.z==   1) {pos.zll = pos.zl; pos.s_zll=-1;}
 
   return pos;
 }
