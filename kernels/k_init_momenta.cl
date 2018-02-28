@@ -20,5 +20,7 @@ __kernel void k_init_momenta_kernel_main(__private parameters par,
   output.y = par.vi*0.5f*(rho_yl+rho);
   output.z = par.wi*0.5f*(rho_zl+rho);
 
+  output = (float4)(0.0);
+
   write_imagef(bf_momenta_fc_a, (int4)(pos.x, pos.y, pos.z, 0), output);
 }

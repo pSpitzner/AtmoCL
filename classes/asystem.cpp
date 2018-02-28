@@ -509,6 +509,7 @@ asystem::asystem(clcontext *contextn, cllogger *loggern, int timescheme) {
   v_exporter.push_back(new clexport(context, "XZ_rho_i", "./kernels/exporter/ke_rho_i.cl", par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,1,1  ));
   v_exporter.push_back(new clexport(context, "XZ_rho_s", "./kernels/exporter/ke_rho_s.cl", par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,1,1  ));
   v_exporter.push_back(new clexport(context, "XZ_theta_e", "./kernels/exporter/ke_theta_e.cl", par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,1,1  ));
+  v_exporter.push_back(new clexport(context, "XZ_theta", "./kernels/exporter/ke_theta.cl", par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,1,1  ));
 
   v_exporter.push_back(new clexport(context, "XZ_n_c",   "./kernels/exporter/ke_n_c.cl",   par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,1,0  ));
   v_exporter.push_back(new clexport(context, "XZ_n_r",   "./kernels/exporter/ke_n_r.cl",   par, bf_momenta_fc_a, bf_scalars_vc_a[0], bf_scalars_vc_a[1], bf_scalars_vc_a[2], 1, par.sy/2,  1,1,0  ));
@@ -552,9 +553,12 @@ void asystem::read_single_profile(clbuffer *b, FILE *f, int c, float dz, float o
     k=0;
     while (height[k]<(z+0.5)*dz)k++;
     // printf("%d %d %d %f %f\n", c, z, k, height[k], prof[k] );
-    for (int x=0; x<par.sx; x++)
-      for (int y=0; y<par.sy; y++)
+    for (int x=0; x<par.sx; x++) {
+      for (int y=0; y<par.sy; y++) {
         b->set(x, y, z, c, prof[k]+offset);
+        // if (x == par.sx/2) printf("%d %g\n", z, prof[k]+offset);
+      }
+    }
   }
   delete prof;
   delete height;
@@ -615,6 +619,8 @@ void asystem::init_from_file(std::string s_filePath) {
   fclose(f);
   bf_scalars_vc_b[0]->ram2device();
   bf_momenta_fc_a->ram2device();
+
+  context->finish();
 
   k_init_scalars->step(par.sx, par.sy, par.sz);
   k_init_momenta->step(par.sx, par.sy, par.sz);
@@ -693,12 +699,12 @@ void asystem::mis_step() {
 
 void asystem::mis_step(int damping, int kx, int ky, int kz) {
 
-  ks_ext_forcings->bind("frame_index", frame_index);
-  ks_ext_forcings->step(kx, ky, kz);
-  kf_copy[0]->step(kx, ky, kz);
-  kf_copy[1]->step(kx, ky, kz);
-  kf_copy[2]->step(kx, ky, kz);
-  kf_copy[3]->step(kx, ky, kz);
+  // ks_ext_forcings->bind("frame_index", frame_index);
+  // ks_ext_forcings->step(kx, ky, kz);
+  // kf_copy[0]->step(kx, ky, kz);
+  // kf_copy[1]->step(kx, ky, kz);
+  // kf_copy[2]->step(kx, ky, kz);
+  // kf_copy[3]->step(kx, ky, kz);
 
   if (par.timescheme == 0) {
     for (int s=0; s<3; s++) {

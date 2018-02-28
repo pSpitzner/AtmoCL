@@ -27,10 +27,17 @@ __kernel void k_perturb_moistbubble_kernel_main(__private parameters par,
   float rho_l  = c.s3;
   float rho_d  = rho-rho_v-rho_l;
 
+  // if (pos.x == 0 && pos.y == 0) printf("foo %v8hlf\n", c);
+
   float cpml = rho_d*par.cpd+rho_v*par.cpv+rho_l*par.cpl;
   float rml  = rho_d*par.rd+rho_v*par.rv;
   float theta = exp(rhosig/cpml + rml/cpml*log(par.pr));
   float p = exp(rhosig/(cpml-rml)+log(rml)/(1.0f-rml/cpml));
+
+  int i = -1;
+  if (pos.x==par.sx/2 && pos.y== par.sy/2 && pos.z==2) printf("%d %2.2f %2.2f %2.2f %2.2f || %2.2f %2.2f %2.2f %2.2f\n", i, rho_d, rho_v, rho_l, rho, rml, cpml, theta, rhosig);
+
+  // printf("%f %f %f\n", rhosig, p, theta);
 
   //cosine squared, r in meters
   r = 2000.0f;
@@ -46,6 +53,7 @@ __kernel void k_perturb_moistbubble_kernel_main(__private parameters par,
     offset = 2.0f*pow(cospi(len*0.5f), 2.0f);
     // change to dry potential temperature
     theta = theta*pow(p/par.pr,rml/cpml-par.rd/par.cpd);
+
     // (virtual) density potential temperature
     theta_vp = theta*(1.0f+(par.rv/par.rd)*rho_v/rho)/(1.0f+(rho_v+rho_l)/rho);
 
@@ -53,10 +61,13 @@ __kernel void k_perturb_moistbubble_kernel_main(__private parameters par,
     theta_vp = theta_vp*(1.0f+offset/320.0f);
 
     // back to 'normal' potential temp
-    theta = theta_vp*(1.0f+(rho_v+rho_l)/rho)/(1.0f+(par.rv/par.rd)*rho_v/rho);
+    float theta_temp = theta_vp*(1.0f+(rho_v+rho_l)/rho)/(1.0f+(par.rv/par.rd)*rho_v/rho);
+    // printf("1 (%d %d %d) %f | %f\n", pos.x, pos.y, pos.z, theta, theta_temp);
+    theta = theta_temp;
 
     // change densities to keep pressure of bubble and surrounding constant
     for (int i = 0; i < 200; i++) {
+      // if (pos.x==par.sx/2 && pos.y== par.sy/2 && pos.z==2) printf("%d %2.2f %2.2f %2.2f %2.2f || %2.2f %2.2f %2.2f\n", i, rho_d, rho_v, rho_l, rho, rml, cpml, theta);
       T     = theta*pow(p/par.pr,par.rd/par.cpd);
       rho_v = rhovs(T, par);
       rho_d = (p-rho_v*par.rv*T)/par.rd/T;
@@ -66,7 +77,6 @@ __kernel void k_perturb_moistbubble_kernel_main(__private parameters par,
       cpml  = rho_d*par.cpd+rho_v*par.cpv+rho_l*par.cpl;
       theta = theta_vp*(1.0f+(rho_v+rho_l)/rho)/(1.0f+(par.rv/par.rd)*rho_v/rho);
 
-      // if (pos.x==par.sx/2 && pos.y== par.sy/2 && pos.z==2) printf("%d %2.2f %2.2f %2.2f %2.2f || %2.2f %2.2f %2.2f\n", i, rho_d, rho_v, rho_l, rho, rml, cpml, theta);
     }
 
     // back to moist potential temperature
@@ -76,7 +86,7 @@ __kernel void k_perturb_moistbubble_kernel_main(__private parameters par,
   }
 
    float pnew = exp(rhosig/(cpml-rml)+log(rml)/(1.0f-rml/cpml));
-  if (pos.x==par.sx/2 && pos.y== par.sy/2) printf("%d %2.5f %2.5f %2.7f\t\t%2.2v4hlf\t%2.2f %2.2f\n", pos.z, theta, offset, rhosig, arg, p, pnew);
+  // if (pos.x==par.sx/2 && pos.y== par.sy/2) printf("%d %2.5f %2.5f %2.7f\t\t%2.2v4hlf\t%2.2f %2.2f\n", pos.z, theta, offset, rhosig, arg, p, pnew);
 
   float8 output;
   output.s0 = rhosig;     // rho*sig
