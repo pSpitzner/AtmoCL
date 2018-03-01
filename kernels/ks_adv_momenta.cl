@@ -68,19 +68,22 @@ __kernel void ks_adv_momenta_kernel_main(__private parameters par,
   if (pos.urf>0.0f) Fxrp = (cxr/3.0f+5.0f/6.0f*  c- cxl/6.0f)*pos.urf;
   if (pos.ulf<0.0f) Fxln = (cxl/3.0f+5.0f/6.0f*  c- cxr/6.0f)*pos.ulf;
   if (pos.urf<0.0f) Fxrn = (  c/3.0f+5.0f/6.0f*cxr-cxrr/6.0f)*pos.urf;
-  Fx = (Fxlp - Fxrp + Fxln - Fxrn) / par.dx; /* negative flux *-1 */
+  //Fx = (Fxlp - Fxrp + Fxln - Fxrn) / par.dx; /* negative flux *-1 */
+  Fx = (Fxlp/par.dx - Fxrp/par.dx + Fxln/par.dx - Fxrn/par.dx) ; /* negative flux *-1 */
 
   if (pos.vlf>0.0f) Fylp = (  c/3.0f+5.0f/6.0f*cyl-cyll/6.0f)*pos.vlf;
   if (pos.vrf>0.0f) Fyrp = (cyr/3.0f+5.0f/6.0f*  c- cyl/6.0f)*pos.vrf;
   if (pos.vlf<0.0f) Fyln = (cyl/3.0f+5.0f/6.0f*  c- cyr/6.0f)*pos.vlf;
   if (pos.vrf<0.0f) Fyrn = (  c/3.0f+5.0f/6.0f*cyr-cyrr/6.0f)*pos.vrf;
-  Fy = (Fylp - Fyrp + Fyln - Fyrn) / par.dy;
+  //Fy = (Fylp - Fyrp + Fyln - Fyrn) / par.dy;
+  Fy = (Fylp/par.dz - Fyrp/par.dz + Fyln/par.dz - Fyrn/par.dz);
 
   if (pos.wlf>0.0f) Fzlp = (  c/3.0f+5.0f/6.0f*czl-czll/6.0f)*pos.wlf;
   if (pos.wrf>0.0f) Fzrp = (czr/3.0f+5.0f/6.0f*  c- czl/6.0f)*pos.wrf;
   if (pos.wlf<0.0f) Fzln = (czl/3.0f+5.0f/6.0f*  c- czr/6.0f)*pos.wlf;
   if (pos.wrf<0.0f) Fzrn = (  c/3.0f+5.0f/6.0f*czr-czrr/6.0f)*pos.wrf;
-  Fz = (Fzlp - Fzrp + Fzln - Fzrn) / par.dz;
+  //Fz = (Fzlp - Fzrp + Fzln - Fzrn) / par.dz;
+  Fz = (Fzlp/par.dz - Fzrp/par.dz + Fzln/par.dz - Fzrn/par.dz);
   // end upwind
 
   float8 Temp = Fx + Fy + Fz;

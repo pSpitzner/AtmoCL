@@ -33,7 +33,7 @@ float4 input = read_f4(pos.x, pos.y, pos.z, bf_scalars_vc_b_0);
 
 float8 output;
 output.s0 = input.s0;      // rho*sig
-output.s1 = input.s1;        // rho_total
+output.s1 = input.s1;      // rho_total
 output.s2 = input.s2;      // rho_vapour
 output.s3 = input.s3;      // rho_cloud_liquid, (old) bulk: rho_liquid
 

@@ -32,17 +32,19 @@ __kernel void k_nesting_moistbubble_kernel_main(__private parameters par,
   c    = read_f8(pos.x, pos.y, pos.z, b_source_scalars_0, b_source_scalars_1);
   cice = (float4)(0.0f);
   mom  = read_f4(pos.x, pos.y, pos.z, b_source_momenta);
-  st = init_state_with_ice(par, c, cice);
+  st   = init_state_with_ice(par, c, cice);
 
   r_t = (st.rho_l+st.rho_v)/st.rho_d;
   r_v = (st.rho_v)/st.rho_d;
   r_l = r_t - r_v;
 
   pd = st.rho_d*par.rd*st.T; // ?
-  theta_e = st.T*pow(pd/par.pr,-par.rd/(par.cpd+par.cpl*r_t))*exp(par.lre0*r_v/(par.cpd+par.cpl*r_t));
+  theta_e = st.T*pow(pd/par.pr,-par.rd/(par.cpd+par.cpl*r_t))*exp(par.lre0*r_v/((par.cpd+par.cpl*r_t)*st.T));
+
+  //printf("%d %d %d %g %g %g %g \n", pos.x, pos.y, pos.z, st.rho_d, st.rho_v, pd , theta_e);
 
   float theta, theta_l;
-  theta = exp((st.sig+st.rml*log(par.pr))/st.cpml);
+  theta   = exp((st.sig+st.rml*log(par.pr))/st.cpml);
   theta_l = theta - (theta/st.T*par.lr/st.cpml)*st.rho_l/st.rho;
 
   theta_e_prof = 320.0f;
@@ -61,8 +63,9 @@ __kernel void k_nesting_moistbubble_kernel_main(__private parameters par,
   c.s2 += (r_v_prof-r_v)*1e-2f*ds;
   c.s3 += (r_l_prof-r_l)*1e-2f*ds;
 
+  //printf("%g\n",theta_e);
   // fix density at ground according to reference pressure
-  if (pos.z == 0) c.s1 += (par.pr - st.P)*1.0e-7f*ds;
+  if (pos.z == 0) c.s1 += (par.pr - st.P)*1.0e-8f*ds;
 
   cice = (float4)(0.0f);
   mom *= dm;

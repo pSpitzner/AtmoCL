@@ -73,9 +73,9 @@ int main(int argc, char * argv[]) {
         sys->init_from_file(s_profilePath);
         // sys->init_from_kernel();
       }
-    // logger->log(0, "Equilibrating...");
-    // sys->equilibrate();
-    // sys->write_state("equil");
+     logger->log(0, "Equilibrating...");
+     sys->equilibrate();
+     sys->write_state("equil");
   } else {
     logger->log(0, "Reading state files from %s\n", s_statePath.c_str());
     sys->read_state(s_statePath);

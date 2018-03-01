@@ -3,23 +3,23 @@
 void asystem::set_par(int timescheme_) {
 
   // moist heatbubble bryan fritsch
-  par.sx  = 200;     // system size
+  par.sx  = 800;     // system size
   par.sy  = 1;
-  par.sz  = 100;
-  par.dx  = 100.0;
-  par.dy  = 100.0;
-  par.dz  = 100.0;
+  par.sz  = 400;
+  par.dx  = 25.0;
+  par.dy  = 25.0;
+  par.dz  = 25.0;
 
   par.ui = 0.0;
   par.vi = 0.0;
   par.wi = 0.0;
 
   // time steps
-  par.dT = 1.0;                   // large timestep
+  par.dT = 0.3;                   // large timestep
   par.ns = 2*2*std::ceil(par.dT*350.0/sqrt(float(par.dx*par.dx + par.dy*par.dy + par.dz*par.dz)));
   // par.ns  = 12;                // max nr small per large
   logger->log(0, "ns: %d\n", par.ns);
-  par.nout = 10;
+  par.nout = 1;
 
 
   par.timescheme = timescheme_;   // mis = 1, rk3 = 0
@@ -628,13 +628,13 @@ void asystem::init_from_file(std::string s_filePath) {
 
 void asystem::equilibrate() {
   // custom mis step to create initial profile with hydrostaic equilibrium
-  int kx = 1;
-  int ky = 1;
+  int kx = par.sx;
+  int ky = par.sy;
   int kz = par.sz;
 
   kf_microphys->bind("phys", (unsigned int)(2)); // only condensation for moist heatbubble
 
-  int equil_steps = 5000;
+  int equil_steps = 2000;
 
   for (int f = 0; f < equil_steps; f++) {
     if (f%10==0) logger->log(2,"\rEquilibrating  -  %d/%d",f,equil_steps);
@@ -650,22 +650,23 @@ void asystem::equilibrate() {
           fast_stage(s, kx, ky, kz);
           k_nesting->bind("damping_strength", frame_index);
           k_nesting->step(kx, ky, kz);
+          
           kf_copy[0]->step(kx, ky, kz);
           kf_copy[1]->step(kx, ky, kz);
           kf_copy[2]->step(kx, ky, kz);
           kf_copy[3]->step(kx, ky, kz);
         }
         // strip to full
-        k_clone[0]->step(par.sx, par.sy, par.sz);
-        k_clone[1]->step(par.sx, par.sy, par.sz);
-        k_clone[2]->step(par.sx, par.sy, par.sz);
-        k_clone[3]->step(par.sx, par.sy, par.sz);
-        kf_copy[0]->step(par.sx, par.sy, par.sz);
-        kf_copy[1]->step(par.sx, par.sy, par.sz);
-        kf_copy[2]->step(par.sx, par.sy, par.sz);
-        kf_copy[3]->step(par.sx, par.sy, par.sz);
+        //k_clone[0]->step(par.sx, par.sy, par.sz);
+        //k_clone[1]->step(par.sx, par.sy, par.sz);
+        //k_clone[2]->step(par.sx, par.sy, par.sz);
+        //k_clone[3]->step(par.sx, par.sy, par.sz);
+        //kf_copy[0]->step(par.sx, par.sy, par.sz);
+        //kf_copy[1]->step(par.sx, par.sy, par.sz);
+        //kf_copy[2]->step(par.sx, par.sy, par.sz);
+        //kf_copy[3]->step(par.sx, par.sy, par.sz);
 
-        // write_files(frame_index*3+s);
+        write_files(frame_index*3+s);
       }
     }
     write_files(frame_index);

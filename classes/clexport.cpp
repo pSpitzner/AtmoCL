@@ -27,7 +27,7 @@ clexport::clexport(clcontext *context_, std::string name_, std::string kname_, p
   ts  = ts_;
   vp  = vp_;
 
-  img_every = 60.0;
+  img_every = 20.0;
   ts_every  = 60.0;
   vp_every  = 10.0*120.0;
   t_img = int(std::ceil(img_every/par.dT));
