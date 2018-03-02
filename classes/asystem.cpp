@@ -3,23 +3,23 @@
 void asystem::set_par(int timescheme_) {
 
   // moist heatbubble bryan fritsch
-  par.sx  = 800;     // system size
+  par.sx  = 200;     // system size
   par.sy  = 1;
-  par.sz  = 400;
-  par.dx  = 25.0;
-  par.dy  = 25.0;
-  par.dz  = 25.0;
+  par.sz  = 100;
+  par.dx  = 100.0;
+  par.dy  = 100.0;
+  par.dz  = 100.0;
 
   par.ui = 0.0;
   par.vi = 0.0;
   par.wi = 0.0;
 
   // time steps
-  par.dT = 0.3;                   // large timestep
+  par.dT =1.0;                   // large timestep
   par.ns = 2*2*std::ceil(par.dT*350.0/sqrt(float(par.dx*par.dx + par.dy*par.dy + par.dz*par.dz)));
   // par.ns  = 12;                // max nr small per large
   logger->log(0, "ns: %d\n", par.ns);
-  par.nout = 1;
+  par.nout = 10;
 
 
   par.timescheme = timescheme_;   // mis = 1, rk3 = 0
@@ -650,7 +650,7 @@ void asystem::equilibrate() {
           fast_stage(s, kx, ky, kz);
           k_nesting->bind("damping_strength", frame_index);
           k_nesting->step(kx, ky, kz);
-          
+
           kf_copy[0]->step(kx, ky, kz);
           kf_copy[1]->step(kx, ky, kz);
           kf_copy[2]->step(kx, ky, kz);

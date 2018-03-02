@@ -70,8 +70,8 @@ int main(int argc, char * argv[]) {
         logger->log(0, "No profile provided\n");
         return -1;
       } else {
-        sys->init_from_file(s_profilePath);
-        // sys->init_from_kernel();
+        // sys->init_from_file(s_profilePath);
+        sys->init_from_kernel();
       }
      logger->log(0, "Equilibrating...");
      sys->equilibrate();
