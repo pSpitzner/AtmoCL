@@ -1,6 +1,5 @@
 #include "clkernel.h"
 
-
 clkernel::clkernel(clcontext *context, parameters parn, std::string filePath, std::string headerPathOne, std::string headerPathTwo):
   context(context), logger(context->logger) {
 
@@ -139,7 +138,14 @@ size_t clkernel::get_pos_of_argument_from_src(std::string s_kernelArg) {
   std::string::size_type end = s_sourceCode.find(s_kernelArg, start);
   std::string s_argList = s_sourceCode.substr(start,end-start);
 
-  return std::count(s_argList.begin(), s_argList.end(), ',');
+  size_t pos = std::count(s_argList.begin(), s_argList.end(), ',');
+  if (std::string::npos == end || s_sourceCode.length()==0) {
+    printf("Kernel argument %s not found in source of %s", s_kernelArg.c_str(), s_name.c_str());
+    fflush(stdout);
+    exit(0);
+  }
+
+  return pos;
 }
 
 void clkernel::bind_custom(std::string s_kernelArg, void *s, size_t custom_size) {
@@ -178,6 +184,7 @@ void clkernel::bind() {
 }
 
 void clkernel::bind(std::string s_kernelArg, clbuffer *b) {
+  // printf("%s binding %s \"%s\"\n", s_name.c_str(), b->s_name.c_str(), s_kernelArg.c_str());
   size_t pos = get_pos_of_argument_from_src(s_kernelArg);
   ret = clSetKernelArg(kernel, pos, sizeof(b->buffer), (void *) &b->buffer);
   binding_count++;

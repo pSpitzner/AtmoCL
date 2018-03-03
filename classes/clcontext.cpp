@@ -69,9 +69,9 @@ clcontext::clcontext(cllogger *loggern, int device_nr, bool profiling_enabled)
   }
   free(platform_list);
 
-  logger->log(0, "Now using:\n");
+  logger->log(0, "Now using device %d\n", device_nr);
 
-  cl_device_info(device_id);
+  // cl_device_info(device_id);
 
   /* Create OpenCL Context */
   context = clCreateContext(NULL, 1, &device_id, NULL, NULL, &ret);

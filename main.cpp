@@ -23,8 +23,7 @@ int main(int argc, char * argv[]) {
 
   cl_device_type DeviceType = CL_DEVICE_TYPE_CPU;
   bool profiling_enabled = false;
-  // std::string s_profilePath = "./profiles/data125";
-  std::string s_profilePath = "./profiles/dycoms_2";
+  std::string s_profilePath = "";
   std::string s_statePath = "";
   std::string s_output = "";
   int timescheme = 1;
@@ -66,12 +65,13 @@ int main(int argc, char * argv[]) {
 
   if (s_statePath.length() == 0) {
     logger->log(0, "No state files given\n");
-      if (s_profilePath.length() == 0) {
-        logger->log(0, "No profile provided\n");
-        return -1;
-      } else {
-        sys->init_from_file(s_profilePath);
-      }
+    if (s_profilePath.length() == 0) {
+      logger->log(0, "No profile provided\n");
+      sys->init_from_kernel();
+    } else {
+      sys->init_from_file(s_profilePath);
+      // remember to modify k_init if using this!
+    }
     logger->log(0, "Equilibrating...");
     sys->equilibrate();
     sys->write_state("equil");
@@ -82,11 +82,13 @@ int main(int argc, char * argv[]) {
   // sys->write_files(0);
   // return 0;
 
+  sys->perturb();
+
   logger->start_new_timer();
   logger->log(2, "Estimating remaining time...\n");
 
 
-  int iterations = 50000;
+  int iterations = 10000;
   for (int i = 0; i < iterations; i++) {
     logger->start_new_timer();
     sys->mis_step();

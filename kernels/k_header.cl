@@ -154,7 +154,8 @@ __private state init_state_with_ice(parameters *par, float8 *c, float4 *cice) {
   st.pv    = st.T*par->rv*st.rho_v;
   st.sv    = par->svr*pow(st.T/par->tr, (par->cpv-par->cpl)/par->rv)*exp(par->lre0/par->rv*(1.0f/par->tr-1.0f/st.T));
   st.svi   = par->svr*pow(st.T/par->tr, (par->cpv-par->cpi)/par->rv)*exp(par->lrs0/par->rv*(1.0f/par->tr-1.0f/st.T));
-  st.lv    = par->lre0+(par->cpv-par->cpl)*st.T;
+  // st.lv    = par->lre0+(par->cpv-par->cpl)*st.T;
+  st.lv    = par->lre0; // assume constant latent heat for moistbubble
   st.sat   = 100.0f*(st.pv/st.sv-1.0f); // relative luftfecuhte über 100 => sat=1 entspricht 101 rel f.
 
   return st;

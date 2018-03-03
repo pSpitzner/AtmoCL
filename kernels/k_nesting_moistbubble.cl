@@ -15,9 +15,9 @@ __kernel void k_nesting_moistbubble_kernel_main(__private parameters par,
                                                 __write_only image3d_t b_target_scalars_2,
                                                 __write_only image3d_t b_target_momenta)
 {
-  position pos = get_pos_bc(&par);
+  // here, just create hydrostatic equilibrium according to profile. bubble needs to be added later via perturbation kernel
 
-  // just create hydrostatic equilibrium according to profile. bubble needs to be added later to 'break' it
+  position pos = get_pos_bc(&par);
 
   float8 c;
   float4 cice, mom;
@@ -39,18 +39,16 @@ __kernel void k_nesting_moistbubble_kernel_main(__private parameters par,
   r_l = r_t - r_v;
 
   pd = st.rho_d*par.rd*st.T; // ?
-  theta_e = st.T*pow(pd/par.pr,-par.rd/(par.cpd+par.cpl*r_t))*exp(par.lre0*r_v/(par.cpd+par.cpl*r_t));
+  theta_e = st.T*pow(pd/par.pr,-par.rd/(par.cpd+par.cpl*r_t))*exp(par.lre0*r_v/((par.cpd+par.cpl*r_t)*st.T));
 
   float theta, theta_l;
-  theta = exp((st.sig+st.rml*log(par.pr))/st.cpml);
+  theta   = exp((st.sig+st.rml*log(par.pr))/st.cpml);
   theta_l = theta - (theta/st.T*par.lr/st.cpml)*st.rho_l/st.rho;
 
   theta_e_prof = 320.0f;
   r_t_prof = 0.02f;
   r_v_prof = rhovs(st.T, par)/st.rho_d;
   r_l_prof = r_t_prof - r_v_prof;
-
-  // if (pos.x == par.sx/2 && pos.z == 0) printf("%d %g %g (%g) |%g (%g) %g (%g) | %g | %g\n", pos.z, theta, theta_e, theta_e_prof, r_t, r_t_prof, r_v, r_v_prof, st.P, offset);
 
   // decrease damping over time
   float ds = (1.0f - 0.3f*exp(-(float)(damping_strength)/20.0f));
@@ -62,7 +60,7 @@ __kernel void k_nesting_moistbubble_kernel_main(__private parameters par,
   c.s3 += (r_l_prof-r_l)*1e-2f*ds;
 
   // fix density at ground according to reference pressure
-  if (pos.z == 0) c.s1 += (par.pr - st.P)*1.0e-7f*ds;
+  if (pos.z == 0) c.s1 += (par.pr - st.P)*1.0e-8f*ds;
 
   cice = (float4)(0.0f);
   mom *= dm;
